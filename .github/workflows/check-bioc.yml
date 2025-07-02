@@ -1,0 +1,83 @@
+name: R-CMD-check-BiocCheck
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  BiocCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3'
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+          
+      - name: Install BiocManager
+        run: |
+          R -e "install.packages('BiocManager')"
+          
+      - name: Install package dependencies
+        run: |
+          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE)"
+          R -e "BiocManager::install(ask = FALSE)"
+          R -e "install.packages(c('devtools', 'remotes'))"
+          
+      - name: Check package
+        run: |
+          R -e "BiocCheck::BiocCheck('.', `quit-with-status` = FALSE)"
+          
+      - name: R CMD check
+        run: |
+          R -e "devtools::check()"
+          
+      - name: Run tests
+        run: |
+          R -e "devtools::test()"
+          
+      - name: Build vignettes
+        run: |
+          R -e "devtools::build_vignettes()"
+          
+      - name: Run code coverage
+        run: |
+          R -e "covr::package_coverage()"
+          R -e "covr_report <- covr::report(covr::package_coverage()); dir.create('coverage_report', showWarnings = FALSE); saveRDS(covr_report, 'coverage_report/coverage.rds')"
+          
+      - name: Run linting checks
+        run: |
+          R -e "lintr::lint_package()"
+          
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: check-results
+          path: check/
+          
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage_report/
+          
+      - name: Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+

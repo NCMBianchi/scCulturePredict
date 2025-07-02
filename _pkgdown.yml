@@ -1,0 +1,126 @@
+url: https://NCMBianchi.github.io/scCulturePredict
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#0054AD"
+    navbar-light-brand-color: "#0054AD"
+    navbar-light-brand-hover-color: "#003D7D"
+  includes:
+    in_header: |
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+home:
+  title: Predict Cell Culture Media from Single-Cell Transcriptomes
+  description: >
+    An R package for predicting the growth medium used for culturing cells
+    based on their single-cell transcriptomic profiles.
+  sidebar:
+    structure: [links, license, community, citation, authors, dev]
+
+navbar:
+  structure:
+    left: [intro, reference, articles, tutorials, news]
+    right: [github]
+  components:
+    home: ~
+    reference:
+      text: Functions
+      href: reference/index.html
+    articles:
+      text: Vignettes
+      menu:
+        - text: Introduction to scCulturePredict
+          href: articles/scCulturePredict-introduction.html
+        - text: Visualization with scCulturePredict
+          href: articles/scCulturePredict-visualization.html
+        - text: Advanced Usage of scCulturePredict
+          href: articles/scCulturePredict-advanced.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/NCMBianchi/scCulturePredict
+      aria-label: GitHub repository
+
+reference:
+  - title: Package Overview
+    desc: Package documentation and overview
+    contents:
+      - scCulturePredict-package
+  - title: Main Pipeline Function
+    desc: Complete analysis pipeline (recommended for most users)
+    contents:
+      - scCulture
+      - plot_scCulture
+  - title: Data Loading
+    desc: Functions for loading and preparing single-cell data
+    contents:
+      - load_data
+      - load_packages
+      - load_object
+      - save_object
+  - title: Preprocessing
+    desc: Functions for preprocessing single-cell data
+    contents:
+      - preprocess_data
+      - reduce_dimensions
+      - perform_dimensionality_reduction
+      - perform_pca
+      - perform_tsne
+      - run_umap
+  - title: Pathway Analysis
+    desc: Functions for KEGG pathway analysis
+    contents:
+      - parse_kegg_keg
+      - build_fingerprints
+      - analyze_pathway_activity
+      - analyze_pathway_enrichment
+      - calculate_pathway_activities
+  - title: Prediction
+    desc: Functions for predicting cell culture media
+    contents:
+      - predict_by_similarity
+      - predict_by_svm
+      - predict_cell_types
+      - train_cell_type_classifier
+  - title: Evaluation
+    desc: Functions for evaluating prediction performance
+    contents:
+      - evaluate_predictions
+      - evaluate_cell_type_predictions
+      - create_evaluation_plots
+      - create_evaluation_metrics_plot
+  - title: Visualization
+    desc: Functions for visualizing results
+    contents:
+      - create_umap_plot
+      - create_accuracy_plot
+      - create_confusion_heatmap
+      - create_pathway_boxplot
+      - create_pathway_heatmap
+      - save_visualization_plots
+  - title: Utility Functions
+    desc: Helper and utility functions
+    contents:
+      - check_and_install_packages
+      - create_dir_if_not_exists
+      - calculate_percentage
+      - format_number
+      - get_file_extension
+      - is_empty
+      - validate_file
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - scCulturePredict-introduction
+  - title: Advanced Topics
+    navbar: ~
+    contents:
+      - scCulturePredict-visualization
+      - scCulturePredict-advanced
+
+news:
+  releases:
+    - text: "Version 0.99.0"
+      href: news/index.html#scculturepredict-0-99-0-2024-04-28

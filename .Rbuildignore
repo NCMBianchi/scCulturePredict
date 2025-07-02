@@ -1,0 +1,75 @@
+# R project files
+^.*\.Rproj$
+^\.Rproj\.user$
+
+# Version control
+^\.git$
+^\.gitignore$
+^\.github$
+
+# Development files
+^\.lintr$
+^\.styler\.R$
+^\.vscode$
+^\.httr-oauth$
+
+# Documentation and website
+^_pkgdown\.yml$
+^pkgdown$
+^docs$
+^docs/.*$
+^README\.Rmd$
+^README\.md$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^cran-comments\.md$
+^LICENSE\.md$
+^LICENSE\.txt$
+
+# Build and check files
+^\.\.Rcheck$
+^\.\.Rcheck/.*$
+^.*\.tar\.gz$
+^doc$
+^Meta$
+
+# System files
+^\.DS_Store$
+^.*\.DS_Store$
+^\.Rhistory$
+^.*\.Rhistory$
+^Icon$
+^Icon
+.*Icon.*
+
+# Project specific
+^IGNORE$
+^IGNORE/.*$
+^scripts$
+^script\.R$
+^package_TEST$
+^package_TEST/.*$
+^data-raw$
+
+# CI/CD
+^codecov\.yml$
+^\.github/workflows/.*\.yaml$
+^\.github/workflows/.*\.yml$
+^CRAN-SUBMISSION$
+^revdep$
+
+# Web assets (from pkgdown)
+^.*\.woff2$
+^.*\.woff$
+^.*\.ttf$
+^.*bootstrap.*$
+^.*\.png$
+^.*\.jpg$
+^.*\.jpeg$
+^.*\.gif$
+^.*\.ico$
+^.*\.svg$
+^.*\.min\.js$
+^.*\.min\.css$
+^.*\.map$
+^.*figure-html.*$

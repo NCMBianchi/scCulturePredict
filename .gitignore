@@ -1,0 +1,90 @@
+# R package specific files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+.Renviron
+.Rprofile
+*-Ex.R
+
+# Build artifacts
+*.o
+*.so
+*.dll
+*.a
+*.dylib
+.libs/
+src/*.o
+src/*.so
+src/*.dll
+inst/doc
+vignettes/*.html
+vignettes/*.pdf
+vignettes/*.R
+Meta/
+.httr-oauth
+*_cache/
+/cache/
+*.utf8.md
+*.knit.md
+.sass-cache/
+
+# Temporary files
+tmp/
+temp/
+.tmp*
+*.tmp
+
+# Session Data files
+.DS_Store
+.httr-oauth
+*.swp
+
+# Output files from R CMD build
+/*.tar.gz
+/*.Rcheck/
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# BiocCheck output
+BiocCheck/
+
+# Compiled documentation
+docs/
+doc/
+inst/doc
+
+# pkgdown site
+docs/
+docs*/
+
+# Project specific excludes
+Icon
+IGNORE
+script.R
+package_TEST
+
+# Coverage files
+.coverage
+coverage.xml
+*.coverage
+*.coveragexml
+*_coverage.txt
+
+# System-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# RStudio files
+*.Rproj
+.Rproj.user/
+*.rproj

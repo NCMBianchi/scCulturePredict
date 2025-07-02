@@ -1,0 +1,38 @@
+ENTRY       example_pathway
+PATHWAY     map00001
+NAME        Example Metabolic Pathway
+CLASS       Metabolism; Energy metabolism
+DESCRIPTION This is an example pathway for demonstration purposes
+            It represents a simplified metabolic process
+REFERENCE
+  AUTHORS   Smith J, Johnson B
+  TITLE     The Example Metabolic Pathway
+  JOURNAL   J. Biol. Chem. 123:456-789 (2023)
+///
+GENE        ENSG00000001  Gene1  [EC:1.1.1.1]
+GENE        ENSG00000002  Gene2  [EC:1.2.1.1]
+GENE        ENSG00000003  Gene3  [EC:2.1.1.1]
+GENE        ENSG00000004  Gene4  [EC:2.2.1.1]
+GENE        ENSG00000005  Gene5  [EC:3.1.1.1]
+GENE        ENSG00000006  Gene6  [EC:3.2.1.1]
+GENE        ENSG00000007  Gene7  [EC:4.1.1.1]
+GENE        ENSG00000008  Gene8  [EC:4.2.1.1]
+GENE        ENSG00000009  Gene9  [EC:5.1.1.1]
+GENE        ENSG00000010  Gene10 [EC:5.2.1.1]
+COMPOUND    C00001  Compound A
+COMPOUND    C00002  Compound B
+COMPOUND    C00003  Compound C
+COMPOUND    C00004  Compound D
+COMPOUND    C00005  Compound E
+REACTION    R00001  C00001 -> C00002
+REACTION    R00002  C00002 -> C00003
+REACTION    R00003  C00003 -> C00004
+REACTION    R00004  C00004 -> C00005
+ENZYME      1.1.1.1  Enzyme1
+ENZYME      1.2.1.1  Enzyme2
+ENZYME      2.1.1.1  Enzyme3
+ENZYME      2.2.1.1  Enzyme4
+ENZYME      3.1.1.1  Enzyme5
+MODULE      M00001  Module1
+MODULE      M00002  Module2
+///

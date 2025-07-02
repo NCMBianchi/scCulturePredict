@@ -1,0 +1,15 @@
+linters <- lintr::with_defaults(
+  lintr::line_length_linter(120),
+  lintr::object_usage_linter = NULL,
+  lintr::cyclocomp_linter(complexity_limit = 25),
+  lintr::object_name_linter(styles = c("snake_case", "camelCase")),
+  lintr::assignment_linter = NULL  # Allow both <- and = for assignment
+)
+
+exclusions <- list(
+  "inst/doc",
+  "inst/extdata",
+  "vignettes",
+  "man",
+  "tests/testthat/helper.R"
+)

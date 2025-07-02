@@ -1,0 +1,75 @@
+Package: scCulturePredict
+Type: Package
+Title: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints
+Version: 0.99.0
+Date: 2024-04-28
+Authors@R: c(
+    person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0000-4202-7154"))
+    )
+Author: Niccolò Bianchi [aut, cre] (<https://orcid.org/0009-0000-4202-7154>)
+Maintainer: Niccolò Bianchi <ncmb89@gmail.com>
+Description: A simple R package to build a phenotypic fingerprint and subsequentially
+    predict cell culture based on gene expression and biological pathways from
+    single-cell transcriptomics data: a dual functionality in BUILD and PREDICT modes.
+    The first generates transferable transcriptomic fingerprints from labeled training
+    data using KEGG pathway analysis and trains both similarity-based and SVM prediction
+    models. The latter applies these pre-built fingerprints to unlabeled datasets for
+    culture condition prediction. Supports both CSV and 10X Genomics data formats,
+    integrates with Seurat workflows, and provides comprehensive visualisation tools
+    for model evaluation and prediction confidence assessment.
+License: MIT + file LICENSE
+URL: https://NCMBianchi.github.io/scCulturePredict
+BugReports: https://github.com/NCMBianchi/scCulturePredict/issues
+Encoding: UTF-8
+LazyData: false
+Depends:
+    R (>= 4.4.0)
+Imports:
+    Seurat (>= 4.0.0),
+    dplyr,
+    ggplot2,
+    e1071,
+    caret,
+    methods,
+    parallel,
+    doParallel,
+    stats,
+    utils,
+    tools,
+    reshape2
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    BiocStyle,
+    lintr,
+    styler,
+    covr,
+    BiocCheck,
+    rcmdcheck,
+    devtools,
+    roxygen2,
+    PRROC,
+    R.utils,
+    pROC,
+    randomForest,
+    xgboost
+biocViews:
+    SingleCell,
+    GeneExpression,
+    Clustering,
+    Classification,
+    DimensionReduction,
+    Visualization,
+    PathwayAnalysis,
+    Transcriptomics,
+    RNASeq,
+    FeatureExtraction,
+    Regression,
+    GenePrediction,
+    Pathways,
+    KEGG
+VignetteBuilder: knitr
+RoxygenNote: 7.3.2
+Config/testthat/edition: 3
