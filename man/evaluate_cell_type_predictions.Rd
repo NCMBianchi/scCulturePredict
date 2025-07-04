@@ -50,21 +50,29 @@ The function performs the following steps:
 }
 }
 \examples{
-\donttest{
-# Evaluate all metrics
-results <- evaluate_predictions(
-  seurat_obj = seurat_obj,
-  predictions = predictions
-)
+# Example with mock predictions
+# Create mock true and predicted labels
+set.seed(123)
+true_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
+predicted_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
 
-# Evaluate specific metrics
-results <- evaluate_predictions(
-  seurat_obj = seurat_obj,
-  predictions = predictions,
-  metrics = c("accuracy", "confusion_matrix")
+# Create mock Seurat object with predictions
+library(Seurat)
+counts <- matrix(rpois(1000, 5), nrow = 100)
+rownames(counts) <- paste0("Gene", seq_len(100))
+colnames(counts) <- paste0("Cell", seq_len(10))
+metadata <- data.frame(
+  true_cell_type = rep(c("TypeA", "TypeB"), each = 5),
+  predicted_cell_type = rep(c("TypeA", "TypeB"), 5)
 )
-}
+seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 
+# Evaluate predictions
+evaluation <- evaluate_cell_type_predictions(
+  seurat_obj,
+  true_labels_col = "true_cell_type",
+  pred_labels_col = "predicted_cell_type"
+)
 }
 \seealso{
 \code{\link{predict_cell_types}} for making predictions

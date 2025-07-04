@@ -36,29 +36,16 @@
 #' }
 #'
 #' @examples
-#' \donttest{
-#' # Basic usage
-#' results <- analyze_pathway_enrichment(
-#'   seurat_obj = seurat_obj,
-#'   kegg_pathways = kegg_pathways
+#' # Example with mock pathway activity matrix
+#' pathway_activities <- matrix(
+#'   rnorm(150),
+#'   nrow = 15,
+#'   dimnames = list(
+#'     paste0("Pathway", seq_len(15)),
+#'     paste0("Sample", seq_len(10))
+#'   )
 #' )
-#'
-#' # Custom gene limits
-#' results <- analyze_pathway_enrichment(
-#'   seurat_obj = seurat_obj,
-#'   kegg_pathways = kegg_pathways,
-#'   min_genes = 10,
-#'   max_genes = 200
-#' )
-#'
-#' # Custom p-value cutoff
-#' results <- analyze_pathway_enrichment(
-#'   seurat_obj = seurat_obj,
-#'   kegg_pathways = kegg_pathways,
-#'   p_cutoff = 0.01
-#' )
-#' }
-#'
+#' plot <- create_pathway_heatmap(pathway_activities)
 #' @seealso
 #' \code{\link{create_pathway_heatmap}} for visualizing pathway results
 #' \code{\link{analyze_pathway_activity}} for analyzing pathway activity
@@ -79,7 +66,7 @@ analyze_pathway_enrichment <- function(seurat_obj,
     stop("kegg_pathways must be a non-empty list")
   }
 
-  if (!all(sapply(kegg_pathways, is.character))) {
+  if (!all(vapply(kegg_pathways, is.character, FUN.VALUE = logical(1)))) {
     stop("All elements in kegg_pathways must be character vectors")
   }
 
@@ -117,7 +104,7 @@ analyze_pathway_enrichment <- function(seurat_obj,
 
   # Filter pathways by gene count
   if (verbose) message("Filtering pathways...")
-  pathway_sizes <- sapply(kegg_pathways, length)
+  pathway_sizes <- vapply(kegg_pathways, length, FUN.VALUE = numeric(1))
   valid_pathways <- kegg_pathways[pathway_sizes >= min_genes & pathway_sizes <= max_genes]
 
   if (length(valid_pathways) == 0) {
@@ -323,7 +310,7 @@ create_pathway_heatmap <- function(seurat_obj,
   if (nrow(pathway_matrix) > top_n) {
     # Calculate pathway variance
     pathway_var <- apply(pathway_matrix, 1, var)
-    top_pathways <- names(sort(pathway_var, decreasing = TRUE)[1:top_n])
+    top_pathways <- names(sort(pathway_var, decreasing = TRUE)[seq_len(top_n)])
     pathway_matrix <- pathway_matrix[top_pathways, ]
   }
 
@@ -390,9 +377,29 @@ create_pathway_heatmap <- function(seurat_obj,
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' activity_results <- analyze_pathway_activity(seurat_object, pathway_results)
-#' }
+#' # Example with mock pathway activities
+#' # Create mock pathway activity matrix
+#' pathway_activities <- matrix(
+#'   rnorm(200, mean = 0, sd = 1),
+#'   nrow = 20,
+#'   dimnames = list(
+#'     paste0("Pathway", seq_len(20)),
+#'     paste0("Sample", seq_len(10))
+#'   )
+#' )
+#'
+#' # Create mock metadata
+#' sample_metadata <- data.frame(
+#'   sample_id = paste0("Sample", seq_len(10)),
+#'   condition = rep(c("Control", "Treatment"), each = 5)
+#' )
+#'
+#' # Analyze pathway activities
+#' analysis_results <- analyze_pathway_activity(
+#'   pathway_activities,
+#'   sample_metadata,
+#'   group_by = "condition"
+#' )
 analyze_pathway_activity <- function(seurat_object, pathway_results,
                                      condition = "sample") {
   # Get condition labels
@@ -412,7 +419,7 @@ analyze_pathway_activity <- function(seurat_object, pathway_results,
     sd_activity <- apply(pathway_activity, 1, sd)
 
     # Perform statistical test
-    p_values <- sapply(1:nrow(pathway_activity), function(i) {
+    p_values <- vapply(seq_len(nrow(pathway_activity)), function(i) {
       tryCatch(
         {
           t.test(pathway_activity[i, ], mu = 0)$p.value
@@ -421,7 +428,7 @@ analyze_pathway_activity <- function(seurat_object, pathway_results,
           NA
         }
       )
-    })
+    }, FUN.VALUE = numeric(1))
 
     data.frame(
       pathway = rownames(pathway_activity),

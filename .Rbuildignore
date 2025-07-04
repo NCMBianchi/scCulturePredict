@@ -32,6 +32,8 @@
 ^.*\.tar\.gz$
 ^doc$
 ^Meta$
+^.*\.BiocCheck$
+^.*\.BiocCheck/.*$
 
 # System files
 ^\.DS_Store$

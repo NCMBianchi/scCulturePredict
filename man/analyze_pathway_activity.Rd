@@ -29,7 +29,27 @@ A data frame containing pathway activity statistics by condition with columns:
 Analyzes pathway activity across different conditions or cell types.
 }
 \examples{
-\donttest{
-activity_results <- analyze_pathway_activity(seurat_object, pathway_results)
-}
+# Example with mock pathway activities
+# Create mock pathway activity matrix
+pathway_activities <- matrix(
+  rnorm(200, mean = 0, sd = 1),
+  nrow = 20,
+  dimnames = list(
+    paste0("Pathway", seq_len(20)),
+    paste0("Sample", seq_len(10))
+  )
+)
+
+# Create mock metadata
+sample_metadata <- data.frame(
+  sample_id = paste0("Sample", seq_len(10)),
+  condition = rep(c("Control", "Treatment"), each = 5)
+)
+
+# Analyze pathway activities
+analysis_results <- analyze_pathway_activity(
+  pathway_activities,
+  sample_metadata,
+  group_by = "condition"
+)
 }

@@ -19,7 +19,28 @@ A list where each element is a character vector of gene names for a pathway.
 Parses a KEGG pathway file (.keg) and extracts gene names for each pathway.
 }
 \examples{
-\donttest{
-pathways <- parse_kegg_keg(file_path = "sce00001.keg")
-}
+# Example with mock KEG file
+# Create a temporary KEG file
+keg_content <- c(
+  "ENTRY       hsa00010                    Pathway",
+  "NAME        Glycolysis / Gluconeogenesis - Homo sapiens (human)",
+  "DESCRIPTION Glycolysis is the process of converting glucose into pyruvate",
+  "CLASS       Metabolism; Carbohydrate metabolism",
+  "PATHWAY_MAP hsa00010  Glycolysis / Gluconeogenesis",
+  "GENE        5213  PFKM; phosphofructokinase, muscle [KO:K00850] [EC:2.7.1.11]",
+  "GENE        5214  PFKL; phosphofructokinase, liver [KO:K00850] [EC:2.7.1.11]",
+  "GENE        5211  PFKP; phosphofructokinase, platelet [KO:K00850] [EC:2.7.1.11]",
+  "///"
+)
+
+temp_file <- tempfile(fileext = ".keg")
+writeLines(keg_content, temp_file)
+
+# Parse the KEG file
+kegg_data <- parse_kegg_keg(temp_file)
+print(names(kegg_data))
+print(kegg_data$genes[1:3])
+
+# Clean up
+unlink(temp_file)
 }

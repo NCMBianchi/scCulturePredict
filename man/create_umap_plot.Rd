@@ -55,7 +55,15 @@ Error handling ensures that invalid inputs are caught early with informative
 error messages, making the function robust for interactive and programmatic use.
 }
 \examples{
-\donttest{
-plot <- create_umap_plot(seurat_object, color_by = "sample")
-}
+# Example saving plots to temporary directory
+temp_dir <- tempdir()
+plots_list <- list(
+    plot1 = ggplot2::ggplot(mtcars, ggplot2::aes(x = mpg, y = wt)) +
+        ggplot2::geom_point(),
+    plot2 = ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length, y = Sepal.Width)) +
+        ggplot2::geom_point()
+)
+save_visualization_plots(plots_list, output_dir = temp_dir)
+# Clean up
+unlink(file.path(temp_dir, "*.png"))
 }

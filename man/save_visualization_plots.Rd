@@ -64,7 +64,35 @@ The function includes robust error handling for file system operations and
 plot creation, with informative error messages if any step fails.
 }
 \examples{
-\donttest{
-save_visualization_plots(seurat_object, evaluation_results, output_dir = "./plots")
-}
+# Example saving plots to temporary directory
+# Create some example plots
+library(ggplot2)
+temp_dir <- tempdir()
+
+# Create a list of plots
+plots_list <- list(
+    scatter = ggplot(mtcars, aes(x = mpg, y = wt)) +
+        geom_point() +
+        ggtitle("Scatter Plot"),
+    histogram = ggplot(mtcars, aes(x = mpg)) +
+        geom_histogram(bins = 10) +
+        ggtitle("Histogram"),
+    boxplot = ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+        geom_boxplot() +
+        ggtitle("Box Plot")
+)
+
+# Save the plots
+save_visualization_plots(
+    plots_list,
+    output_dir = temp_dir,
+    prefix = "example"
+)
+
+# Check that files were created
+plot_files <- list.files(temp_dir, pattern = "example.*\\\\.png$")
+print(plot_files)
+
+# Clean up
+unlink(file.path(temp_dir, plot_files))
 }

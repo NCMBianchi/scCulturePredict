@@ -59,31 +59,20 @@ The UMAP algorithm:
 }
 }
 \examples{
-\donttest{
-# Basic usage
-seurat_obj <- run_umap(
-  seurat_obj = seurat_obj
-)
+# Example with mock Seurat object
+library(Seurat)
+# Create minimal mock data
+counts <- matrix(rpois(1000, 5), nrow = 100)
+rownames(counts) <- paste0("Gene", seq_len(100))
+colnames(counts) <- paste0("Cell", seq_len(10))
+seurat_obj <- CreateSeuratObject(counts = counts)
+seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+seurat_obj <- FindVariableFeatures(seurat_obj, verbose = FALSE)
+seurat_obj <- ScaleData(seurat_obj, verbose = FALSE)
+seurat_obj <- RunPCA(seurat_obj, npcs = 5, verbose = FALSE)
 
-# Custom number of neighbors
-seurat_obj <- run_umap(
-  seurat_obj = seurat_obj,
-  n_neighbors = 15
-)
-
-# Custom minimum distance
-seurat_obj <- run_umap(
-  seurat_obj = seurat_obj,
-  min_dist = 0.1
-)
-
-# 3D UMAP
-seurat_obj <- run_umap(
-  seurat_obj = seurat_obj,
-  n_components = 3
-)
-}
-
+# Run UMAP
+seurat_with_umap <- run_umap(seurat_obj, n_components = 2, n_neighbors = 5)
 }
 \seealso{
 \code{\link{perform_pca}} for PCA analysis

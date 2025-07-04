@@ -7,7 +7,7 @@
 #' @param packages Character vector of package names to check and install.
 #' @param repos Character vector of repository URLs. Default is getOption("repos").
 #'
-#' @return NULL
+#' @return Invisible NULL. This function is called for its side effects of checking and installing packages. Messages are printed to indicate installation progress.
 #'
 #' @details
 #' The function performs the following steps:
@@ -32,12 +32,12 @@
 #'
 #' @export
 check_and_install_packages <- function(packages, repos = getOption("repos")) {
-  for (pkg in packages) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      message(sprintf("Installing package: %s", pkg))
-      warning(sprintf("Package %s is not installed. Please install it manually: install.packages('%s')", pkg, pkg))
+    for (pkg in packages) {
+        if (!requireNamespace(pkg, quietly = TRUE)) {
+            message(sprintf("Installing package: %s", pkg))
+            warning(sprintf("Package %s is not installed. Please install it manually: install.packages('%s')", pkg, pkg))
+        }
     }
-  }
 }
 
 #' Create directory if it doesn't exist
@@ -50,7 +50,7 @@ check_and_install_packages <- function(packages, repos = getOption("repos")) {
 #' @param recursive Logical indicating whether to create parent directories.
 #'   Default is TRUE.
 #'
-#' @return NULL
+#' @return Invisible NULL. The directory is created if it doesn't exist. The function returns the directory path invisibly.
 #'
 #' @details
 #' The function performs the following steps:
@@ -75,9 +75,9 @@ check_and_install_packages <- function(packages, repos = getOption("repos")) {
 #'
 #' @export
 create_dir_if_not_exists <- function(dir_path, recursive = TRUE) {
-  if (!dir.exists(dir_path)) {
-    dir.create(dir_path, recursive = recursive)
-  }
+    if (!dir.exists(dir_path)) {
+        dir.create(dir_path, recursive = recursive)
+    }
 }
 
 #' Save R object to file
@@ -89,7 +89,7 @@ create_dir_if_not_exists <- function(dir_path, recursive = TRUE) {
 #' @param file_path Character string specifying the file path.
 #' @param compress Logical indicating whether to compress the file. Default is TRUE.
 #'
-#' @return NULL
+#' @return Invisible NULL. The object is saved to the specified file path. The function returns the file path invisibly.
 #'
 #' @details
 #' The function performs the following steps:
@@ -122,19 +122,19 @@ create_dir_if_not_exists <- function(dir_path, recursive = TRUE) {
 #'
 #' @export
 save_object <- function(object, file_path, compress = TRUE) {
-  # Create directory if it doesn't exist
-  dir_path <- dirname(file_path)
-  create_dir_if_not_exists(dir_path)
+    # Create directory if it doesn't exist
+    dir_path <- dirname(file_path)
+    create_dir_if_not_exists(dir_path)
 
-  # Save object
-  tryCatch(
-    {
-      saveRDS(object, file_path, compress = compress)
-    },
-    error = function(e) {
-      stop(sprintf("Failed to save object to %s: %s", file_path, e$message))
-    }
-  )
+    # Save object
+    tryCatch(
+        {
+            saveRDS(object, file_path, compress = compress)
+        },
+        error = function(e) {
+            stop(sprintf("Failed to save object to %s: %s", file_path, e$message))
+        }
+    )
 }
 
 #' Load R object from file
@@ -177,18 +177,18 @@ save_object <- function(object, file_path, compress = TRUE) {
 #'
 #' @export
 load_object <- function(file_path) {
-  if (!file.exists(file_path)) {
-    stop(sprintf("File not found: %s", file_path))
-  }
-
-  tryCatch(
-    {
-      readRDS(file_path)
-    },
-    error = function(e) {
-      stop(sprintf("Failed to load object from %s: %s", file_path, e$message))
+    if (!file.exists(file_path)) {
+        stop(sprintf("File not found: %s", file_path))
     }
-  )
+
+    tryCatch(
+        {
+            readRDS(file_path)
+        },
+        error = function(e) {
+            stop(sprintf("Failed to load object from %s: %s", file_path, e$message))
+        }
+    )
 }
 
 #' Format numeric values
@@ -231,7 +231,7 @@ load_object <- function(file_path) {
 #'
 #' @export
 format_number <- function(x, digits = 2) {
-  sprintf(paste0("%.", digits, "f"), x)
+    sprintf(paste0("%.", digits, "f"), x)
 }
 
 #' Calculate percentage
@@ -276,7 +276,7 @@ format_number <- function(x, digits = 2) {
 #'
 #' @export
 calculate_percentage <- function(x, total = sum(x), digits = 1) {
-  sprintf(paste0("%.", digits, "f%%"), 100 * x / total)
+    sprintf(paste0("%.", digits, "f%%"), 100 * x / total)
 }
 
 #' Check if object is empty
@@ -323,19 +323,19 @@ calculate_percentage <- function(x, total = sum(x), digits = 1) {
 #'
 #' @export
 is_empty <- function(x) {
-  if (is.null(x)) {
-    return(TRUE)
-  }
-  if (length(x) == 0) {
-    return(TRUE)
-  }
-  if (is.data.frame(x) && nrow(x) == 0) {
-    return(TRUE)
-  }
-  if (all(is.na(x))) {
-    return(TRUE)
-  }
-  FALSE
+    if (is.null(x)) {
+        return(TRUE)
+    }
+    if (length(x) == 0) {
+        return(TRUE)
+    }
+    if (is.data.frame(x) && nrow(x) == 0) {
+        return(TRUE)
+    }
+    if (all(is.na(x))) {
+        return(TRUE)
+    }
+    FALSE
 }
 
 #' Get file extension
@@ -376,7 +376,7 @@ is_empty <- function(x) {
 #'
 #' @export
 get_file_extension <- function(file_path) {
-  tools::file_ext(file_path)
+    tools::file_ext(file_path)
 }
 
 #' Validate file exists
@@ -423,23 +423,23 @@ get_file_extension <- function(file_path) {
 #'
 #' @export
 validate_file <- function(file_path, extension = NULL) {
-  if (!file.exists(file_path)) {
-    warning(sprintf("File not found: %s", file_path))
-    return(FALSE)
-  }
-
-  if (!is.null(extension)) {
-    file_ext <- get_file_extension(file_path)
-    if (file_ext != extension) {
-      warning(sprintf("File extension mismatch. Expected: %s, Got: %s", extension, file_ext))
-      return(FALSE)
+    if (!file.exists(file_path)) {
+        warning(sprintf("File not found: %s", file_path))
+        return(FALSE)
     }
-  }
 
-  if (!file.access(file_path, 4) == 0) {
-    warning(sprintf("File is not readable: %s", file_path))
-    return(FALSE)
-  }
+    if (!is.null(extension)) {
+        file_ext <- get_file_extension(file_path)
+        if (file_ext != extension) {
+            warning(sprintf("File extension mismatch. Expected: %s, Got: %s", extension, file_ext))
+            return(FALSE)
+        }
+    }
 
-  TRUE
+    if (!file.access(file_path, 4) == 0) {
+        warning(sprintf("File is not readable: %s", file_path))
+        return(FALSE)
+    }
+
+    TRUE
 }

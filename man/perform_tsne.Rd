@@ -10,7 +10,7 @@ perform_tsne(seurat_object, dims = 1:40, perplexity = 30, max_iter = 1000)
 \item{seurat_object}{A Seurat object containing PCA results.}
 
 \item{dims}{Integer vector specifying which PCA dimensions to use.
-Default is 1:40.}
+Default is seq_len(40).}
 
 \item{perplexity}{Numeric value specifying the perplexity parameter.
 Default is 30.}
@@ -26,5 +26,5 @@ Performs t-Distributed Stochastic Neighbor Embedding (t-SNE) on a Seurat object
 using PCA results as input.
 }
 \examples{
-seurat_object <- perform_tsne(seurat_object, dims = 1:40)
+seurat_object <- perform_tsne(seurat_object, dims = seq_len(40))
 }

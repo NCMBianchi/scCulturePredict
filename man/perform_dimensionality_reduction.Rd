@@ -18,7 +18,7 @@ perform_dimensionality_reduction(
 Default is 50.}
 
 \item{dims}{Integer vector specifying which PCA dimensions to use for UMAP and t-SNE.
-Default is 1:40.}
+Default is seq_len(40).}
 
 \item{perform_tsne}{Logical indicating whether to perform t-SNE. Default is TRUE.}
 }

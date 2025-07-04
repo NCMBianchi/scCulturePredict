@@ -21,36 +21,36 @@
 #' @examples
 #' pca_results <- perform_pca(seurat_object, n_pcs = 50)
 perform_pca <- function(seurat_object, n_pcs = 50, features = NULL) {
-  # Run PCA
-  seurat_object <- Seurat::RunPCA(seurat_object,
-    features = features %||% Seurat::VariableFeatures(seurat_object),
-    npcs = n_pcs,
-    verbose = FALSE
-  )
-
-  # Calculate variance explained
-  variance_explained <- data.frame(
-    PC = 1:n_pcs,
-    Variance = seurat_object@reductions$pca@stdev^2,
-    Cumulative = cumsum(seurat_object@reductions$pca@stdev^2) / sum(seurat_object@reductions$pca@stdev^2)
-  )
-
-  # Create elbow plot
-  elbow_plot <- ggplot2::ggplot(variance_explained, ggplot2::aes(x = PC, y = Variance)) +
-    ggplot2::geom_point() +
-    ggplot2::geom_line() +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(
-      title = "PCA Elbow Plot",
-      x = "Principal Component",
-      y = "Variance Explained"
+    # Run PCA
+    seurat_object <- Seurat::RunPCA(seurat_object,
+        features = features %||% Seurat::VariableFeatures(seurat_object),
+        npcs = n_pcs,
+        verbose = FALSE
     )
 
-  return(list(
-    seurat_object = seurat_object,
-    variance_explained = variance_explained,
-    elbow_plot = elbow_plot
-  ))
+    # Calculate variance explained
+    variance_explained <- data.frame(
+        PC = seq_len(n_pcs),
+        Variance = seurat_object@reductions$pca@stdev^2,
+        Cumulative = cumsum(seurat_object@reductions$pca@stdev^2) / sum(seurat_object@reductions$pca@stdev^2)
+    )
+
+    # Create elbow plot
+    elbow_plot <- ggplot2::ggplot(variance_explained, ggplot2::aes(x = PC, y = Variance)) +
+        ggplot2::geom_point() +
+        ggplot2::geom_line() +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(
+            title = "PCA Elbow Plot",
+            x = "Principal Component",
+            y = "Variance Explained"
+        )
+
+    return(list(
+        seurat_object = seurat_object,
+        variance_explained = variance_explained,
+        elbow_plot = elbow_plot
+    ))
 }
 
 #' Run UMAP dimensionality reduction
@@ -96,31 +96,20 @@ perform_pca <- function(seurat_object, n_pcs = 50, features = NULL) {
 #' }
 #'
 #' @examples
-#' \donttest{
-#' # Basic usage
-#' seurat_obj <- run_umap(
-#'   seurat_obj = seurat_obj
-#' )
+#' # Example with mock Seurat object
+#' library(Seurat)
+#' # Create minimal mock data
+#' counts <- matrix(rpois(1000, 5), nrow = 100)
+#' rownames(counts) <- paste0("Gene", seq_len(100))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#' seurat_obj <- CreateSeuratObject(counts = counts)
+#' seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+#' seurat_obj <- FindVariableFeatures(seurat_obj, verbose = FALSE)
+#' seurat_obj <- ScaleData(seurat_obj, verbose = FALSE)
+#' seurat_obj <- RunPCA(seurat_obj, npcs = 5, verbose = FALSE)
 #'
-#' # Custom number of neighbors
-#' seurat_obj <- run_umap(
-#'   seurat_obj = seurat_obj,
-#'   n_neighbors = 15
-#' )
-#'
-#' # Custom minimum distance
-#' seurat_obj <- run_umap(
-#'   seurat_obj = seurat_obj,
-#'   min_dist = 0.1
-#' )
-#'
-#' # 3D UMAP
-#' seurat_obj <- run_umap(
-#'   seurat_obj = seurat_obj,
-#'   n_components = 3
-#' )
-#' }
-#'
+#' # Run UMAP
+#' seurat_with_umap <- run_umap(seurat_obj, n_components = 2, n_neighbors = 5)
 #' @seealso
 #' \code{\link{perform_pca}} for PCA analysis
 #' \code{\link{perform_tsne}} for t-SNE analysis
@@ -131,65 +120,65 @@ run_umap <- function(seurat_obj,
                      min_dist = 0.3,
                      n_components = 2,
                      verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_obj, "Seurat")) {
-    stop("seurat_obj must be a Seurat object")
-  }
-
-  if (!is.numeric(n_neighbors) || length(n_neighbors) != 1 || n_neighbors < 0) {
-    stop("n_neighbors must be a single positive number")
-  }
-
-  if (!is.numeric(min_dist) || length(min_dist) != 1 || min_dist < 0 || min_dist > 1) {
-    stop("min_dist must be a single number between 0 and 1")
-  }
-
-  if (!is.numeric(n_components) || length(n_components) != 1 || n_components < 1) {
-    stop("n_components must be a single positive integer")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check if PCA has been run
-  if (!"pca" %in% names(seurat_obj@reductions)) {
-    if (verbose) message("PCA not found, running PCA first...")
-    seurat_obj <- tryCatch(
-      {
-        Seurat::RunPCA(seurat_obj,
-          features = Seurat::VariableFeatures(seurat_obj),
-          verbose = verbose
-        )
-      },
-      error = function(e) {
-        stop(sprintf("Error running PCA: %s", e$message))
-      }
-    )
-  }
-
-  # Run UMAP
-  if (verbose) message("Running UMAP...")
-  seurat_obj <- tryCatch(
-    {
-      Seurat::RunUMAP(seurat_obj,
-        dims = 1:30,
-        n.neighbors = n_neighbors,
-        min.dist = min_dist,
-        n.components = n_components,
-        verbose = verbose
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error running UMAP: %s", e$message))
+    # Input validation
+    if (!inherits(seurat_obj, "Seurat")) {
+        stop("seurat_obj must be a Seurat object")
     }
-  )
 
-  if (verbose) {
-    message(sprintf("UMAP complete. Added %d UMAP components", n_components))
-  }
+    if (!is.numeric(n_neighbors) || length(n_neighbors) != 1 || n_neighbors < 0) {
+        stop("n_neighbors must be a single positive number")
+    }
 
-  return(seurat_obj)
+    if (!is.numeric(min_dist) || length(min_dist) != 1 || min_dist < 0 || min_dist > 1) {
+        stop("min_dist must be a single number between 0 and 1")
+    }
+
+    if (!is.numeric(n_components) || length(n_components) != 1 || n_components < 1) {
+        stop("n_components must be a single positive integer")
+    }
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Check if PCA has been run
+    if (!"pca" %in% names(seurat_obj@reductions)) {
+        if (verbose) message("PCA not found, running PCA first...")
+        seurat_obj <- tryCatch(
+            {
+                Seurat::RunPCA(seurat_obj,
+                    features = Seurat::VariableFeatures(seurat_obj),
+                    verbose = verbose
+                )
+            },
+            error = function(e) {
+                stop(sprintf("Error running PCA: %s", e$message))
+            }
+        )
+    }
+
+    # Run UMAP
+    if (verbose) message("Running UMAP...")
+    seurat_obj <- tryCatch(
+        {
+            Seurat::RunUMAP(seurat_obj,
+                dims = 1:30,
+                n.neighbors = n_neighbors,
+                min.dist = min_dist,
+                n.components = n_components,
+                verbose = verbose
+            )
+        },
+        error = function(e) {
+            stop(sprintf("Error running UMAP: %s", e$message))
+        }
+    )
+
+    if (verbose) {
+        message(sprintf("UMAP complete. Added %d UMAP components", n_components))
+    }
+
+    return(seurat_obj)
 }
 
 #' Perform t-SNE dimensionality reduction
@@ -200,7 +189,7 @@ run_umap <- function(seurat_obj,
 #'
 #' @param seurat_object A Seurat object containing PCA results.
 #' @param dims Integer vector specifying which PCA dimensions to use.
-#'   Default is 1:40.
+#'   Default is seq_len(40).
 #' @param perplexity Numeric value specifying the perplexity parameter.
 #'   Default is 30.
 #' @param max_iter Integer specifying the maximum number of iterations.
@@ -210,23 +199,23 @@ run_umap <- function(seurat_obj,
 #' @export
 #'
 #' @examples
-#' seurat_object <- perform_tsne(seurat_object, dims = 1:40)
+#' seurat_object <- perform_tsne(seurat_object, dims = seq_len(40))
 perform_tsne <- function(seurat_object, dims = 1:40, perplexity = 30,
                          max_iter = 1000) {
-  # Run t-SNE
-  seurat_object <- Seurat::RunTSNE(seurat_object,
-    reduction = "pca",
-    dims = dims,
-    perplexity = perplexity,
-    max_iter = max_iter
-  )
+    # Run t-SNE
+    seurat_object <- Seurat::RunTSNE(seurat_object,
+        reduction = "pca",
+        dims = dims,
+        perplexity = perplexity,
+        max_iter = max_iter
+    )
 
-  # Add t-SNE coordinates to metadata
-  tsne_data <- Seurat::FetchData(seurat_object, c("tSNE_1", "tSNE_2"))
-  seurat_object@meta.data$tSNE_1 <- tsne_data$tSNE_1
-  seurat_object@meta.data$tSNE_2 <- tsne_data$tSNE_2
+    # Add t-SNE coordinates to metadata
+    tsne_data <- Seurat::FetchData(seurat_object, c("tSNE_1", "tSNE_2"))
+    seurat_object@meta.data$tSNE_1 <- tsne_data$tSNE_1
+    seurat_object@meta.data$tSNE_2 <- tsne_data$tSNE_2
 
-  return(seurat_object)
+    return(seurat_object)
 }
 
 #' Perform dimensionality reduction pipeline
@@ -239,7 +228,7 @@ perform_tsne <- function(seurat_object, dims = 1:40, perplexity = 30,
 #' @param n_pcs Integer specifying the number of principal components to compute.
 #'   Default is 50.
 #' @param dims Integer vector specifying which PCA dimensions to use for UMAP and t-SNE.
-#'   Default is 1:40.
+#'   Default is seq_len(40).
 #' @param perform_tsne Logical indicating whether to perform t-SNE. Default is TRUE.
 #'
 #' @return A list containing:
@@ -253,20 +242,20 @@ perform_tsne <- function(seurat_object, dims = 1:40, perplexity = 30,
 #' results <- perform_dimensionality_reduction(seurat_object)
 perform_dimensionality_reduction <- function(seurat_object, n_pcs = 50,
                                              dims = 1:40, perform_tsne = TRUE) {
-  # Perform PCA
-  pca_results <- perform_pca(seurat_object, n_pcs = n_pcs)
-  seurat_object <- pca_results$seurat_object
+    # Perform PCA
+    pca_results <- perform_pca(seurat_object, n_pcs = n_pcs)
+    seurat_object <- pca_results$seurat_object
 
-  # Perform UMAP
-  seurat_object <- run_umap(seurat_object)
+    # Perform UMAP
+    seurat_object <- run_umap(seurat_object)
 
-  # Perform t-SNE if requested
-  if (perform_tsne) {
-    seurat_object <- perform_tsne(seurat_object, dims = dims)
-  }
+    # Perform t-SNE if requested
+    if (perform_tsne) {
+        seurat_object <- perform_tsne(seurat_object, dims = dims)
+    }
 
-  return(list(
-    seurat_object = seurat_object,
-    pca_results = pca_results
-  ))
+    return(list(
+        seurat_object = seurat_object,
+        pca_results = pca_results
+    ))
 }

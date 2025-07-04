@@ -6,6 +6,9 @@
 \usage{
 detect_scCulture_mode(scCulture_results)
 }
+\value{
+A character string indicating the detected analysis mode: either 'BUILD' (for training with labeled data) or 'PREDICT' (for prediction on unlabeled data).
+}
 \description{
 Detect scCulture Analysis Mode
 }

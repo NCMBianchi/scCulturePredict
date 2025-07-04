@@ -6,6 +6,9 @@
 \usage{
 calculate_prediction_confidence(new_pathway_matrix, reference_pathway_matrix)
 }
+\value{
+A numeric vector of confidence scores between 0 and 1 for each prediction. Higher values indicate more confident predictions.
+}
 \description{
 Calculate prediction confidence scores
 }

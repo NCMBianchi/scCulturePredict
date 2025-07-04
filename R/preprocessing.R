@@ -49,25 +49,23 @@
 #' }
 #'
 #' @examples
-#' \donttest{
-#' # Basic usage
-#' seurat_obj <- preprocess_data(
-#'   seurat_obj = seurat_obj
+#' # Example with mock Seurat object
+#' library(Seurat)
+#' # Create minimal mock data
+#' counts <- matrix(rpois(1000, 5), nrow = 100)
+#' rownames(counts) <- paste0("Gene", seq_len(100))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#' metadata <- data.frame(
+#'     row.names = colnames(counts),
+#'     condition = rep(c("A", "B"), each = 5)
 #' )
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 #'
-#' # Custom number of variable features
-#' seurat_obj <- preprocess_data(
-#'   seurat_obj = seurat_obj,
-#'   n_features = 3000
+#' # Preprocess the data
+#' processed_obj <- preprocess_data(
+#'     seurat_obj,
+#'     normalization_method = "LogNormalize"
 #' )
-#'
-#' # Custom scale factor
-#' seurat_obj <- preprocess_data(
-#'   seurat_obj = seurat_obj,
-#'   scale_factor = 15000
-#' )
-#' }
-#'
 #' @seealso
 #' \code{\link{load_data}} for loading the data
 #' \code{\link{reduce_dimensions}} for dimensionality reduction
@@ -77,91 +75,91 @@ preprocess_data <- function(seurat_obj,
                             n_features = 2000,
                             scale_factor = 10000,
                             verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_obj, "Seurat")) {
-    stop("seurat_obj must be a Seurat object")
-  }
-
-  if (!is.numeric(n_features) || length(n_features) != 1 || n_features < 0) {
-    stop("n_features must be a single positive number")
-  }
-
-  if (!is.numeric(scale_factor) || length(scale_factor) != 1 || scale_factor <= 0) {
-    stop("scale_factor must be a single positive number")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check if data is already normalized (avoiding layer warning)
-  data_normalized <- tryCatch(
-    {
-      data_layer <- seurat_obj[["RNA"]]$data
-      !is.null(data_layer) && nrow(data_layer) > 0
-    },
-    warning = function(w) {
-      # Suppress layer warnings and assume normalization is needed
-      FALSE
-    },
-    error = function(e) {
-      # If error accessing layer, assume normalization is needed
-      FALSE
+    # Input validation
+    if (!inherits(seurat_obj, "Seurat")) {
+        stop("seurat_obj must be a Seurat object")
     }
-  )
 
-  if (data_normalized) {
-    if (verbose) message("Data is already normalized, skipping normalization step")
-  } else {
-    if (verbose) message("Normalizing data...")
-    seurat_obj <- tryCatch(
-      {
-        Seurat::NormalizeData(seurat_obj,
-          normalization.method = "LogNormalize",
-          scale.factor = scale_factor
-        )
-      },
-      error = function(e) {
-        stop(sprintf("Error normalizing data: %s", e$message))
-      }
+    if (!is.numeric(n_features) || length(n_features) != 1 || n_features < 0) {
+        stop("n_features must be a single positive number")
+    }
+
+    if (!is.numeric(scale_factor) || length(scale_factor) != 1 || scale_factor <= 0) {
+        stop("scale_factor must be a single positive number")
+    }
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Check if data is already normalized (avoiding layer warning)
+    data_normalized <- tryCatch(
+        {
+            data_layer <- seurat_obj[["RNA"]]$data
+            !is.null(data_layer) && nrow(data_layer) > 0
+        },
+        warning = function(w) {
+            # Suppress layer warnings and assume normalization is needed
+            FALSE
+        },
+        error = function(e) {
+            # If error accessing layer, assume normalization is needed
+            FALSE
+        }
     )
-  }
 
-  # Find variable features
-  if (verbose) message("Finding variable features...")
-  seurat_obj <- tryCatch(
-    {
-      Seurat::FindVariableFeatures(seurat_obj,
-        selection.method = "vst",
-        nfeatures = n_features
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error finding variable features: %s", e$message))
+    if (data_normalized) {
+        if (verbose) message("Data is already normalized, skipping normalization step")
+    } else {
+        if (verbose) message("Normalizing data...")
+        seurat_obj <- tryCatch(
+            {
+                Seurat::NormalizeData(seurat_obj,
+                    normalization.method = "LogNormalize",
+                    scale.factor = scale_factor
+                )
+            },
+            error = function(e) {
+                stop(sprintf("Error normalizing data: %s", e$message))
+            }
+        )
     }
-  )
 
-  # Scale data (following original script approach - only variable features)
-  if (verbose) message("Scaling data...")
-  seurat_obj <- tryCatch(
-    {
-      Seurat::ScaleData(seurat_obj,
-        features = Seurat::VariableFeatures(object = seurat_obj)
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error scaling data: %s", e$message))
+    # Find variable features
+    if (verbose) message("Finding variable features...")
+    seurat_obj <- tryCatch(
+        {
+            Seurat::FindVariableFeatures(seurat_obj,
+                selection.method = "vst",
+                nfeatures = n_features
+            )
+        },
+        error = function(e) {
+            stop(sprintf("Error finding variable features: %s", e$message))
+        }
+    )
+
+    # Scale data (following original script approach - only variable features)
+    if (verbose) message("Scaling data...")
+    seurat_obj <- tryCatch(
+        {
+            Seurat::ScaleData(seurat_obj,
+                features = Seurat::VariableFeatures(object = seurat_obj)
+            )
+        },
+        error = function(e) {
+            stop(sprintf("Error scaling data: %s", e$message))
+        }
+    )
+
+    if (verbose) {
+        message(sprintf(
+            "Preprocessing complete. Selected %d variable features",
+            length(Seurat::VariableFeatures(seurat_obj))
+        ))
     }
-  )
 
-  if (verbose) {
-    message(sprintf(
-      "Preprocessing complete. Selected %d variable features",
-      length(Seurat::VariableFeatures(seurat_obj))
-    ))
-  }
-
-  return(seurat_obj)
+    return(seurat_obj)
 }
 
 #' Reduce dimensions of single-cell data
@@ -182,31 +180,31 @@ preprocess_data <- function(seurat_obj,
 #' seurat_object <- reduce_dimensions(seurat_object)
 #' seurat_object <- reduce_dimensions(seurat_object, perform_tsne = FALSE, verbose = FALSE)
 reduce_dimensions <- function(seurat_object, perform_tsne = TRUE, verbose = TRUE) {
-  if (verbose) message("Running PCA...")
-  # Run PCA
-  seurat_object <- Seurat::RunPCA(seurat_object, features = Seurat::VariableFeatures(object = seurat_object), verbose = FALSE)
+    if (verbose) message("Running PCA...")
+    # Run PCA
+    seurat_object <- Seurat::RunPCA(seurat_object, features = Seurat::VariableFeatures(object = seurat_object), verbose = FALSE)
 
-  if (verbose) message("Running UMAP...")
-  # Run UMAP with specific parameters from the original study
-  seurat_object <- Seurat::RunUMAP(seurat_object, reduction = "pca", dims = 1:40, n.neighbors = 4, min.dist = .05)
+    if (verbose) message("Running UMAP...")
+    # Run UMAP with specific parameters from the original study
+    seurat_object <- Seurat::RunUMAP(seurat_object, reduction = "pca", dims = 1:40, n.neighbors = 4, min.dist = .05)
 
-  # Add UMAP coordinates to metadata (Seurat v5 compatible)
-  umap_embeddings <- seurat_object[["umap"]]@cell.embeddings
-  seurat_object@meta.data$UMAP_1 <- umap_embeddings[, 1]
-  seurat_object@meta.data$UMAP_2 <- umap_embeddings[, 2]
+    # Add UMAP coordinates to metadata (Seurat v5 compatible)
+    umap_embeddings <- seurat_object[["umap"]]@cell.embeddings
+    seurat_object@meta.data$UMAP_1 <- umap_embeddings[, 1]
+    seurat_object@meta.data$UMAP_2 <- umap_embeddings[, 2]
 
-  # Run t-SNE if requested
-  if (perform_tsne) {
-    if (verbose) message("Running t-SNE...")
-    seurat_object <- Seurat::RunTSNE(seurat_object, reduction = "pca", dims = 1:40)
+    # Run t-SNE if requested
+    if (perform_tsne) {
+        if (verbose) message("Running t-SNE...")
+        seurat_object <- Seurat::RunTSNE(seurat_object, reduction = "pca", dims = 1:40)
 
-    # Add t-SNE coordinates to metadata (Seurat v5 compatible)
-    tsne_embeddings <- seurat_object[["tsne"]]@cell.embeddings
-    seurat_object@meta.data$tSNE_1 <- tsne_embeddings[, 1]
-    seurat_object@meta.data$tSNE_2 <- tsne_embeddings[, 2]
-  }
+        # Add t-SNE coordinates to metadata (Seurat v5 compatible)
+        tsne_embeddings <- seurat_object[["tsne"]]@cell.embeddings
+        seurat_object@meta.data$tSNE_1 <- tsne_embeddings[, 1]
+        seurat_object@meta.data$tSNE_2 <- tsne_embeddings[, 2]
+    }
 
-  if (verbose) message("Dimensionality reduction complete")
+    if (verbose) message("Dimensionality reduction complete")
 
-  return(seurat_object)
+    return(seurat_object)
 }

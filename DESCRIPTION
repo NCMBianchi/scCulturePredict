@@ -1,14 +1,12 @@
 Package: scCulturePredict
 Type: Package
 Title: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints
-Version: 0.99.0
-Date: 2024-04-28
+Version: 0.99.1
+Date: 2025-07-04
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-4202-7154"))
     )
-Author: Niccolò Bianchi [aut, cre] (<https://orcid.org/0009-0000-4202-7154>)
-Maintainer: Niccolò Bianchi <ncmb89@gmail.com>
 Description: A simple R package to build a phenotypic fingerprint and subsequentially
     predict cell culture based on gene expression and biological pathways from
     single-cell transcriptomics data: a dual functionality in BUILD and PREDICT modes.
@@ -62,11 +60,9 @@ biocViews:
     Classification,
     DimensionReduction,
     Visualization,
-    PathwayAnalysis,
     Transcriptomics,
     RNASeq,
     FeatureExtraction,
-    Regression,
     GenePrediction,
     Pathways,
     KEGG

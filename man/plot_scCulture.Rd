@@ -58,29 +58,23 @@ within the scCulture results. It handles missing data gracefully and provides
 informative error messages for common issues.
 }
 \examples{
-\donttest{
-# BUILD mode visualization
-build_results <- scCulture(mode = "build", ...)
-accuracy_plot <- plot_scCulture(build_results)
-print(accuracy_plot)
+# Example with mock scCulture results
+# Create mock result structure
+mock_results <- list(
+    predictions = data.frame(
+        cell_id = paste0("Cell", seq_len(100)),
+        predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
+        confidence = runif(100, 0.6, 0.95)
+    ),
+    umap_coords = data.frame(
+        UMAP_1 = rnorm(100),
+        UMAP_2 = rnorm(100)
+    )
+)
+class(mock_results) <- "scCulture"
 
-# PREDICT mode visualization
-predict_results <- scCulture(mode = "predict", ...)
-
-# Default: Both plots returned as a list
-both_plots <- plot_scCulture(predict_results)
-print(both_plots$predictions) # Prediction plot
-print(both_plots$confidence) # Confidence plot
-
-# Or get individual plots by specifying plot_type
-pred_plot <- plot_scCulture(predict_results, plot_type = "predictions")
-conf_plot <- plot_scCulture(predict_results, plot_type = "confidence")
-
-# Get underlying data
-plot_data <- plot_scCulture(predict_results, return_data = TRUE)
-head(plot_data)
-}
-
+# Create visualization
+plot <- plot_scCulture(mock_results, plot_type = "confidence")
 }
 \seealso{
 \code{\link{scCulture}} for generating the results object

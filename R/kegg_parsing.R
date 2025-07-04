@@ -9,12 +9,19 @@
 #' @return Character string specifying the best layer to use
 #' @keywords internal
 #' @examples
-#' # Example with mock Seurat object layers
-#' # This is a simplified example
-#' layers <- list(counts = matrix(1:9, nrow = 3), 
-#'                data = matrix(2:10, nrow = 3))
-#' # In practice, use with actual Seurat object:
-#' # best_layer <- get_best_data_layer(seurat_obj)
+#' # Example with mock KEG file content
+#' keg_content <- c(
+#'   "ENTRY       hsa00010                    Pathway",
+#'   "NAME        Glycolysis / Gluconeogenesis",
+#'   "GENE        1234  HK1; hexokinase 1",
+#'   "GENE        5678  GPI; glucose-6-phosphate isomerase",
+#'   "///"
+#' )
+#' temp_file <- tempfile(fileext = ".keg")
+#' writeLines(keg_content, temp_file)
+#' kegg_data <- parse_kegg_keg(temp_file)
+#' print(kegg_data)
+#' unlink(temp_file)
 get_best_data_layer <- function(seurat_object) {
   # Get the default assay (usually "RNA")
   default_assay <- Seurat::DefaultAssay(seurat_object)
@@ -73,9 +80,30 @@ get_best_data_layer <- function(seurat_object) {
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' pathways <- parse_kegg_keg(file_path = "sce00001.keg")
-#' }
+#' # Example with mock KEG file
+#' # Create a temporary KEG file
+#' keg_content <- c(
+#'   "ENTRY       hsa00010                    Pathway",
+#'   "NAME        Glycolysis / Gluconeogenesis - Homo sapiens (human)",
+#'   "DESCRIPTION Glycolysis is the process of converting glucose into pyruvate",
+#'   "CLASS       Metabolism; Carbohydrate metabolism",
+#'   "PATHWAY_MAP hsa00010  Glycolysis / Gluconeogenesis",
+#'   "GENE        5213  PFKM; phosphofructokinase, muscle [KO:K00850] [EC:2.7.1.11]",
+#'   "GENE        5214  PFKL; phosphofructokinase, liver [KO:K00850] [EC:2.7.1.11]",
+#'   "GENE        5211  PFKP; phosphofructokinase, platelet [KO:K00850] [EC:2.7.1.11]",
+#'   "///"
+#' )
+#'
+#' temp_file <- tempfile(fileext = ".keg")
+#' writeLines(keg_content, temp_file)
+#'
+#' # Parse the KEG file
+#' kegg_data <- parse_kegg_keg(temp_file)
+#' print(names(kegg_data))
+#' print(kegg_data$genes[1:3])
+#'
+#' # Clean up
+#' unlink(temp_file)
 parse_kegg_keg <- function(file_path = "sce00001.keg", verbose = TRUE) {
   lines <- readLines(file_path)
   pathways <- list()
@@ -115,9 +143,31 @@ parse_kegg_keg <- function(file_path = "sce00001.keg", verbose = TRUE) {
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' fingerprints <- build_fingerprints(seurat_object, kegg_pathways)
-#' }
+#' # Example with minimal mock data
+#' library(Seurat)
+#' # Create small mock dataset
+#' counts <- matrix(rpois(2000, 5), nrow = 200)
+#' rownames(counts) <- paste0("Gene", seq_len(200))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#' metadata <- data.frame(
+#'   row.names = colnames(counts),
+#'   culture = rep(c("TypeA", "TypeB"), each = 5)
+#' )
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+#'
+#' # Create mock pathway database
+#' pathways <- list(
+#'   Pathway1 = sample(rownames(counts), 10),
+#'   Pathway2 = sample(rownames(counts), 15),
+#'   Pathway3 = sample(rownames(counts), 12)
+#' )
+#'
+#' # Build fingerprints
+#' fingerprints <- build_fingerprints(
+#'   seurat_obj,
+#'   group_by = "culture",
+#'   pathways = pathways
+#' )
 build_fingerprints <- function(seurat_object, kegg_pathways, verbose = TRUE) {
   # Aggregate gene expression by pathway
   pathway_names <- names(kegg_pathways)
@@ -128,7 +178,7 @@ build_fingerprints <- function(seurat_object, kegg_pathways, verbose = TRUE) {
   # Determine best available data layer
   best_layer <- get_best_data_layer(seurat_object)
 
-  pathway_expression <- sapply(pathway_names, function(pathway) {
+  pathway_expression <- lapply(pathway_names, function(pathway) {
     pathway_genes <- kegg_pathways[[pathway]]
     valid_genes <- pathway_genes[!is.na(pathway_genes) & pathway_genes %in% rownames(seurat_object)]
     if (length(valid_genes) == 0) {
@@ -142,7 +192,7 @@ build_fingerprints <- function(seurat_object, kegg_pathways, verbose = TRUE) {
       pathway_data <- Seurat::FetchData(seurat_object, vars = valid_genes, layer = best_layer)
     }
     return(rowMeans(pathway_data, na.rm = TRUE))
-  }, simplify = FALSE)
+  })
 
   # Create matrix safely with proper column names
   pathway_expression_matrix <- do.call(cbind, pathway_expression)
@@ -182,9 +232,27 @@ build_fingerprints <- function(seurat_object, kegg_pathways, verbose = TRUE) {
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' pathway_activities <- calculate_pathway_activities(seurat_object, kegg_pathways)
-#' }
+#' # Example with mock data
+#' library(Seurat)
+#' # Create minimal mock Seurat object
+#' counts <- matrix(rpois(1000, 5), nrow = 100)
+#' rownames(counts) <- paste0("Gene", seq_len(100))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#' seurat_obj <- CreateSeuratObject(counts = counts)
+#' seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+#'
+#' # Create mock pathways
+#' mock_pathways <- list(
+#'   Pathway1 = paste0("Gene", seq_len(20)),
+#'   Pathway2 = paste0("Gene", 21:40),
+#'   Pathway3 = paste0("Gene", 41:60)
+#' )
+#'
+#' # Calculate pathway activities
+#' pathway_activities <- calculate_pathway_activities(
+#'   seurat_obj, mock_pathways,
+#'   verbose = FALSE
+#' )
 calculate_pathway_activities <- function(seurat_object, kegg_pathways, verbose = TRUE) {
   # Aggregate gene expression by pathway
   pathway_names <- names(kegg_pathways)
@@ -195,7 +263,7 @@ calculate_pathway_activities <- function(seurat_object, kegg_pathways, verbose =
   # Determine best available data layer
   best_layer <- get_best_data_layer(seurat_object)
 
-  pathway_expression <- sapply(pathway_names, function(pathway) {
+  pathway_expression <- lapply(pathway_names, function(pathway) {
     pathway_genes <- kegg_pathways[[pathway]]
     valid_genes <- pathway_genes[!is.na(pathway_genes) & pathway_genes %in% rownames(seurat_object)]
     if (length(valid_genes) == 0) {
@@ -209,7 +277,7 @@ calculate_pathway_activities <- function(seurat_object, kegg_pathways, verbose =
       pathway_data <- Seurat::FetchData(seurat_object, vars = valid_genes, layer = best_layer)
     }
     return(rowMeans(pathway_data, na.rm = TRUE))
-  }, simplify = FALSE)
+  })
 
   # Create matrix safely with proper column names
   pathway_expression_matrix <- do.call(cbind, pathway_expression)

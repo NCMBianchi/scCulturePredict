@@ -56,29 +56,16 @@ The function performs the following steps:
 }
 }
 \examples{
-\donttest{
-# Basic usage
-results <- analyze_pathway_enrichment(
-  seurat_obj = seurat_obj,
-  kegg_pathways = kegg_pathways
+# Example with mock pathway activity matrix
+pathway_activities <- matrix(
+  rnorm(150),
+  nrow = 15,
+  dimnames = list(
+    paste0("Pathway", seq_len(15)),
+    paste0("Sample", seq_len(10))
+  )
 )
-
-# Custom gene limits
-results <- analyze_pathway_enrichment(
-  seurat_obj = seurat_obj,
-  kegg_pathways = kegg_pathways,
-  min_genes = 10,
-  max_genes = 200
-)
-
-# Custom p-value cutoff
-results <- analyze_pathway_enrichment(
-  seurat_obj = seurat_obj,
-  kegg_pathways = kegg_pathways,
-  p_cutoff = 0.01
-)
-}
-
+plot <- create_pathway_heatmap(pathway_activities)
 }
 \seealso{
 \code{\link{create_pathway_heatmap}} for visualizing pathway results

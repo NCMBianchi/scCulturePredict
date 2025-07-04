@@ -80,24 +80,40 @@ The function includes comprehensive error handling at each step of the workflow,
 with informative error messages to help diagnose any issues that arise during training.
 }
 \examples{
-\donttest{
-# Train Random Forest classifier
-classifier <- train_cell_type_classifier(
-  seurat_object = seurat_object,
-  pathway_activity = pathway_activity,
-  method = "rf"
+# Example with mock data
+# Create mock pathway activity matrix
+set.seed(123)
+n_cells <- 60
+n_pathways <- 10
+
+pathway_activity <- matrix(
+    c(
+        rnorm(20 * n_pathways, mean = 1, sd = 0.5), # TypeA pattern
+        rnorm(20 * n_pathways, mean = -1, sd = 0.5), # TypeB pattern
+        rnorm(20 * n_pathways, mean = 0, sd = 0.5) # TypeC pattern
+    ),
+    nrow = n_cells,
+    ncol = n_pathways,
+    byrow = TRUE
 )
 
-# Train SVM classifier with custom parameters
-classifier <- train_cell_type_classifier(
-  seurat_object = seurat_object,
-  pathway_activity = pathway_activity,
-  method = "svm",
-  n_features = 50,
-  cv_folds = 10
-)
-}
+rownames(pathway_activity) <- paste0("Cell", seq_len(n_cells))
+colnames(pathway_activity) <- paste0("Pathway", seq_len(n_pathways))
 
+# Create labels
+labels <- factor(rep(c("TypeA", "TypeB", "TypeC"), each = 20))
+
+# Train classifier
+classifier <- train_cell_type_classifier(
+    pathway_activity,
+    labels,
+    method = "svm",
+    cross_validate = FALSE # Disable CV for speed
+)
+
+# Check model
+print(classifier$method)
+print(table(classifier$predictions, labels))
 }
 \seealso{
 \code{\link{predict_cell_types}} for making predictions

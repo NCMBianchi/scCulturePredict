@@ -1,3 +1,21 @@
+# scCulturePredict 0.99.1 (2025-07-04)
+
+## Bug Fixes and Improvements
+
+### BiocCheck Compliance
+* Fixed all `1:n` patterns in examples, replaced with `seq_len()` for Bioconductor compliance
+* Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)
+* Added BiocCheck output folder pattern to `.Rbuildignore` to prevent build errors
+* Achieved 0 ERRORS in BiocCheck validation
+
+### Code Improvements
+* Corrected SVM column name handling in `predict_by_svm()` function
+* Removed temporary helper scripts used during development
+* Updated documentation with properly formatted examples
+
+### Known Issues
+* **DESCRIPTION file date correction**: Version 0.99.0 was erroneously dated as 2024-04-28 in the DESCRIPTION file instead of the correct date 2025-06-20. This has been corrected in version 0.99.1.
+
 # scCulturePredict 0.99.0 (2025-06-20)
 
 ## Initial Release

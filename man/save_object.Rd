@@ -13,6 +13,9 @@ save_object(object, file_path, compress = TRUE)
 
 \item{compress}{Logical indicating whether to compress the file. Default is TRUE.}
 }
+\value{
+Invisible NULL. The object is saved to the specified file path. The function returns the file path invisibly.
+}
 \description{
 Saves an R object to a file with error handling and directory creation.
 }

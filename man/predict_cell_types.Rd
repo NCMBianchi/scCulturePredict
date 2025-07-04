@@ -67,23 +67,46 @@ if any step fails, making the function robust for both interactive and
 programmatic use.
 }
 \examples{
-\donttest{
-# Basic usage
+# Example with mock data
+# Create mock Seurat object
+library(Seurat)
+counts <- matrix(rpois(1000, 5), nrow = 100)
+rownames(counts) <- paste0("Gene", seq_len(100))
+colnames(counts) <- paste0("Cell", seq_len(10))
+seurat_obj <- CreateSeuratObject(counts = counts)
+seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+
+# Create mock pathway activities
+pathway_activities <- matrix(
+    rnorm(50, mean = 0, sd = 1),
+    nrow = 10,
+    dimnames = list(
+        colnames(seurat_obj),
+        paste0("Pathway", seq_len(5))
+    )
+)
+
+# Create mock models list
+mock_fingerprints <- matrix(
+    rnorm(15, mean = 0, sd = 0.5),
+    nrow = 3,
+    dimnames = list(
+        c("TypeA", "TypeB", "TypeC"),
+        paste0("Pathway", seq_len(5))
+    )
+)
+
+models_list <- list(
+    direct = list(fingerprints = mock_fingerprints),
+    pathway_activities = pathway_activities
+)
+
+# Predict cell types
 predictions <- predict_cell_types(
-  seurat_object = seurat_object,
-  pathway_activity = pathway_activity,
-  classifier = trained_classifier
+    seurat_obj,
+    models_list,
+    method = "direct"
 )
-
-# Get prediction probabilities
-results <- predict_cell_types(
-  seurat_object = seurat_object,
-  pathway_activity = pathway_activity,
-  classifier = trained_classifier,
-  probability = TRUE
-)
-}
-
 }
 \seealso{
 \code{\link{train_cell_type_classifier}} for training the classifier

@@ -193,21 +193,29 @@ create_evaluation_plots <- function(seurat_object, results_dir = "./results",
 #' }
 #'
 #' @examples
-#' \donttest{
-#' # Evaluate all metrics
-#' results <- evaluate_predictions(
-#'   seurat_obj = seurat_obj,
-#'   predictions = predictions
-#' )
+#' # Example with mock predictions
+#' # Create mock true and predicted labels
+#' set.seed(123)
+#' true_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
+#' predicted_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
 #'
-#' # Evaluate specific metrics
-#' results <- evaluate_predictions(
-#'   seurat_obj = seurat_obj,
-#'   predictions = predictions,
-#'   metrics = c("accuracy", "confusion_matrix")
+#' # Create mock Seurat object with predictions
+#' library(Seurat)
+#' counts <- matrix(rpois(1000, 5), nrow = 100)
+#' rownames(counts) <- paste0("Gene", seq_len(100))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#' metadata <- data.frame(
+#'   true_cell_type = rep(c("TypeA", "TypeB"), each = 5),
+#'   predicted_cell_type = rep(c("TypeA", "TypeB"), 5)
 #' )
-#' }
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 #'
+#' # Evaluate predictions
+#' evaluation <- evaluate_cell_type_predictions(
+#'   seurat_obj,
+#'   true_labels_col = "true_cell_type",
+#'   pred_labels_col = "predicted_cell_type"
+#' )
 #' @seealso
 #' \code{\link{predict_cell_types}} for making predictions
 #' \code{\link{train_cell_type_classifier}} for training the classifier
@@ -298,13 +306,13 @@ evaluate_cell_type_predictions <- function(seurat_obj,
     if ("precision" %in% metrics) {
       results$precision <- tryCatch(
         {
-          sapply(unique_labels, function(label) {
+          vapply(unique_labels, function(label) {
             pred_pos <- predictions == label
             if (sum(pred_pos) == 0) {
               return(0)
             }
             sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
-          })
+          }, FUN.VALUE = numeric(1))
         },
         error = function(e) {
           stop(sprintf("Error calculating precision: %s", e$message))
@@ -315,13 +323,13 @@ evaluate_cell_type_predictions <- function(seurat_obj,
     if ("recall" %in% metrics) {
       results$recall <- tryCatch(
         {
-          sapply(unique_labels, function(label) {
+          vapply(unique_labels, function(label) {
             true_pos <- true_labels == label
             if (sum(true_pos) == 0) {
               return(0)
             }
             sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
-          })
+          }, FUN.VALUE = numeric(1))
         },
         error = function(e) {
           stop(sprintf("Error calculating recall: %s", e$message))
@@ -334,25 +342,61 @@ evaluate_cell_type_predictions <- function(seurat_obj,
       results$f1 <- tryCatch(
         {
           if (!"precision" %in% names(results)) {
-            precision <- sapply(unique_labels, function(label) {
+            precision <- vapply(unique_labels, function(label) {
               pred_pos <- predictions == label
               if (sum(pred_pos) == 0) {
                 return(0)
               }
               sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
-            })
+            }, FUN.VALUE = numeric(1))
           } else {
             precision <- results$precision
           }
 
           if (!"recall" %in% names(results)) {
-            recall <- sapply(unique_labels, function(label) {
+            recall <- vapply(unique_labels, function(label) {
               true_pos <- true_labels == label
               if (sum(true_pos) == 0) {
                 return(0)
               }
               sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
-            })
+            }, FUN.VALUE = numeric(1))
+          } else {
+            recall <- results$recall
+          }
+
+          2 * (precision * recall) / (precision + recall)
+        },
+        error = function(e) {
+          stop(sprintf("Error calculating F1 score: %s", e$message))
+        }
+      )
+    }
+
+    if ("f1" %in% metrics) {
+      if (verbose) message("Calculating F1 score...")
+      results$f1 <- tryCatch(
+        {
+          if (!"precision" %in% names(results)) {
+            precision <- vapply(unique_labels, function(label) {
+              pred_pos <- predictions == label
+              if (sum(pred_pos) == 0) {
+                return(0)
+              }
+              sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
+            }, FUN.VALUE = numeric(1))
+          } else {
+            precision <- results$precision
+          }
+
+          if (!"recall" %in% names(results)) {
+            recall <- vapply(unique_labels, function(label) {
+              true_pos <- true_labels == label
+              if (sum(true_pos) == 0) {
+                return(0)
+              }
+              sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
+            }, FUN.VALUE = numeric(1))
           } else {
             recall <- results$recall
           }
@@ -405,28 +449,13 @@ evaluate_cell_type_predictions <- function(seurat_obj,
 #' }
 #'
 #' @examples
-#' \donttest{
-#' # Plot confusion matrix
-#' p <- plot_evaluation_metrics(
-#'   evaluation_results = results,
-#'   plot_type = "confusion"
+#' # Example with mock evaluation metrics
+#' metrics_data <- data.frame(
+#'   metric = rep(c("Accuracy", "Precision", "Recall", "F1"), 3),
+#'   value = c(0.85, 0.82, 0.88, 0.85, 0.79, 0.77, 0.81, 0.79, 0.91, 0.89, 0.93, 0.91),
+#'   method = rep(c("Method1", "Method2", "Method3"), each = 4)
 #' )
-#'
-#' # Plot metrics with custom colors
-#' p <- plot_evaluation_metrics(
-#'   evaluation_results = results,
-#'   plot_type = "metrics",
-#'   color_palette = c("red", "blue", "green")
-#' )
-#'
-#' # Plot ROC curve with custom title
-#' p <- plot_evaluation_metrics(
-#'   evaluation_results = results,
-#'   plot_type = "roc",
-#'   title = "ROC Curve"
-#' )
-#' }
-#'
+#' plot <- create_evaluation_metrics_plot(metrics_data)
 #' @details
 #' This function creates various types of evaluation plots to visualize prediction performance.
 #' It supports four different plot types:

@@ -60,7 +60,28 @@ The function implements extensive error checking to ensure the required data
 exists in the evaluation_results object and that all parameters are valid.
 }
 \examples{
-\donttest{
-plot <- create_confusion_heatmap(evaluation_results, method = "svm")
-}
+# Example with mock confusion matrix
+# Create a confusion matrix for 4 cell types
+confusion_data <- matrix(
+    c(
+        120, 5, 3, 2,
+        8, 95, 4, 3,
+        2, 6, 88, 4,
+        1, 2, 3, 104
+    ),
+    nrow = 4,
+    dimnames = list(
+        Actual = c("CellType_A", "CellType_B", "CellType_C", "CellType_D"),
+        Predicted = c("CellType_A", "CellType_B", "CellType_C", "CellType_D")
+    )
+)
+
+# Create confusion heatmap
+heatmap_plot <- create_confusion_heatmap(confusion_data)
+
+# Create confusion heatmap with custom title
+heatmap_custom <- create_confusion_heatmap(
+    confusion_data,
+    title = "Cell Type Prediction Accuracy"
+)
 }

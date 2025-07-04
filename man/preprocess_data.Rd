@@ -65,25 +65,23 @@ The scaling step:
 }
 }
 \examples{
-\donttest{
-# Basic usage
-seurat_obj <- preprocess_data(
-  seurat_obj = seurat_obj
+# Example with mock Seurat object
+library(Seurat)
+# Create minimal mock data
+counts <- matrix(rpois(1000, 5), nrow = 100)
+rownames(counts) <- paste0("Gene", seq_len(100))
+colnames(counts) <- paste0("Cell", seq_len(10))
+metadata <- data.frame(
+    row.names = colnames(counts),
+    condition = rep(c("A", "B"), each = 5)
 )
+seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 
-# Custom number of variable features
-seurat_obj <- preprocess_data(
-  seurat_obj = seurat_obj,
-  n_features = 3000
+# Preprocess the data
+processed_obj <- preprocess_data(
+    seurat_obj,
+    normalization_method = "LogNormalize"
 )
-
-# Custom scale factor
-seurat_obj <- preprocess_data(
-  seurat_obj = seurat_obj,
-  scale_factor = 15000
-)
-}
-
 }
 \seealso{
 \code{\link{load_data}} for loading the data

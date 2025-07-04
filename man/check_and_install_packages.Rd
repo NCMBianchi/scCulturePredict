@@ -11,6 +11,9 @@ check_and_install_packages(packages, repos = getOption("repos"))
 
 \item{repos}{Character vector of repository URLs. Default is getOption("repos").}
 }
+\value{
+Invisible NULL. This function is called for its side effects of checking and installing packages. Messages are printed to indicate installation progress.
+}
 \description{
 Checks if required packages are installed and installs them if they are not.
 This is a more robust version of load_packages() that handles errors gracefully.

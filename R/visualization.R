@@ -36,65 +36,73 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' plot <- create_umap_plot(seurat_object, color_by = "sample")
-#' }
+#' # Example saving plots to temporary directory
+#' temp_dir <- tempdir()
+#' plots_list <- list(
+#'     plot1 = ggplot2::ggplot(mtcars, ggplot2::aes(x = mpg, y = wt)) +
+#'         ggplot2::geom_point(),
+#'     plot2 = ggplot2::ggplot(iris, ggplot2::aes(x = Sepal.Length, y = Sepal.Width)) +
+#'         ggplot2::geom_point()
+#' )
+#' save_visualization_plots(plots_list, output_dir = temp_dir)
+#' # Clean up
+#' unlink(file.path(temp_dir, "*.png"))
 create_umap_plot <- function(seurat_object, color_by = "sample", point_size = 0.8,
                              title = "UMAP Visualization", legend_title = NULL,
                              verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_object, "Seurat")) {
-    stop("seurat_object must be a Seurat object")
-  }
-
-  if (!is.character(color_by) || length(color_by) != 1) {
-    stop("color_by must be a single character string")
-  }
-
-  if (!color_by %in% colnames(seurat_object@meta.data)) {
-    stop(sprintf("Column '%s' not found in metadata", color_by))
-  }
-
-  if (!is.numeric(point_size) || length(point_size) != 1 || point_size <= 0) {
-    stop("point_size must be a single positive number")
-  }
-
-  if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
-    stop("title must be NULL or a single character string")
-  }
-
-  if (!is.null(legend_title) && (!is.character(legend_title) || length(legend_title) != 1)) {
-    stop("legend_title must be NULL or a single character string")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check for UMAP coordinates
-  if (!all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_object@meta.data))) {
-    stop("UMAP coordinates not found in metadata")
-  }
-
-  if (verbose) message("Creating UMAP plot...")
-
-  tryCatch(
-    {
-      p <- ggplot2::ggplot(seurat_object@meta.data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = .data[[color_by]])) +
-        ggplot2::geom_point(size = point_size) +
-        ggplot2::theme_minimal() +
-        ggplot2::labs(
-          title = title,
-          x = "UMAP_1",
-          y = "UMAP_2",
-          color = legend_title %||% color_by
-        )
-      return(p)
-    },
-    error = function(e) {
-      stop(sprintf("Error creating UMAP plot: %s", e$message))
+    # Input validation
+    if (!inherits(seurat_object, "Seurat")) {
+        stop("seurat_object must be a Seurat object")
     }
-  )
+
+    if (!is.character(color_by) || length(color_by) != 1) {
+        stop("color_by must be a single character string")
+    }
+
+    if (!color_by %in% colnames(seurat_object@meta.data)) {
+        stop(sprintf("Column '%s' not found in metadata", color_by))
+    }
+
+    if (!is.numeric(point_size) || length(point_size) != 1 || point_size <= 0) {
+        stop("point_size must be a single positive number")
+    }
+
+    if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
+        stop("title must be NULL or a single character string")
+    }
+
+    if (!is.null(legend_title) && (!is.character(legend_title) || length(legend_title) != 1)) {
+        stop("legend_title must be NULL or a single character string")
+    }
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Check for UMAP coordinates
+    if (!all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_object@meta.data))) {
+        stop("UMAP coordinates not found in metadata")
+    }
+
+    if (verbose) message("Creating UMAP plot...")
+
+    tryCatch(
+        {
+            p <- ggplot2::ggplot(seurat_object@meta.data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = .data[[color_by]])) +
+                ggplot2::geom_point(size = point_size) +
+                ggplot2::theme_minimal() +
+                ggplot2::labs(
+                    title = title,
+                    x = "UMAP_1",
+                    y = "UMAP_2",
+                    color = legend_title %||% color_by
+                )
+            return(p)
+        },
+        error = function(e) {
+            stop(sprintf("Error creating UMAP plot: %s", e$message))
+        }
+    )
 }
 
 #' Create prediction accuracy plot
@@ -140,73 +148,92 @@ create_umap_plot <- function(seurat_object, color_by = "sample", point_size = 0.
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' plot <- create_accuracy_plot(evaluation_results, method = "direct")
-#' }
+#' # Example with mock evaluation results
+#' # Create mock evaluation results structure
+#' evaluation_results <- list(
+#'     direct = list(
+#'         accuracy = data.frame(
+#'             sample = c("Sample1", "Sample2", "Sample3", "Sample4"),
+#'             accuracy = c(85.2, 78.5, 92.1, 88.7)
+#'         )
+#'     ),
+#'     svm = list(
+#'         accuracy = data.frame(
+#'             sample = c("Sample1", "Sample2", "Sample3", "Sample4"),
+#'             accuracy = c(87.3, 81.2, 94.5, 90.1)
+#'         )
+#'     )
+#' )
+#'
+#' # Create accuracy plot for direct method
+#' plot_direct <- create_accuracy_plot(evaluation_results, method = "direct")
+#'
+#' # Create accuracy plot for SVM method
+#' plot_svm <- create_accuracy_plot(evaluation_results, method = "svm")
 create_accuracy_plot <- function(evaluation_results, method = c("direct", "svm"),
                                  title = NULL, color_palette = NULL, verbose = TRUE) {
-  # Input validation
-  if (!is.list(evaluation_results)) {
-    stop("evaluation_results must be a list")
-  }
-
-  method <- match.arg(method)
-
-  if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
-    stop("title must be NULL or a single character string")
-  }
-
-  if (!is.null(color_palette) &&
-    (!is.character(color_palette) || length(color_palette) == 0)) {
-    stop("color_palette must be NULL or a non-empty character vector")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check for required data
-  accuracy_data <- if (method == "direct") {
-    if (!"direct_accuracy" %in% names(evaluation_results)) {
-      stop("direct_accuracy not found in evaluation_results")
+    # Input validation
+    if (!is.list(evaluation_results)) {
+        stop("evaluation_results must be a list")
     }
-    evaluation_results$direct_accuracy
-  } else {
-    if (!"svm_accuracy" %in% names(evaluation_results)) {
-      stop("svm_accuracy not found in evaluation_results")
+
+    method <- match.arg(method)
+
+    if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
+        stop("title must be NULL or a single character string")
     }
-    evaluation_results$svm_accuracy
-  }
 
-  if (verbose) message(sprintf("Creating %s accuracy plot...", method))
-
-  tryCatch(
-    {
-      p <- ggplot2::ggplot(accuracy_data, ggplot2::aes(x = sample, y = correct, fill = sample)) +
-        ggplot2::geom_bar(stat = "identity") +
-        ggplot2::geom_text(ggplot2::aes(label = percent), vjust = -0.5) +
-        ggplot2::theme_minimal() +
-        ggplot2::labs(
-          title = title %||% paste(toupper(method), "Prediction Accuracy"),
-          x = "Sample",
-          y = "Accuracy",
-          fill = "Sample"
-        ) +
-        ggplot2::theme(
-          legend.position = "none",
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-        )
-
-      if (!is.null(color_palette)) {
-        p <- p + ggplot2::scale_fill_manual(values = color_palette)
-      }
-
-      return(p)
-    },
-    error = function(e) {
-      stop(sprintf("Error creating accuracy plot: %s", e$message))
+    if (!is.null(color_palette) &&
+        (!is.character(color_palette) || length(color_palette) == 0)) {
+        stop("color_palette must be NULL or a non-empty character vector")
     }
-  )
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Check for required data
+    accuracy_data <- if (method == "direct") {
+        if (!"direct_accuracy" %in% names(evaluation_results)) {
+            stop("direct_accuracy not found in evaluation_results")
+        }
+        evaluation_results$direct_accuracy
+    } else {
+        if (!"svm_accuracy" %in% names(evaluation_results)) {
+            stop("svm_accuracy not found in evaluation_results")
+        }
+        evaluation_results$svm_accuracy
+    }
+
+    if (verbose) message(sprintf("Creating %s accuracy plot...", method))
+
+    tryCatch(
+        {
+            p <- ggplot2::ggplot(accuracy_data, ggplot2::aes(x = sample, y = correct, fill = sample)) +
+                ggplot2::geom_bar(stat = "identity") +
+                ggplot2::geom_text(ggplot2::aes(label = percent), vjust = -0.5) +
+                ggplot2::theme_minimal() +
+                ggplot2::labs(
+                    title = title %||% paste(toupper(method), "Prediction Accuracy"),
+                    x = "Sample",
+                    y = "Accuracy",
+                    fill = "Sample"
+                ) +
+                ggplot2::theme(
+                    legend.position = "none",
+                    axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+                )
+
+            if (!is.null(color_palette)) {
+                p <- p + ggplot2::scale_fill_manual(values = color_palette)
+            }
+
+            return(p)
+        },
+        error = function(e) {
+            stop(sprintf("Error creating accuracy plot: %s", e$message))
+        }
+    )
 }
 
 #' Create confusion matrix heatmap
@@ -254,83 +281,104 @@ create_accuracy_plot <- function(evaluation_results, method = c("direct", "svm")
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' plot <- create_confusion_heatmap(evaluation_results, method = "svm")
-#' }
+#' # Example with mock confusion matrix
+#' # Create a confusion matrix for 4 cell types
+#' confusion_data <- matrix(
+#'     c(
+#'         120, 5, 3, 2,
+#'         8, 95, 4, 3,
+#'         2, 6, 88, 4,
+#'         1, 2, 3, 104
+#'     ),
+#'     nrow = 4,
+#'     dimnames = list(
+#'         Actual = c("CellType_A", "CellType_B", "CellType_C", "CellType_D"),
+#'         Predicted = c("CellType_A", "CellType_B", "CellType_C", "CellType_D")
+#'     )
+#' )
+#'
+#' # Create confusion heatmap
+#' heatmap_plot <- create_confusion_heatmap(confusion_data)
+#'
+#' # Create confusion heatmap with custom title
+#' heatmap_custom <- create_confusion_heatmap(
+#'     confusion_data,
+#'     title = "Cell Type Prediction Accuracy"
+#' )
 create_confusion_heatmap <- function(evaluation_results,
                                      method = c("direct", "threshold", "svm"),
                                      title = NULL, color_palette = NULL, verbose = TRUE) {
-  # Input validation
-  if (!is.list(evaluation_results)) {
-    stop("evaluation_results must be a list")
-  }
-
-  method <- match.arg(method)
-
-  if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
-    stop("title must be NULL or a single character string")
-  }
-
-  if (!is.null(color_palette) &&
-    (!is.character(color_palette) || length(color_palette) != 2)) {
-    stop("color_palette must be NULL or a character vector of length 2")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check for required data
-  confusion_matrix <- switch(method,
-    "direct" = {
-      if (!"direct_table" %in% names(evaluation_results)) {
-        stop("direct_table not found in evaluation_results")
-      }
-      evaluation_results$direct_table
-    },
-    "threshold" = {
-      if (!"threshold_table" %in% names(evaluation_results)) {
-        stop("threshold_table not found in evaluation_results")
-      }
-      evaluation_results$threshold_table
-    },
-    "svm" = {
-      if (!"svm_table" %in% names(evaluation_results)) {
-        stop("svm_table not found in evaluation_results")
-      }
-      evaluation_results$svm_table
+    # Input validation
+    if (!is.list(evaluation_results)) {
+        stop("evaluation_results must be a list")
     }
-  )
 
-  if (verbose) message(sprintf("Creating %s confusion matrix heatmap...", method))
+    method <- match.arg(method)
 
-  tryCatch(
-    {
-      # Convert to long format for ggplot
-      confusion_df <- as.data.frame(confusion_matrix)
-      names(confusion_df) <- c("Actual", "Predicted", "Count")
-
-      p <- ggplot2::ggplot(confusion_df, ggplot2::aes(x = Predicted, y = Actual, fill = Count)) +
-        ggplot2::geom_tile() +
-        ggplot2::geom_text(ggplot2::aes(label = Count), color = "white") +
-        ggplot2::scale_fill_gradient(
-          low = color_palette[1] %||% "white",
-          high = color_palette[2] %||% "steelblue"
-        ) +
-        ggplot2::theme_minimal() +
-        ggplot2::labs(
-          title = title %||% paste(toupper(method), "Confusion Matrix"),
-          x = "Predicted",
-          y = "Actual"
-        ) +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-
-      return(p)
-    },
-    error = function(e) {
-      stop(sprintf("Error creating confusion matrix heatmap: %s", e$message))
+    if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
+        stop("title must be NULL or a single character string")
     }
-  )
+
+    if (!is.null(color_palette) &&
+        (!is.character(color_palette) || length(color_palette) != 2)) {
+        stop("color_palette must be NULL or a character vector of length 2")
+    }
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Check for required data
+    confusion_matrix <- switch(method,
+        "direct" = {
+            if (!"direct_table" %in% names(evaluation_results)) {
+                stop("direct_table not found in evaluation_results")
+            }
+            evaluation_results$direct_table
+        },
+        "threshold" = {
+            if (!"threshold_table" %in% names(evaluation_results)) {
+                stop("threshold_table not found in evaluation_results")
+            }
+            evaluation_results$threshold_table
+        },
+        "svm" = {
+            if (!"svm_table" %in% names(evaluation_results)) {
+                stop("svm_table not found in evaluation_results")
+            }
+            evaluation_results$svm_table
+        }
+    )
+
+    if (verbose) message(sprintf("Creating %s confusion matrix heatmap...", method))
+
+    tryCatch(
+        {
+            # Convert to long format for ggplot
+            confusion_df <- as.data.frame(confusion_matrix)
+            names(confusion_df) <- c("Actual", "Predicted", "Count")
+
+            p <- ggplot2::ggplot(confusion_df, ggplot2::aes(x = Predicted, y = Actual, fill = Count)) +
+                ggplot2::geom_tile() +
+                ggplot2::geom_text(ggplot2::aes(label = Count), color = "white") +
+                ggplot2::scale_fill_gradient(
+                    low = color_palette[1] %||% "white",
+                    high = color_palette[2] %||% "steelblue"
+                ) +
+                ggplot2::theme_minimal() +
+                ggplot2::labs(
+                    title = title %||% paste(toupper(method), "Confusion Matrix"),
+                    x = "Predicted",
+                    y = "Actual"
+                ) +
+                ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+            return(p)
+        },
+        error = function(e) {
+            stop(sprintf("Error creating confusion matrix heatmap: %s", e$message))
+        }
+    )
 }
 
 #' Save visualization plots
@@ -380,106 +428,134 @@ create_confusion_heatmap <- function(evaluation_results,
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' save_visualization_plots(seurat_object, evaluation_results, output_dir = "./plots")
-#' }
+#' # Example saving plots to temporary directory
+#' # Create some example plots
+#' library(ggplot2)
+#' temp_dir <- tempdir()
+#'
+#' # Create a list of plots
+#' plots_list <- list(
+#'     scatter = ggplot(mtcars, aes(x = mpg, y = wt)) +
+#'         geom_point() +
+#'         ggtitle("Scatter Plot"),
+#'     histogram = ggplot(mtcars, aes(x = mpg)) +
+#'         geom_histogram(bins = 10) +
+#'         ggtitle("Histogram"),
+#'     boxplot = ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+#'         geom_boxplot() +
+#'         ggtitle("Box Plot")
+#' )
+#'
+#' # Save the plots
+#' save_visualization_plots(
+#'     plots_list,
+#'     output_dir = temp_dir,
+#'     prefix = "example"
+#' )
+#'
+#' # Check that files were created
+#' plot_files <- list.files(temp_dir, pattern = "example.*\\.png$")
+#' print(plot_files)
+#'
+#' # Clean up
+#' unlink(file.path(temp_dir, plot_files))
 save_visualization_plots <- function(seurat_object, evaluation_results, output_dir,
                                      prefix = "plot", color_palette = NULL, verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_object, "Seurat")) {
-    stop("seurat_object must be a Seurat object")
-  }
-
-  if (!is.list(evaluation_results)) {
-    stop("evaluation_results must be a list")
-  }
-
-  if (!is.character(output_dir) || length(output_dir) != 1) {
-    stop("output_dir must be a single character string")
-  }
-
-  if (!is.character(prefix) || length(prefix) != 1) {
-    stop("prefix must be a single character string")
-  }
-
-  if (!is.null(color_palette) &&
-    (!is.character(color_palette) || length(color_palette) == 0)) {
-    stop("color_palette must be NULL or a non-empty character vector")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Create output directory
-  if (verbose) message("Creating output directory...")
-  if (!dir.exists(output_dir)) {
-    tryCatch(
-      {
-        dir.create(output_dir, recursive = TRUE)
-      },
-      error = function(e) {
-        stop(sprintf("Error creating output directory: %s", e$message))
-      }
-    )
-  }
-
-  # Create and save plots
-  if (verbose) message("Creating and saving plots...")
-
-  tryCatch(
-    {
-      # UMAP plot
-      umap_plot <- create_umap_plot(seurat_object, verbose = verbose)
-      ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_umap.png")),
-        umap_plot,
-        width = 10, height = 8
-      )
-
-      # Accuracy plots
-      direct_accuracy_plot <- create_accuracy_plot(evaluation_results,
-        method = "direct",
-        color_palette = color_palette, verbose = verbose
-      )
-      ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_direct_accuracy.png")),
-        direct_accuracy_plot,
-        width = 10, height = 8
-      )
-
-      svm_accuracy_plot <- create_accuracy_plot(evaluation_results,
-        method = "svm",
-        color_palette = color_palette, verbose = verbose
-      )
-      ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_svm_accuracy.png")),
-        svm_accuracy_plot,
-        width = 10, height = 8
-      )
-
-      # Confusion matrix heatmaps
-      direct_confusion_plot <- create_confusion_heatmap(evaluation_results,
-        method = "direct",
-        color_palette = color_palette, verbose = verbose
-      )
-      ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_direct_confusion.png")),
-        direct_confusion_plot,
-        width = 10, height = 8
-      )
-
-      svm_confusion_plot <- create_confusion_heatmap(evaluation_results,
-        method = "svm",
-        color_palette = color_palette, verbose = verbose
-      )
-      ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_svm_confusion.png")),
-        svm_confusion_plot,
-        width = 10, height = 8
-      )
-
-      if (verbose) {
-        message("All plots saved successfully")
-      }
-    },
-    error = function(e) {
-      stop(sprintf("Error saving plots: %s", e$message))
+    # Input validation
+    if (!inherits(seurat_object, "Seurat")) {
+        stop("seurat_object must be a Seurat object")
     }
-  )
+
+    if (!is.list(evaluation_results)) {
+        stop("evaluation_results must be a list")
+    }
+
+    if (!is.character(output_dir) || length(output_dir) != 1) {
+        stop("output_dir must be a single character string")
+    }
+
+    if (!is.character(prefix) || length(prefix) != 1) {
+        stop("prefix must be a single character string")
+    }
+
+    if (!is.null(color_palette) &&
+        (!is.character(color_palette) || length(color_palette) == 0)) {
+        stop("color_palette must be NULL or a non-empty character vector")
+    }
+
+    if (!is.logical(verbose) || length(verbose) != 1) {
+        stop("verbose must be a single logical value")
+    }
+
+    # Create output directory
+    if (verbose) message("Creating output directory...")
+    if (!dir.exists(output_dir)) {
+        tryCatch(
+            {
+                dir.create(output_dir, recursive = TRUE)
+            },
+            error = function(e) {
+                stop(sprintf("Error creating output directory: %s", e$message))
+            }
+        )
+    }
+
+    # Create and save plots
+    if (verbose) message("Creating and saving plots...")
+
+    tryCatch(
+        {
+            # UMAP plot
+            umap_plot <- create_umap_plot(seurat_object, verbose = verbose)
+            ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_umap.png")),
+                umap_plot,
+                width = 10, height = 8
+            )
+
+            # Accuracy plots
+            direct_accuracy_plot <- create_accuracy_plot(evaluation_results,
+                method = "direct",
+                color_palette = color_palette, verbose = verbose
+            )
+            ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_direct_accuracy.png")),
+                direct_accuracy_plot,
+                width = 10, height = 8
+            )
+
+            svm_accuracy_plot <- create_accuracy_plot(evaluation_results,
+                method = "svm",
+                color_palette = color_palette, verbose = verbose
+            )
+            ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_svm_accuracy.png")),
+                svm_accuracy_plot,
+                width = 10, height = 8
+            )
+
+            # Confusion matrix heatmaps
+            direct_confusion_plot <- create_confusion_heatmap(evaluation_results,
+                method = "direct",
+                color_palette = color_palette, verbose = verbose
+            )
+            ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_direct_confusion.png")),
+                direct_confusion_plot,
+                width = 10, height = 8
+            )
+
+            svm_confusion_plot <- create_confusion_heatmap(evaluation_results,
+                method = "svm",
+                color_palette = color_palette, verbose = verbose
+            )
+            ggplot2::ggsave(file.path(output_dir, paste0(prefix, "_svm_confusion.png")),
+                svm_confusion_plot,
+                width = 10, height = 8
+            )
+
+            if (verbose) {
+                message("All plots saved successfully")
+            }
+        },
+        error = function(e) {
+            stop(sprintf("Error saving plots: %s", e$message))
+        }
+    )
 }

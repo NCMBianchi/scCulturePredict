@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.1] - 2025-07-04
+
+### Added
+- BiocCheck output folder pattern to `.Rbuildignore` to prevent build errors
+
+### Fixed
+- Fixed all `1:n` patterns in examples, replaced with `seq_len()` for BiocCheck compliance
+- Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)
+- Corrected SVM column name handling in `predict_by_svm()` function
+
+### Changed
+- Improved BiocCheck compliance, achieving 0 ERRORS status
+- Updated documentation with properly formatted examples
+
+### Removed
+- Removed temporary helper scripts (`fix_coding_practices.R`, `fix_sapply_todos.R`)
+
 ## [0.99.0] - 2025-06-20
 
 ### Added
@@ -56,6 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Memory usage monitoring** for large dataset handling
 
 ### Known Issues
+
+#### Documentation Date Discrepancy
+- **DESCRIPTION file date error**: Version 0.99.0 was erroneously dated as 2024-04-28 in the DESCRIPTION file instead of the correct date 2025-06-20. This has been corrected in version 0.99.1.
 
 #### SVM Prediction Limitations
 - **Feature mismatch scenarios**: SVM prediction may fail when there are significant differences between training and prediction datasets (e.g., different gene coverage, pathway availability)

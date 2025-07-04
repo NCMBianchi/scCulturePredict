@@ -68,30 +68,36 @@ The function performs the following steps:
 }
 }
 \examples{
-\donttest{
-# Basic usage with automatic file detection
+# Example with temporary files
+# Create temporary directory and files
+temp_dir <- tempdir()
+exp_id <- "test_exp"
+
+# Create mock counts file
+counts_data <- matrix(rpois(500, 5), nrow = 50)
+rownames(counts_data) <- paste0("Gene", seq_len(50))
+colnames(counts_data) <- paste0("Cell", seq_len(10))
+counts_file <- file.path(temp_dir, paste0(exp_id, "_counts.csv"))
+write.csv(counts_data, counts_file)
+
+# Create mock metadata file
+metadata <- data.frame(
+    cell_id = colnames(counts_data),
+    sample = rep(c("Sample1", "Sample2"), each = 5)
+)
+metadata_file <- file.path(temp_dir, paste0(exp_id, "_metadata.csv"))
+write.csv(metadata, metadata_file, row.names = FALSE)
+
+# Load the data
 seurat_obj <- load_data(
-  data_dir = "path/to/data",
-  experiment_id = "GSE165686"
+    data_dir = temp_dir,
+    experiment_id = exp_id,
+    use_shell_script = FALSE
 )
 
-# Specify custom file names
-seurat_obj <- load_data(
-  data_dir = "path/to/data",
-  experiment_id = "GSE165686",
-  metadata_file = "custom_metadata.csv",
-  counts_file = "custom_counts.csv"
-)
-
-# Custom filtering parameters
-seurat_obj <- load_data(
-  data_dir = "path/to/data",
-  experiment_id = "GSE165686",
-  min_cells = 5,
-  min_features = 300
-)
-}
-
+# Clean up
+unlink(counts_file)
+unlink(metadata_file)
 }
 \seealso{
 \code{\link{preprocess_data}} for preprocessing the loaded data

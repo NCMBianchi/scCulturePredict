@@ -28,7 +28,25 @@ profiles for different conditions. This is the appropriate function to use when
 applying pre-built fingerprints to new unlabeled data.
 }
 \examples{
-\donttest{
-pathway_activities <- calculate_pathway_activities(seurat_object, kegg_pathways)
-}
+# Example with mock data
+library(Seurat)
+# Create minimal mock Seurat object
+counts <- matrix(rpois(1000, 5), nrow = 100)
+rownames(counts) <- paste0("Gene", seq_len(100))
+colnames(counts) <- paste0("Cell", seq_len(10))
+seurat_obj <- CreateSeuratObject(counts = counts)
+seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+
+# Create mock pathways
+mock_pathways <- list(
+  Pathway1 = paste0("Gene", seq_len(20)),
+  Pathway2 = paste0("Gene", 21:40),
+  Pathway3 = paste0("Gene", 41:60)
+)
+
+# Calculate pathway activities
+pathway_activities <- calculate_pathway_activities(
+  seurat_obj, mock_pathways,
+  verbose = FALSE
+)
 }

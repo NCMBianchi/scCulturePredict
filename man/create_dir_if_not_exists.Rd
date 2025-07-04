@@ -12,6 +12,9 @@ create_dir_if_not_exists(dir_path, recursive = TRUE)
 \item{recursive}{Logical indicating whether to create parent directories.
 Default is TRUE.}
 }
+\value{
+Invisible NULL. The directory is created if it doesn't exist. The function returns the directory path invisibly.
+}
 \description{
 Creates a directory if it doesn't exist, with optional recursive creation
 of parent directories.

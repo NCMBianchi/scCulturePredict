@@ -22,8 +22,8 @@ Internal helper function to process metadata and barcodes for a Seurat object
 \examples{
 # Example with sample metadata
 metadata <- data.frame(
-  cell_id = c("cell1", "cell2", "cell3"),
-  condition = c("ctrl", "treated", "ctrl")
+    cell_id = c("cell1", "cell2", "cell3"),
+    condition = c("ctrl", "treated", "ctrl")
 )
 processed <- process_metadata(metadata)
 head(processed)

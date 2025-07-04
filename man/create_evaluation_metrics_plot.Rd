@@ -66,28 +66,13 @@ metrics plot displays precision, recall, and F1 scores with customizable colors.
 ROC and PR curves visualize classifier performance across different thresholds.
 }
 \examples{
-\donttest{
-# Plot confusion matrix
-p <- plot_evaluation_metrics(
-  evaluation_results = results,
-  plot_type = "confusion"
+# Example with mock evaluation metrics
+metrics_data <- data.frame(
+  metric = rep(c("Accuracy", "Precision", "Recall", "F1"), 3),
+  value = c(0.85, 0.82, 0.88, 0.85, 0.79, 0.77, 0.81, 0.79, 0.91, 0.89, 0.93, 0.91),
+  method = rep(c("Method1", "Method2", "Method3"), each = 4)
 )
-
-# Plot metrics with custom colors
-p <- plot_evaluation_metrics(
-  evaluation_results = results,
-  plot_type = "metrics",
-  color_palette = c("red", "blue", "green")
-)
-
-# Plot ROC curve with custom title
-p <- plot_evaluation_metrics(
-  evaluation_results = results,
-  plot_type = "roc",
-  title = "ROC Curve"
-)
-}
-
+plot <- create_evaluation_metrics_plot(metrics_data)
 }
 \seealso{
 \code{\link{evaluate_predictions}} for calculating evaluation metrics

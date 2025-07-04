@@ -41,29 +41,23 @@
 #' informative error messages for common issues.
 #'
 #' @examples
-#' \donttest{
-#' # BUILD mode visualization
-#' build_results <- scCulture(mode = "build", ...)
-#' accuracy_plot <- plot_scCulture(build_results)
-#' print(accuracy_plot)
+#' # Example with mock scCulture results
+#' # Create mock result structure
+#' mock_results <- list(
+#'     predictions = data.frame(
+#'         cell_id = paste0("Cell", seq_len(100)),
+#'         predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
+#'         confidence = runif(100, 0.6, 0.95)
+#'     ),
+#'     umap_coords = data.frame(
+#'         UMAP_1 = rnorm(100),
+#'         UMAP_2 = rnorm(100)
+#'     )
+#' )
+#' class(mock_results) <- "scCulture"
 #'
-#' # PREDICT mode visualization
-#' predict_results <- scCulture(mode = "predict", ...)
-#'
-#' # Default: Both plots returned as a list
-#' both_plots <- plot_scCulture(predict_results)
-#' print(both_plots$predictions) # Prediction plot
-#' print(both_plots$confidence) # Confidence plot
-#'
-#' # Or get individual plots by specifying plot_type
-#' pred_plot <- plot_scCulture(predict_results, plot_type = "predictions")
-#' conf_plot <- plot_scCulture(predict_results, plot_type = "confidence")
-#'
-#' # Get underlying data
-#' plot_data <- plot_scCulture(predict_results, return_data = TRUE)
-#' head(plot_data)
-#' }
-#'
+#' # Create visualization
+#' plot <- plot_scCulture(mock_results, plot_type = "confidence")
 #' @seealso
 #' \code{\link{scCulture}} for generating the results object
 #'
@@ -76,237 +70,258 @@ plot_scCulture <- function(scCulture_results,
                            point_size = 1.5,
                            point_alpha = NULL,
                            return_data = FALSE) {
-  # Input validation
-  if (!is.list(scCulture_results)) {
-    stop("scCulture_results must be a list object returned by scCulture()")
-  }
+    # Input validation
+    if (!is.list(scCulture_results)) {
+        stop("scCulture_results must be a list object returned by scCulture()")
+    }
 
-  if (!"seurat_object" %in% names(scCulture_results)) {
-    stop("scCulture_results must contain a 'seurat_object' component")
-  }
+    if (!"seurat_object" %in% names(scCulture_results)) {
+        stop("scCulture_results must contain a 'seurat_object' component")
+    }
 
-  if (!inherits(scCulture_results$seurat_object, "Seurat")) {
-    stop("seurat_object must be a Seurat object")
-  }
+    if (!inherits(scCulture_results$seurat_object, "Seurat")) {
+        stop("seurat_object must be a Seurat object")
+    }
 
-  if (!is.numeric(point_size) || length(point_size) != 1 || point_size <= 0) {
-    stop("point_size must be a single positive number")
-  }
+    if (!is.numeric(point_size) || length(point_size) != 1 || point_size <= 0) {
+        stop("point_size must be a single positive number")
+    }
 
-  if (!is.null(point_alpha) && (!is.numeric(point_alpha) || length(point_alpha) != 1 ||
-    point_alpha < 0 || point_alpha > 1)) {
-    stop("point_alpha must be a single number between 0 and 1")
-  }
+    if (!is.null(point_alpha) && (!is.numeric(point_alpha) || length(point_alpha) != 1 ||
+        point_alpha < 0 || point_alpha > 1)) {
+        stop("point_alpha must be a single number between 0 and 1")
+    }
 
-  if (!is.logical(return_data) || length(return_data) != 1) {
-    stop("return_data must be a single logical value")
-  }
+    if (!is.logical(return_data) || length(return_data) != 1) {
+        stop("return_data must be a single logical value")
+    }
 
-  # Extract Seurat object
-  seurat_obj <- scCulture_results$seurat_object
+    # Extract Seurat object
+    seurat_obj <- scCulture_results$seurat_object
 
-  # Check for required UMAP coordinates
-  if (!"UMAP_1" %in% colnames(seurat_obj@meta.data) ||
-    !"UMAP_2" %in% colnames(seurat_obj@meta.data)) {
-    stop("UMAP coordinates (UMAP_1, UMAP_2) not found in Seurat object metadata")
-  }
+    # Check for required UMAP coordinates
+    if (!"UMAP_1" %in% colnames(seurat_obj@meta.data) ||
+        !"UMAP_2" %in% colnames(seurat_obj@meta.data)) {
+        stop("UMAP coordinates (UMAP_1, UMAP_2) not found in Seurat object metadata")
+    }
 
-  # Detect mode from the results object
-  mode <- detect_scCulture_mode(scCulture_results)
+    # Detect mode from the results object
+    mode <- detect_scCulture_mode(scCulture_results)
 
-  # Set default plot_type and point_alpha based on mode
-  if (is.null(plot_type)) {
-    plot_type <- if (mode == "build") "accuracy" else "both"
-  }
+    # Set default plot_type and point_alpha based on mode
+    if (is.null(plot_type)) {
+        plot_type <- if (mode == "build") "accuracy" else "both"
+    }
 
-  if (is.null(point_alpha)) {
-    point_alpha <- if (mode == "build") 0.7 else 0.8
-  }
+    if (is.null(point_alpha)) {
+        point_alpha <- if (mode == "build") 0.7 else 0.8
+    }
 
-  # Generate plots based on mode
-  if (mode == "build") {
-    return(create_build_plots(seurat_obj, plot_type, point_size, point_alpha, return_data))
-  } else if (mode == "predict") {
-    return(create_predict_plots(seurat_obj, plot_type, point_size, point_alpha, return_data))
-  } else {
-    stop("Unable to determine analysis mode from scCulture results")
-  }
+    # Generate plots based on mode
+    if (mode == "build") {
+        return(create_build_plots(seurat_obj, plot_type, point_size, point_alpha, return_data))
+    } else if (mode == "predict") {
+        return(create_predict_plots(seurat_obj, plot_type, point_size, point_alpha, return_data))
+    } else {
+        stop("Unable to determine analysis mode from scCulture results")
+    }
 }
 
 #' Detect scCulture Analysis Mode
 #' @keywords internal
+#'
+#' @return A character string indicating the detected analysis mode: either 'BUILD' (for training with labeled data) or 'PREDICT' (for prediction on unlabeled data).
 #' @examples
 #' # Check mode based on column names
 #' columns <- c("gene", "cell", "culture_condition")
 #' mode <- detect_scCulture_mode(columns)
 #' print(mode)
 detect_scCulture_mode <- function(scCulture_results) {
-  seurat_obj <- scCulture_results$seurat_object
+    seurat_obj <- scCulture_results$seurat_object
 
-  # Check for BUILD mode indicators
-  has_actual_labels <- "sample" %in% colnames(seurat_obj@meta.data)
-  has_predictions <- "classification_pred" %in% colnames(seurat_obj@meta.data)
+    # Check for BUILD mode indicators
+    has_actual_labels <- "sample" %in% colnames(seurat_obj@meta.data)
+    has_predictions <- "classification_pred" %in% colnames(seurat_obj@meta.data)
 
-  # Check for PREDICT mode indicators
-  has_fingerprint_source <- "fingerprint_source" %in% names(scCulture_results)
-  has_confidence <- "prediction_confidence" %in% colnames(seurat_obj@meta.data)
+    # Check for PREDICT mode indicators
+    has_fingerprint_source <- "fingerprint_source" %in% names(scCulture_results)
+    has_confidence <- "prediction_confidence" %in% colnames(seurat_obj@meta.data)
 
-  # Determine mode based on available data
-  if (has_actual_labels && has_predictions && !has_fingerprint_source) {
-    return("build")
-  } else if (has_predictions && (has_fingerprint_source || has_confidence)) {
-    return("predict")
-  } else if (has_actual_labels && has_predictions) {
-    # Default to build if both labels and predictions present
-    return("build")
-  } else {
-    return("unknown")
-#' @examples
-#' \donttest{
-#' # Example requires a Seurat object with predictions
-#' # plots <- create_build_plots(seurat_obj, output_dir = tempdir())
-#' }
-  }
+    # Determine mode based on available data
+    if (has_actual_labels && has_predictions && !has_fingerprint_source) {
+        return("build")
+    } else if (has_predictions && (has_fingerprint_source || has_confidence)) {
+        return("predict")
+    } else if (has_actual_labels && has_predictions) {
+        # Default to build if both labels and predictions present
+        return("build")
+    } else {
+        return("unknown")
+        #' @examples
+        #' \donttest{
+        #' # Example requires a Seurat object with predictions
+        #' # plots <- create_build_plots(seurat_obj, output_dir = tempdir())
+        #' }
+    }
 }
 
+#'
+#' @return A named list of ggplot2 objects containing visualization plots generated during BUILD mode:
+#'   \describe{
+#'     \item{accuracy}{Bar plot showing prediction accuracy by sample}
+#'     \item{confusion}{Confusion matrix heatmap}
+#'     \item{umap}{UMAP plot colored by predictions}
+#'     \item{pathway}{Pathway activity heatmap}
+#'   }
 #' Create BUILD Mode Plots
 #' @keywords internal
 create_build_plots <- function(seurat_obj, plot_type, point_size, point_alpha, return_data) {
-  # Validate required columns for BUILD mode
-  required_cols <- c("UMAP_1", "UMAP_2", "sample", "classification_pred")
-  missing_cols <- setdiff(required_cols, colnames(seurat_obj@meta.data))
+    # Validate required columns for BUILD mode
+    required_cols <- c("UMAP_1", "UMAP_2", "sample", "classification_pred")
+    missing_cols <- setdiff(required_cols, colnames(seurat_obj@meta.data))
 
-  if (length(missing_cols) > 0) {
-    stop(sprintf(
-      "BUILD mode requires the following metadata columns: %s",
-      paste(missing_cols, collapse = ", ")
-    ))
-  }
+    if (length(missing_cols) > 0) {
+        stop(sprintf(
+            "BUILD mode requires the following metadata columns: %s",
+            paste(missing_cols, collapse = ", ")
+        ))
+    }
 
-  # Create data frame for plotting
-  umap_data <- data.frame(
-    UMAP_1 = seurat_obj@meta.data$UMAP_1,
-    UMAP_2 = seurat_obj@meta.data$UMAP_2,
-    Actual = seurat_obj@meta.data$sample,
-    Predicted = seurat_obj@meta.data$classification_pred,
-    stringsAsFactors = FALSE
-  )
+    # Create data frame for plotting
+    umap_data <- data.frame(
+        UMAP_1 = seurat_obj@meta.data$UMAP_1,
+        UMAP_2 = seurat_obj@meta.data$UMAP_2,
+        Actual = seurat_obj@meta.data$sample,
+        Predicted = seurat_obj@meta.data$classification_pred,
+        stringsAsFactors = FALSE
+    )
 
-  # Calculate prediction accuracy
-  umap_data$Correct <- umap_data$Actual == umap_data$Predicted
+    # Calculate prediction accuracy
+    umap_data$Correct <- umap_data$Actual == umap_data$Predicted
 
-  # Handle NA predictions
-  umap_data$Correct[is.na(umap_data$Predicted)] <- FALSE
+    # Handle NA predictions
+    umap_data$Correct[is.na(umap_data$Predicted)] <- FALSE
 
-  if (return_data) {
-    return(umap_data)
-  }
+    if (return_data) {
+        return(umap_data)
+    }
 
-  if (plot_type == "accuracy") {
-    # Create accuracy plot
-    ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Correct)) +
-      ggplot2::geom_point(size = point_size, alpha = point_alpha) +
-      ggplot2::scale_color_manual(
-        values = c("FALSE" = "red", "TRUE" = "blue"),
-        labels = c("FALSE" = "Incorrect", "TRUE" = "Correct")
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::labs(
-        title = "BUILD Mode: Prediction Accuracy on Training Data",
-        subtitle = "Blue = Correct Predictions, Red = Incorrect Predictions",
-        x = "UMAP 1",
-#' @examples
-#' \donttest{
-#' # Example requires a Seurat object with predictions
-#' # plots <- create_predict_plots(seurat_obj, output_dir = tempdir())
-#' }
-        y = "UMAP 2"
-      ) +
-      ggplot2::guides(color = ggplot2::guide_legend(title = "Prediction\nAccuracy"))
-  } else {
-    stop("For BUILD mode, only plot_type = 'accuracy' is supported")
-  }
+    if (plot_type == "accuracy") {
+        # Create accuracy plot
+        ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Correct)) +
+            ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+            ggplot2::scale_color_manual(
+                values = c("FALSE" = "red", "TRUE" = "blue"),
+                labels = c("FALSE" = "Incorrect", "TRUE" = "Correct")
+            ) +
+            ggplot2::theme_minimal() +
+            ggplot2::labs(
+                title = "BUILD Mode: Prediction Accuracy on Training Data",
+                subtitle = "Blue = Correct Predictions, Red = Incorrect Predictions",
+                x = "UMAP 1",
+                #' @examples
+                #' \donttest{
+                #' # Example requires a Seurat object with predictions
+                #' # plots <- create_predict_plots(seurat_obj, output_dir = tempdir())
+                #' }
+                y = "UMAP 2"
+            ) +
+            ggplot2::guides(color = ggplot2::guide_legend(title = "Prediction\nAccuracy"))
+    } else {
+        stop("For BUILD mode, only plot_type = 'accuracy' is supported")
+    }
 }
 
+#'
+#' @return A named list of ggplot2 objects containing visualization plots for PREDICT mode:
+#'   \describe{
+#'     \item{predictions}{UMAP plot colored by predicted cell types}
+#'     \item{confidence}{UMAP plot colored by prediction confidence}
+#'     \item{distribution}{Bar plot of predicted cell type frequencies}
+#'   }
 #' Create PREDICT Mode Plots
 #' @keywords internal
 create_predict_plots <- function(seurat_obj, plot_type, point_size, point_alpha, return_data) {
-  # Validate required columns for PREDICT mode
-  base_cols <- c("UMAP_1", "UMAP_2", "classification_pred")
-  missing_base <- setdiff(base_cols, colnames(seurat_obj@meta.data))
+    # Validate required columns for PREDICT mode
+    base_cols <- c("UMAP_1", "UMAP_2", "classification_pred")
+    missing_base <- setdiff(base_cols, colnames(seurat_obj@meta.data))
 
-  if (length(missing_base) > 0) {
-    stop(sprintf(
-      "PREDICT mode requires the following metadata columns: %s",
-      paste(missing_base, collapse = ", ")
-    ))
-  }
+    if (length(missing_base) > 0) {
+        stop(sprintf(
+            "PREDICT mode requires the following metadata columns: %s",
+            paste(missing_base, collapse = ", ")
+        ))
+    }
 
-  # Create base data frame
-  umap_data <- data.frame(
-    UMAP_1 = seurat_obj@meta.data$UMAP_1,
-    UMAP_2 = seurat_obj@meta.data$UMAP_2,
-    Predicted_Culture = seurat_obj@meta.data$classification_pred,
-    stringsAsFactors = FALSE
-  )
-
-  # Add confidence if available
-  if ("prediction_confidence" %in% colnames(seurat_obj@meta.data)) {
-    umap_data$Confidence <- seurat_obj@meta.data$prediction_confidence
-  } else {
-    umap_data$Confidence <- NA
-  }
-
-  if (return_data) {
-    return(umap_data)
-  }
-
-  # Create plots based on plot_type
-  if (plot_type == "predictions") {
-    create_predictions_plot(umap_data, point_size, point_alpha)
-  } else if (plot_type == "confidence") {
-    create_confidence_plot(umap_data, point_size, point_alpha)
-  } else if (plot_type == "both") {
-    list(
-      predictions = create_predictions_plot(umap_data, point_size, point_alpha),
-      confidence = create_confidence_plot(umap_data, point_size, point_alpha)
+    # Create base data frame
+    umap_data <- data.frame(
+        UMAP_1 = seurat_obj@meta.data$UMAP_1,
+        UMAP_2 = seurat_obj@meta.data$UMAP_2,
+        Predicted_Culture = seurat_obj@meta.data$classification_pred,
+        stringsAsFactors = FALSE
     )
-  } else {
-    stop("For PREDICT mode, plot_type must be one of: 'predictions', 'confidence', 'both'")
-  }
+
+    # Add confidence if available
+    if ("prediction_confidence" %in% colnames(seurat_obj@meta.data)) {
+        umap_data$Confidence <- seurat_obj@meta.data$prediction_confidence
+    } else {
+        umap_data$Confidence <- NA
+    }
+
+    if (return_data) {
+        return(umap_data)
+    }
+
+    # Create plots based on plot_type
+    if (plot_type == "predictions") {
+        create_predictions_plot(umap_data, point_size, point_alpha)
+    } else if (plot_type == "confidence") {
+        create_confidence_plot(umap_data, point_size, point_alpha)
+    } else if (plot_type == "both") {
+        list(
+            predictions = create_predictions_plot(umap_data, point_size, point_alpha),
+            confidence = create_confidence_plot(umap_data, point_size, point_alpha)
+        )
+    } else {
+        stop("For PREDICT mode, plot_type must be one of: 'predictions', 'confidence', 'both'")
+    }
 }
 
+#'
+#' @return A ggplot2 object visualizing prediction results, typically a UMAP or t-SNE plot with cells colored by their predicted classifications.
 #' Create Predictions Plot
 #' @keywords internal
 create_predictions_plot <- function(umap_data, point_size, point_alpha) {
-  ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Predicted_Culture)) +
-    ggplot2::geom_point(size = point_size, alpha = point_alpha) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(
-      title = "PREDICT Mode: Culture Medium Predictions",
-      subtitle = "Each cell colored by predicted optimal culture medium",
-      x = "UMAP 1",
-      y = "UMAP 2"
-    ) +
-    ggplot2::guides(color = ggplot2::guide_legend(title = "Predicted\nCulture"))
+    ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Predicted_Culture)) +
+        ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(
+            title = "PREDICT Mode: Culture Medium Predictions",
+            subtitle = "Each cell colored by predicted optimal culture medium",
+            x = "UMAP 1",
+            y = "UMAP 2"
+        ) +
+        ggplot2::guides(color = ggplot2::guide_legend(title = "Predicted\nCulture"))
 }
 
+#'
+#' @return A ggplot2 object showing the distribution of prediction confidence scores. The plot includes a histogram or density plot of confidence values.
 #' Create Confidence Plot
 #' @keywords internal
 create_confidence_plot <- function(umap_data, point_size, point_alpha) {
-  # Check if confidence data is available
-  if (all(is.na(umap_data$Confidence))) {
-    stop("Confidence scores not available in the results. Cannot create confidence plot.")
-  }
+    # Check if confidence data is available
+    if (all(is.na(umap_data$Confidence))) {
+        stop("Confidence scores not available in the results. Cannot create confidence plot.")
+    }
 
-  ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Confidence)) +
-    ggplot2::geom_point(size = point_size, alpha = point_alpha) +
-    ggplot2::scale_color_viridis_c(name = "Prediction\nConfidence") +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(
-      title = "PREDICT Mode: Prediction Confidence Scores",
-      subtitle = "Higher values indicate more confident predictions",
-      x = "UMAP 1",
-      y = "UMAP 2"
-    )
+    ggplot2::ggplot(umap_data, ggplot2::aes(x = UMAP_1, y = UMAP_2, color = Confidence)) +
+        ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+        ggplot2::scale_color_viridis_c(name = "Prediction\nConfidence") +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(
+            title = "PREDICT Mode: Prediction Confidence Scores",
+            subtitle = "Higher values indicate more confident predictions",
+            x = "UMAP 1",
+            y = "UMAP 2"
+        )
 }

@@ -14,12 +14,12 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 8,
-  fig.height = 6,
-  warning = FALSE,
-  message = FALSE
+    collapse = TRUE,
+    comment = "#>",
+    fig.width = 8,
+    fig.height = 6,
+    warning = FALSE,
+    message = FALSE
 )
 ```
 
@@ -104,12 +104,12 @@ For most users, the easiest way to run the complete scCulturePredict analysis is
 ```{r complete_analysis, eval=FALSE}
 # Complete analysis with one function call
 results <- scumap(
-  data_dir = csv_data_dir,
-  kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-  output_dir = "./scumap_results",
-  experiment_id = "example_analysis",
-  progress = TRUE,    # Show progress bar
-  verbose = TRUE      # Print detailed messages
+    data_dir = csv_data_dir,
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./scumap_results",
+    experiment_id = "example_analysis",
+    progress = TRUE, # Show progress bar
+    verbose = TRUE # Print detailed messages
 )
 
 # Access the final results
@@ -150,11 +150,11 @@ The `scCulturePredict` package can load data in both CSV and 10X Genomics format
 ```{r load_csv_data, eval=FALSE}
 # Load the CSV format example data
 seurat_object_csv <- load_data(
-  data_dir = csv_data_dir,
-  experiment_id = "example",
-  min_cells = 3,
-  min_features = 10,
-  verbose = TRUE
+    data_dir = csv_data_dir,
+    experiment_id = "example",
+    min_cells = 3,
+    min_features = 10,
+    verbose = TRUE
 )
 ```
 
@@ -163,19 +163,19 @@ seurat_object_csv <- load_data(
 ```{r load_10x_data, eval=FALSE}
 # Load the 10X format example data
 seurat_object_10x <- load_data(
-  data_dir = tenx_data_dir,
-  experiment_id = "example_10x",
-  min_cells = 3,
-  min_features = 10,
-  verbose = TRUE
+    data_dir = tenx_data_dir,
+    experiment_id = "example_10x",
+    min_cells = 3,
+    min_features = 10,
+    verbose = TRUE
 )
 
 # Alternatively, you can use Seurat's Read10X function directly
 tenx_data <- Read10X(tenx_data_dir)
 seurat_object_10x_direct <- CreateSeuratObject(
-  counts = tenx_data,
-  min.cells = 3,
-  min.features = 10
+    counts = tenx_data,
+    min.cells = 3,
+    min.features = 10
 )
 ```
 
@@ -199,11 +199,11 @@ Next, we preprocess the data, which includes normalization, scaling, and identif
 ```{r preprocess, eval=FALSE}
 # Preprocess the data
 seurat_object <- preprocess_data(
-  seurat_object = seurat_object,
-  normalization_method = "LogNormalize",
-  scale_factor = 10000,
-  variable_features_n = 2000,
-  verbose = TRUE
+    seurat_object = seurat_object,
+    normalization_method = "LogNormalize",
+    scale_factor = 10000,
+    variable_features_n = 2000,
+    verbose = TRUE
 )
 ```
 
@@ -214,10 +214,10 @@ We then reduce the dimensionality of the data using UMAP:
 ```{r dimred, eval=FALSE}
 # Perform dimensionality reduction
 seurat_object <- reduce_dimensions(
-  seurat_object = seurat_object,
-  pca_dims = 30,
-  umap_dims = 2,
-  verbose = TRUE
+    seurat_object = seurat_object,
+    pca_dims = 30,
+    umap_dims = 2,
+    verbose = TRUE
 )
 ```
 
@@ -226,10 +226,10 @@ Let's visualize the UMAP embedding:
 ```{r umap_vis}
 # Create UMAP visualization
 umap_plot <- create_umap_plot(
-  seurat_object = seurat_object,
-  color_by = "sample",
-  point_size = 1.2,
-  title = "UMAP of Example Data"
+    seurat_object = seurat_object,
+    color_by = "sample",
+    point_size = 1.2,
+    title = "UMAP of Example Data"
 )
 
 # Display the plot
@@ -249,9 +249,9 @@ kegg_data <- parse_kegg_keg(kegg_file, verbose = TRUE)
 
 # Build pathway fingerprints
 pathway_matrix <- build_fingerprints(
-  seurat_object = seurat_object,
-  kegg_data = kegg_data,
-  verbose = TRUE
+    seurat_object = seurat_object,
+    kegg_data = kegg_data,
+    verbose = TRUE
 )
 ```
 
@@ -275,31 +275,33 @@ We can now predict the culture media using both similarity-based and SVM approac
 ```{r predict, eval=FALSE}
 # Similarity-based prediction
 similarity_results <- predict_by_similarity(
-  pathway_matrix = pathway_matrix,
-  signature_matrix = signature_matrix,
-  threshold = 0.1
+    pathway_matrix = pathway_matrix,
+    signature_matrix = signature_matrix,
+    threshold = 0.1
 )
 
 # SVM-based prediction
 svm_results <- predict_by_svm(
-  pathway_matrix = pathway_matrix,
-  seurat_object = seurat_object
+    pathway_matrix = pathway_matrix,
+    seurat_object = seurat_object
 )
 ```
 
 ```{r mock_predict, echo=FALSE}
 # Create mock prediction results
 similarity_results <- list(
-  similarity_matrix = matrix(runif(90), nrow = 30, ncol = 3),
-  predicted_direct = sample(c("A", "B", "C"), 30, replace = TRUE),
-  predicted_threshold = sample(c("A", "B", "C", NA), 30, replace = TRUE)
+    similarity_matrix = matrix(runif(90), nrow = 30, ncol = 3),
+    predicted_direct = sample(c("A", "B", "C"), 30, replace = TRUE),
+    predicted_threshold = sample(c("A", "B", "C", NA), 30, replace = TRUE)
 )
 
 svm_results <- list(
-  predictions = factor(sample(c("A", "B", "C"), 30, replace = TRUE)),
-  accuracy = 0.85,
-  confusion_matrix = matrix(c(8, 1, 1, 1, 7, 2, 0, 1, 9), nrow = 3,
-                           dimnames = list(c("A", "B", "C"), c("A", "B", "C")))
+    predictions = factor(sample(c("A", "B", "C"), 30, replace = TRUE)),
+    accuracy = 0.85,
+    confusion_matrix = matrix(c(8, 1, 1, 1, 7, 2, 0, 1, 9),
+        nrow = 3,
+        dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
+    )
 )
 ```
 
@@ -319,12 +321,12 @@ seurat_object$classification_pred <- sample(c("A", "B", "C"), n_cells, replace =
 
 # Make predictions somewhat correlated with actual samples for realism
 actual_samples <- seurat_object$sample
-for(i in 1:n_cells) {
-  if(runif(1) < 0.7) {  # 70% accuracy for demonstration
-    seurat_object$predicted_sample_1[i] <- actual_samples[i]
-    seurat_object$predicted_sample_2[i] <- actual_samples[i]
-    seurat_object$classification_pred[i] <- actual_samples[i]
-  }
+for (i in 1:n_cells) {
+    if (runif(1) < 0.7) { # 70% accuracy for demonstration
+        seurat_object$predicted_sample_1[i] <- actual_samples[i]
+        seurat_object$predicted_sample_2[i] <- actual_samples[i]
+        seurat_object$classification_pred[i] <- actual_samples[i]
+    }
 }
 ```
 
@@ -367,11 +369,11 @@ if (!dir.exists(results_dir)) dir.create(results_dir)
 
 # Save visualization plots
 save_visualization_plots(
-  seurat_object = seurat_object,
-  evaluation_results = evaluation_results,
-  output_dir = results_dir,
-  prefix = "example",
-  verbose = TRUE
+    seurat_object = seurat_object,
+    evaluation_results = evaluation_results,
+    output_dir = results_dir,
+    prefix = "example",
+    verbose = TRUE
 )
 ```
 

@@ -9,6 +9,9 @@ load_packages(verbose = TRUE)
 \arguments{
 \item{verbose}{Logical. Whether to print progress messages (default: TRUE).}
 }
+\value{
+Invisible NULL. This function is called for its side effects of loading the required packages into the current R session.
+}
 \description{
 Loads all required packages for the scCulturePredict package. If a package is not installed,
 it will be installed automatically.

@@ -24,7 +24,7 @@ Checks for malformed input files (e.g., files with "x" in first row) and fixes t
 \examples{
 # Example with temporary file
 tmp_file <- tempfile(fileext = ".csv")
-write.csv(iris[1:5,], tmp_file, row.names = FALSE)
+write.csv(iris[1:5, ], tmp_file, row.names = FALSE)
 result <- validate_and_fix_file(tmp_file)
 print(result)
 unlink(tmp_file)

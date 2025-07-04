@@ -58,7 +58,26 @@ The function includes comprehensive error handling to catch missing data,
 invalid parameters, or processing issues with informative error messages.
 }
 \examples{
-\donttest{
-plot <- create_accuracy_plot(evaluation_results, method = "direct")
-}
+# Example with mock evaluation results
+# Create mock evaluation results structure
+evaluation_results <- list(
+    direct = list(
+        accuracy = data.frame(
+            sample = c("Sample1", "Sample2", "Sample3", "Sample4"),
+            accuracy = c(85.2, 78.5, 92.1, 88.7)
+        )
+    ),
+    svm = list(
+        accuracy = data.frame(
+            sample = c("Sample1", "Sample2", "Sample3", "Sample4"),
+            accuracy = c(87.3, 81.2, 94.5, 90.1)
+        )
+    )
+)
+
+# Create accuracy plot for direct method
+plot_direct <- create_accuracy_plot(evaluation_results, method = "direct")
+
+# Create accuracy plot for SVM method
+plot_svm <- create_accuracy_plot(evaluation_results, method = "svm")
 }

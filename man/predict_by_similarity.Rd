@@ -51,7 +51,33 @@ with 0 indicating orthogonality (no relationship). The threshold parameter allow
 control over prediction stringency - higher values require stronger similarity for prediction.
 }
 \examples{
-\donttest{
-predictions <- predict_by_similarity(pathway_matrix, signature_matrix)
-}
+# Example with mock data
+# Create mock pathway activity matrix
+pathway_activity <- matrix(
+    rnorm(150, mean = 0, sd = 1),
+    nrow = 15,
+    dimnames = list(
+        paste0("Cell", seq_len(15)),
+        paste0("Pathway", seq_len(10))
+    )
+)
+
+# Create mock fingerprint profiles
+fingerprint_profiles <- matrix(
+    rnorm(30, mean = 0, sd = 0.5),
+    nrow = 3,
+    dimnames = list(
+        c("CultureA", "CultureB", "CultureC"),
+        paste0("Pathway", seq_len(10))
+    )
+)
+
+# Make predictions
+predictions <- predict_by_similarity(
+    pathway_activity,
+    fingerprint_profiles
+)
+
+# Check results
+print(head(predictions))
 }
