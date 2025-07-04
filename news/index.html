@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,30 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.1" id="scculturepredict-0991-2025-07-04">scCulturePredict 0.99.1 (2025-07-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-0991-2025-07-04"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-and-improvements-0-99-1">Bug Fixes and Improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-improvements-0-99-1"></a></h3>
+<div class="section level4">
+<h4 id="bioccheck-compliance-0-99-1">BiocCheck Compliance<a class="anchor" aria-label="anchor" href="#bioccheck-compliance-0-99-1"></a></h4>
+<ul><li>Fixed all <code>1:n</code> patterns in examples, replaced with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> for Bioconductor compliance</li>
+<li>Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)</li>
+<li>Added BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
+<li>Achieved 0 ERRORS in BiocCheck validation</li>
+</ul></div>
+<div class="section level4">
+<h4 id="code-improvements-0-99-1">Code Improvements<a class="anchor" aria-label="anchor" href="#code-improvements-0-99-1"></a></h4>
+<ul><li>Corrected SVM column name handling in <code><a href="../reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
+<li>Removed temporary helper scripts used during development</li>
+<li>Updated documentation with properly formatted examples</li>
+</ul></div>
+<div class="section level4">
+<h4 id="known-issues-0-99-1">Known Issues<a class="anchor" aria-label="anchor" href="#known-issues-0-99-1"></a></h4>
+<ul><li>
+<strong>DESCRIPTION file date correction</strong>: Version 0.99.0 was erroneously dated as 2024-04-28 in the DESCRIPTION file instead of the correct date 2025-06-20. This has been corrected in version 0.99.1.</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.0" id="scculturepredict-0990-2025-06-20">scCulturePredict 0.99.0 (2025-06-20)<a class="anchor" aria-label="anchor" href="#scculturepredict-0990-2025-06-20"></a></h2>
 <div class="section level3">

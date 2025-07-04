@@ -17,17 +17,12 @@
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/calculate_prediction_confidence.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/check_and_install_packages.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_accuracy_plot.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_build_plots.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_confidence_plot.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_confusion_heatmap.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_dir_if_not_exists.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_evaluation_metrics_plot.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_evaluation_plots.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_pathway_boxplot.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_pathway_heatmap.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_predict_plots.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_prediction_plots.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_predictions_plot.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/create_umap_plot.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/detect_scCulture_mode.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/evaluate_cell_type_predictions.html</loc></url>
@@ -53,7 +48,6 @@
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/process_metadata.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/reduce_dimensions.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/run_build_mode.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/run_predict_mode.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/run_umap.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/save_object.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/save_visualization_plots.html</loc></url>

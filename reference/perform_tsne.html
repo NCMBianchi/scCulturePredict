@@ -9,7 +9,7 @@ using PCA results as input."><link rel="stylesheet" href="https://cdn.jsdelivr.n
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@ using PCA results as input.</p>
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
 <dd><p>Integer vector specifying which PCA dimensions to use.
-Default is 1:40.</p></dd>
+Default is seq_len(40).</p></dd>
 
 
 <dt id="arg-perplexity">perplexity<a class="anchor" aria-label="anchor" href="#arg-perplexity"></a></dt>
@@ -85,7 +85,7 @@ Default is 1000.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">perform_tsne</span><span class="op">(</span><span class="va">seurat_object</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">perform_tsne</span><span class="op">(</span><span class="va">seurat_object</span>, dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'seurat_object' not found</span>
 </code></pre></div>
     </div>

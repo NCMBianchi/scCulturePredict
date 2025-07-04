@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,9 +47,31 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="id_0990---2025-06-20">[0.99.0] - 2025-06-20<a class="anchor" aria-label="anchor" href="#id_0990---2025-06-20"></a></h2>
+<h2 id="id_0991---2025-07-04">[0.99.1] - 2025-07-04<a class="anchor" aria-label="anchor" href="#id_0991---2025-07-04"></a></h2>
 <div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<ul><li>BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Fixed all <code>1:n</code> patterns in examples, replaced with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> for BiocCheck compliance</li>
+<li>Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)</li>
+<li>Corrected SVM column name handling in <code><a href="reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>Improved BiocCheck compliance, achieving 0 ERRORS status</li>
+<li>Updated documentation with properly formatted examples</li>
+</ul></div>
+<div class="section level3">
+<h3 id="removed">Removed<a class="anchor" aria-label="anchor" href="#removed"></a></h3>
+<ul><li>Removed temporary helper scripts (<code>fix_coding_practices.R</code>, <code>fix_sapply_todos.R</code>)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_0990---2025-06-20">[0.99.0] - 2025-06-20<a class="anchor" aria-label="anchor" href="#id_0990---2025-06-20"></a></h2>
+<div class="section level3">
+<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
 <div class="section level4">
 <h4 id="core-functionality">Core Functionality<a class="anchor" aria-label="anchor" href="#core-functionality"></a></h4>
 <ul><li>
@@ -107,11 +129,11 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
@@ -130,6 +152,11 @@
 </div>
 <div class="section level3">
 <h3 id="known-issues">Known Issues<a class="anchor" aria-label="anchor" href="#known-issues"></a></h3>
+<div class="section level4">
+<h4 id="documentation-date-discrepancy">Documentation Date Discrepancy<a class="anchor" aria-label="anchor" href="#documentation-date-discrepancy"></a></h4>
+<ul><li>
+<strong>DESCRIPTION file date error</strong>: Version 0.99.0 was erroneously dated as 2024-04-28 in the DESCRIPTION file instead of the correct date 2025-06-20. This has been corrected in version 0.99.1.</li>
+</ul></div>
 <div class="section level4">
 <h4 id="svm-prediction-limitations">SVM Prediction Limitations<a class="anchor" aria-label="anchor" href="#svm-prediction-limitations"></a></h4>
 <ul><li>
@@ -152,7 +179,7 @@
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
-<h3 id="removed">Removed<a class="anchor" aria-label="anchor" href="#removed"></a></h3>
+<h3 id="removed-1">Removed<a class="anchor" aria-label="anchor" href="#removed-1"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 </div>

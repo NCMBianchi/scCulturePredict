@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,28 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_build_mode</span><span class="op">(</span><span class="va">seurat_object</span>, <span class="va">kegg_file</span>, <span class="va">output_dir</span>, <span class="va">progress</span>, <span class="va">pb</span>, <span class="va">verbose</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A list containing the complete results of BUILD mode analysis:</p><dl><dt>seurat_object</dt>
+<dd><p>Seurat object with predictions and evaluation metadata</p></dd>
+
+    <dt>models</dt>
+<dd><p>List containing trained direct and SVM classification models</p></dd>
+
+    <dt>evaluation_results</dt>
+<dd><p>List with accuracy metrics, confusion matrices, and performance statistics</p></dd>
+
+    <dt>plots</dt>
+<dd><p>Named list of generated visualization plots</p></dd>
+
+    <dt>fingerprints</dt>
+<dd><p>Matrix of calculated transcriptomic fingerprints for each culture condition</p></dd>
+
+    <dt>pathway_activities</dt>
+<dd><p>Matrix of pathway activity scores used for training</p></dd>
+
+
+</dl></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
