@@ -1,3 +1,11 @@
+# scCulturePredict 0.99.6 (2025-07-31)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Added missing system dependencies (libfontconfig1-dev, libfreetype6-dev, libpng-dev, libharfbuzz-dev, libfribidi-dev) required for Seurat installation
+* Fixed package installation failures caused by missing system libraries for graphics packages
+
 # scCulturePredict 0.99.5 (2025-07-31)
 
 ## GitHub Actions Improvements
