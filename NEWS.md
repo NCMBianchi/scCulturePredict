@@ -1,3 +1,12 @@
+# scCulturePredict 0.99.4 (2025-07-31)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Fixed GitHub Actions workflow to properly install all package dependencies before running checks
+* Improved dependency installation order to ensure BiocManager packages are available
+* Enhanced workflow reliability for automated testing and validation
+
 # scCulturePredict 0.99.3 (2025-07-31)
 
 ## Compatibility Improvements

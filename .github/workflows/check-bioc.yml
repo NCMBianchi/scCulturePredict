@@ -32,9 +32,11 @@ jobs:
 
       - name: Install package dependencies
         run: |
-          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE)"
-          R -e "BiocManager::install(ask = FALSE)"
           R -e "install.packages(c('devtools', 'remotes'))"
+          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE)"
+          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'e1071', 'caret', 'reshape2', 'parallel', 'doParallel', 'methods', 'stats', 'utils', 'tools'), update = FALSE)"
+          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE)"
+          R -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
 
       - name: Check package
         run: |
