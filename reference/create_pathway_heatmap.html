@@ -121,32 +121,32 @@ If NULL, uses all cells (default: NULL).</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="co"># Basic usage</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">create_pathway_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
-<span class="r-in"><span>  pathway_results <span class="op">=</span> <span class="va">pathway_results</span></span></span>
+<span class="r-in"><span>    seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
+<span class="r-in"><span>    pathway_results <span class="op">=</span> <span class="va">pathway_results</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'seurat_obj' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show top 10 pathways</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">create_pathway_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
-<span class="r-in"><span>  pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
-<span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">10</span></span></span>
+<span class="r-in"><span>    seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
+<span class="r-in"><span>    pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
+<span class="r-in"><span>    top_n <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'seurat_obj' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use specific cells</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">create_pathway_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
-<span class="r-in"><span>  pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
-<span class="r-in"><span>  cells.use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell1"</span>, <span class="st">"cell2"</span>, <span class="st">"cell3"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
+<span class="r-in"><span>    pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
+<span class="r-in"><span>    cells.use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell1"</span>, <span class="st">"cell2"</span>, <span class="st">"cell3"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'seurat_obj' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Custom title</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">create_pathway_heatmap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
-<span class="r-in"><span>  pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
-<span class="r-in"><span>  title <span class="op">=</span> <span class="st">"My Custom Heatmap"</span></span></span>
+<span class="r-in"><span>    seurat_obj <span class="op">=</span> <span class="va">seurat_obj</span>,</span></span>
+<span class="r-in"><span>    pathway_results <span class="op">=</span> <span class="va">pathway_results</span>,</span></span>
+<span class="r-in"><span>    title <span class="op">=</span> <span class="st">"My Custom Heatmap"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'seurat_obj' not found</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

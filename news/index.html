@@ -43,6 +43,23 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.2" id="scculturepredict-0992-2025-07-31">scCulturePredict 0.99.2 (2025-07-31)<a class="anchor" aria-label="anchor" href="#scculturepredict-0992-2025-07-31"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-and-improvements-0-99-2">Bug Fixes and Improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-improvements-0-99-2"></a></h3>
+<div class="section level4">
+<h4 id="critical-fixes-0-99-2">Critical Fixes<a class="anchor" aria-label="anchor" href="#critical-fixes-0-99-2"></a></h4>
+<ul><li>Fixed syntax error in <code>train_cell_type_classifier</code> function where <code>seq_len(min)(n_features, nrow(feature_importance))</code> was incorrectly parenthesized</li>
+<li>Fixed <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> calls in <code>build_fingerprints</code> and <code>calculate_pathway_activities</code> functions by changing to <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> for variable-length outputs</li>
+<li>Restored accidentally removed F1 score calculation block in <code>evaluate_cell_type_predictions</code> function</li>
+</ul></div>
+<div class="section level4">
+<h4 id="bioccheck-improvements-0-99-2">BiocCheck Improvements<a class="anchor" aria-label="anchor" href="#bioccheck-improvements-0-99-2"></a></h4>
+<ul><li>Achieved 0 ERRORS status in BiocCheck validation, ensuring GitHub Actions compatibility</li>
+<li>Improved code indentation compliance using styler package (reduced from 12% to 5% non-compliant lines)</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.1" id="scculturepredict-0991-2025-07-04">scCulturePredict 0.99.1 (2025-07-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-0991-2025-07-04"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-and-improvements-0-99-1">Bug Fixes and Improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-improvements-0-99-1"></a></h3>
