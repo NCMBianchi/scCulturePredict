@@ -30,13 +30,38 @@ jobs:
         run: |
           R -e "install.packages('BiocManager')"
 
-      - name: Install package dependencies
+      - name: Install devtools and remotes
         run: |
           R -e "install.packages(c('devtools', 'remotes'))"
-          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE)"
-          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'e1071', 'caret', 'reshape2', 'parallel', 'doParallel', 'methods', 'stats', 'utils', 'tools'), update = FALSE)"
-          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE)"
+
+      - name: Install BiocCheck and documentation packages
+        run: |
+          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown'), update = FALSE, ask = FALSE)"
+
+      - name: Install linting and coverage packages
+        run: |
+          R -e "BiocManager::install(c('covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE)"
+
+      - name: Install core dependencies
+        run: |
+          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2'), update = FALSE, ask = FALSE)"
+
+      - name: Install ML packages
+        run: |
+          R -e "BiocManager::install(c('e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE)"
+
+      - name: Install suggested packages
+        run: |
+          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE)"
+
+      - name: Install remaining dependencies
+        run: |
           R -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
+
+      - name: Check package installation
+        run: |
+          R -e "if (!requireNamespace('scCulturePredict', quietly = TRUE)) { install.packages('.', repos = NULL, type = 'source') }"
+          R -e "library(scCulturePredict)"
 
       - name: Check package
         run: |

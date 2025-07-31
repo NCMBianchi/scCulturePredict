@@ -1,3 +1,14 @@
+# scCulturePredict 0.99.5 (2025-07-31)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Fixed GitHub Actions workflow by removing base R packages (parallel, methods, stats, utils, tools) from BiocManager installation commands
+* Split dependency installation into smaller, more manageable steps for better error tracking
+* Added explicit package installation check before running BiocCheck
+* Added `ask = FALSE` parameter to BiocManager::install() calls to prevent interactive prompts
+* Improved workflow reliability with step-by-step installation and error handling
+
 # scCulturePredict 0.99.4 (2025-07-31)
 
 ## GitHub Actions Improvements
