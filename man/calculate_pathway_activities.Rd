@@ -39,14 +39,14 @@ seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
 
 # Create mock pathways
 mock_pathways <- list(
-  Pathway1 = paste0("Gene", seq_len(20)),
-  Pathway2 = paste0("Gene", 21:40),
-  Pathway3 = paste0("Gene", 41:60)
+    Pathway1 = paste0("Gene", seq_len(20)),
+    Pathway2 = paste0("Gene", 21:40),
+    Pathway3 = paste0("Gene", 41:60)
 )
 
 # Calculate pathway activities
 pathway_activities <- calculate_pathway_activities(
-  seurat_obj, mock_pathways,
-  verbose = FALSE
+    seurat_obj, mock_pathways,
+    verbose = FALSE
 )
 }

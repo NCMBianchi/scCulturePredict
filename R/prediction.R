@@ -549,7 +549,7 @@ train_cell_type_classifier <- function(seurat_object,
         }
     )
 
-    top_features <- rownames(feature_importance)[seq_len(min)(n_features, nrow(feature_importance))]
+    top_features <- rownames(feature_importance)[seq_len(min(n_features, nrow(feature_importance)))]
     training_data <- training_data[, top_features]
 
     # Perform cross-validation

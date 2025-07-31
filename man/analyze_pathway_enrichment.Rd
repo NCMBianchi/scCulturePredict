@@ -58,12 +58,12 @@ The function performs the following steps:
 \examples{
 # Example with mock pathway activity matrix
 pathway_activities <- matrix(
-  rnorm(150),
-  nrow = 15,
-  dimnames = list(
-    paste0("Pathway", seq_len(15)),
-    paste0("Sample", seq_len(10))
-  )
+    rnorm(150),
+    nrow = 15,
+    dimnames = list(
+        paste0("Pathway", seq_len(15)),
+        paste0("Sample", seq_len(10))
+    )
 )
 plot <- create_pathway_heatmap(pathway_activities)
 }

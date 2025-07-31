@@ -1,3 +1,16 @@
+# scCulturePredict 0.99.2 (2025-07-31)
+
+## Bug Fixes and Improvements
+
+### Critical Fixes
+* Fixed syntax error in `train_cell_type_classifier` function where `seq_len(min)(n_features, nrow(feature_importance))` was incorrectly parenthesized
+* Fixed `vapply()` calls in `build_fingerprints` and `calculate_pathway_activities` functions by changing to `lapply()` for variable-length outputs
+* Restored accidentally removed F1 score calculation block in `evaluate_cell_type_predictions` function
+
+### BiocCheck Improvements
+* Achieved 0 ERRORS status in BiocCheck validation, ensuring GitHub Actions compatibility
+* Improved code indentation compliance using styler package (reduced from 12% to 5% non-compliant lines)
+
 # scCulturePredict 0.99.1 (2025-07-04)
 
 ## Bug Fixes and Improvements
