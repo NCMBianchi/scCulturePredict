@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,15 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
+<h2 id="id_0994---2025-07-31">[0.99.4] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0994---2025-07-31"></a></h2>
+<div class="section level3">
+<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Fixed GitHub Actions workflow to properly install all package dependencies before running checks</li>
+<li>Improved dependency installation order to ensure BiocManager packages are available</li>
+<li>Enhanced workflow reliability for automated testing and validation</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="id_0993---2025-07-31">[0.99.3] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0993---2025-07-31"></a></h2>
 <div class="section level3">
 <h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
@@ -56,7 +65,7 @@
 <div class="section level2">
 <h2 id="id_0992---2025-07-31">[0.99.2] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0992---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
 <ul><li>Fixed syntax error in <code>train_cell_type_classifier</code> function where <code>seq_len(min)(...)</code> was incorrectly parenthesized</li>
 <li>Fixed <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> calls in <code>build_fingerprints</code> and <code>calculate_pathway_activities</code> functions by changing to <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> for variable-length outputs</li>
 <li>Restored accidentally removed F1 score calculation block in <code>evaluate_cell_type_predictions</code> function</li>
@@ -74,7 +83,7 @@
 <ul><li>BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
 </ul></div>
 <div class="section level3">
-<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
+<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
 <ul><li>Fixed all <code>1:n</code> patterns in examples, replaced with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> for BiocCheck compliance</li>
 <li>Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)</li>
 <li>Corrected SVM column name handling in <code><a href="reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
@@ -150,7 +159,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
+<h3 id="fixed-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-3"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
