@@ -1,3 +1,10 @@
+# scCulturePredict 0.99.3 (2025-07-31)
+
+## Compatibility Improvements
+
+### R Version Requirement
+* Lowered R version requirement from 4.4.0 to 4.3.0 for broader compatibility with GitHub Actions and CI/CD environments
+
 # scCulturePredict 0.99.2 (2025-07-31)
 
 ## Bug Fixes and Improvements
