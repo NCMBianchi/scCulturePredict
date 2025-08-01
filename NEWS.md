@@ -1,3 +1,14 @@
+# scCulturePredict 0.99.9 (2025-08-01)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Fixed empty log issues by reverting from Rscript to R -e for better command execution
+* Changed R CMD check to use rcmdcheck::rcmdcheck() directly to avoid devtools dependency
+* Updated test runner to use testthat::test_local() instead of devtools::test()
+* Ensured devtools is installed as a suggested package for development environments
+* Reformatted system dependencies installation for better readability
+
 # scCulturePredict 0.99.8 (2025-08-01)
 
 ## GitHub Actions Improvements

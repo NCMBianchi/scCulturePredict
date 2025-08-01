@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.9] - 2025-08-01
+
+### Fixed
+- Fixed empty log issues by reverting from Rscript to R -e for better command execution
+- Changed R CMD check to use rcmdcheck::rcmdcheck() directly to avoid devtools dependency
+- Updated test runner to use testthat::test_local() instead of devtools::test()
+- Ensured devtools is installed as a suggested package for development environments
+- Reformatted system dependencies installation for better readability
+
 ## [0.99.8] - 2025-08-01
 
 ### Fixed
