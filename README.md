@@ -226,7 +226,7 @@ If you use scCulturePredict in your research, please cite (bibtex format):
   title = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},
   author = {Niccolò Bianchi},
   year = {2025},
-  note = {R package version 0.99.12},
+  note = {R package version 0.99.13},
   url = {https://github.com/ncmbianchi/scCulturePredict},
 }
 ```

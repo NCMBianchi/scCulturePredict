@@ -1,3 +1,13 @@
+# scCulturePredict 0.99.13 (2025-08-01)
+
+## Workflow Debugging and Fixes
+
+### GitHub Actions Workflow
+* Debugging multi-OS workflow failures from version 0.99.12
+* Investigating container availability and R version compatibility
+* Addressing platform-specific dependency installation issues
+* Working to resolve BiocManager and repository configuration problems
+
 # scCulturePredict 0.99.12 (2025-08-01)
 
 ## Bioconductor-Specific CI/CD Updates
