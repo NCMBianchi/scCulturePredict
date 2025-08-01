@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.11] - 2025-08-01
+
+### Fixed
+- Rewrote GitHub Actions workflow using r-lib/actions best practices
+- Replaced manual package installation with r-lib/actions/setup-r-dependencies
+- Used r-lib/actions/check-r-package for standardized R CMD check
+- Simplified BiocCheck execution with direct Rscript calls
+- Improved workflow reliability and maintainability
+
 ## [0.99.10] - 2025-08-01
 
 ### Fixed

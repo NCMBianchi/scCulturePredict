@@ -1,3 +1,14 @@
+# scCulturePredict 0.99.11 (2025-08-01)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Rewrote GitHub Actions workflow using r-lib/actions best practices
+* Replaced manual package installation with r-lib/actions/setup-r-dependencies
+* Used r-lib/actions/check-r-package for standardized R CMD check
+* Simplified BiocCheck execution with direct Rscript calls
+* Improved workflow reliability and maintainability
+
 # scCulturePredict 0.99.10 (2025-08-01)
 
 ## GitHub Actions Improvements

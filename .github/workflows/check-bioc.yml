@@ -1,28 +1,30 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 name: R-CMD-check-BiocCheck
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   pull_request:
-    branches:
-      - main
-      - master
+    branches: [main, master]
 
 jobs:
-  BiocCheck:
+  R-CMD-check:
     runs-on: ubuntu-latest
     env:
-      R_LIBS_USER: ${{ github.workspace }}/R/library
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
       _R_CHECK_FORCE_SUGGESTS_: false
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: "4.3"
+          use-public-rspm: true
 
       - name: Install system dependencies
         run: |
@@ -35,66 +37,54 @@ jobs:
             libfreetype6-dev \
             libpng-dev \
             libharfbuzz-dev \
-            libfribidi-dev \
-            pandoc
+            libfribidi-dev
 
-      - name: Install BiocManager
-        run: |
-          R -e "install.packages('BiocManager')"
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            any::BiocManager
+            bioc::BiocCheck
+            any::devtools
+            any::covr
+          needs: check
 
-      - name: Install all package dependencies
-        run: |
-          R -e "install.packages('remotes', repos = 'https://cran.rstudio.com/')"
-          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE)"
-          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2', 'e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE)"
-          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE)"
-          R -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
-          R -e "install.packages('devtools', repos = 'https://cran.rstudio.com/')"
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
 
-      - name: Check package installation
+      - name: Run BiocCheck
         run: |
-          R -e "if (!requireNamespace('scCulturePredict', quietly = TRUE)) { install.packages('.', repos = NULL, type = 'source') }"
-          R -e "library(scCulturePredict)"
-
-      - name: Check package
-        run: |
-          R -e "BiocCheck::BiocCheck('.')"
-
-      - name: R CMD check
-        run: |
-          R -e "rcmdcheck::rcmdcheck(error_on = 'warning', check_dir = 'check')"
+          BiocCheck::BiocCheck(
+            package = ".",
+            `quit-with-status` = FALSE,
+            `no-check-R-ver` = TRUE,
+            `no-check-bioc-help` = TRUE
+          )
+        shell: Rscript {0}
 
       - name: Run tests
+        if: always()
         run: |
-          R -e "if (requireNamespace('testthat', quietly = TRUE)) { testthat::test_local() }"
+          testthat::test_local()
+        shell: Rscript {0}
 
-      - name: Build vignettes
+      - name: Calculate coverage
+        if: always()
         run: |
-          R -e "devtools::build_vignettes()"
-
-      - name: Run code coverage
-        run: |
-          R -e "covr::package_coverage()"
-          R -e "covr_report <- covr::report(covr::package_coverage()); dir.create('coverage_report', showWarnings = FALSE); saveRDS(covr_report, 'coverage_report/coverage.rds')"
-
-      - name: Run linting checks
-        run: |
-          R -e "lintr::lint_package()"
+          covr::package_coverage()
+        shell: Rscript {0}
 
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: check-results
-          path: .
+          path: check
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage_report/
-
-      - name: Codecov
+      - name: Upload coverage reports
+        if: always()
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
