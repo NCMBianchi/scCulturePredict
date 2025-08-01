@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.12] - 2025-08-01
+
+### Changed
+- Switched to Bioconductor-specific GitHub Actions workflow based on biocthis package template
+- Added multi-OS testing support (Linux with Bioconductor Docker, macOS, Windows)
+- Integrated proper BiocCheck execution into the workflow
+- Uses Bioconductor package repositories and versioning system
+- Maintains compatibility with Bioconductor 3.18 and R 4.3
+
+### Fixed
+- Temporarily disabled code coverage to fix workflow failures (pending Codecov token setup)
+
 ## [0.99.11] - 2025-08-01
 
 ### Fixed

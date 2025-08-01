@@ -1,3 +1,15 @@
+# scCulturePredict 0.99.12 (2025-08-01)
+
+## Bioconductor-Specific CI/CD Updates
+
+### GitHub Actions Workflow
+* Switched to Bioconductor-specific workflow based on biocthis package template
+* Added multi-OS testing support (Linux with Bioconductor Docker, macOS, Windows)
+* Integrated proper BiocCheck execution into the workflow
+* Uses Bioconductor package repositories and versioning
+* Temporarily disabled code coverage (pending Codecov token setup)
+* Maintains compatibility with Bioconductor 3.18 and R 4.3
+
 # scCulturePredict 0.99.11 (2025-08-01)
 
 ## GitHub Actions Improvements
