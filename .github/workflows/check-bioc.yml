@@ -13,6 +13,9 @@ on:
 jobs:
   BiocCheck:
     runs-on: ubuntu-latest
+    env:
+      R_LIBS_USER: ${{ github.workspace }}/R/library
+      _R_CHECK_FORCE_SUGGESTS_: false
     steps:
       - uses: actions/checkout@v4
 

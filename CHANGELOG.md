@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.10] - 2025-08-01
+
+### Fixed
+- Added _R_CHECK_FORCE_SUGGESTS_=false environment variable to fix R CMD check error
+- Fixed "Package suggested but not available: 'devtools'" error during package checking
+- Set explicit R_LIBS_USER path for consistent package installation
+
 ## [0.99.9] - 2025-08-01
 
 ### Fixed

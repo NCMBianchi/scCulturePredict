@@ -1,3 +1,12 @@
+# scCulturePredict 0.99.10 (2025-08-01)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Added _R_CHECK_FORCE_SUGGESTS_=false environment variable to fix R CMD check error
+* Fixed "Package suggested but not available: 'devtools'" error during package checking
+* Set explicit R_LIBS_USER path for consistent package installation
+
 # scCulturePredict 0.99.9 (2025-08-01)
 
 ## GitHub Actions Improvements
