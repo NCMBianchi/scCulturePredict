@@ -30,33 +30,14 @@ jobs:
         run: |
           R -e "install.packages('BiocManager')"
 
-      - name: Install devtools and remotes
+      - name: Install all package dependencies
         run: |
-          R -e "install.packages(c('devtools', 'remotes'))"
-
-      - name: Install BiocCheck and documentation packages
-        run: |
-          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown'), update = FALSE, ask = FALSE)"
-
-      - name: Install linting and coverage packages
-        run: |
-          R -e "BiocManager::install(c('covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE)"
-
-      - name: Install core dependencies
-        run: |
-          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2'), update = FALSE, ask = FALSE)"
-
-      - name: Install ML packages
-        run: |
-          R -e "BiocManager::install(c('e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE)"
-
-      - name: Install suggested packages
-        run: |
-          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE)"
-
-      - name: Install remaining dependencies
-        run: |
+          R -e "install.packages(c('remotes'), repos = 'https://cran.rstudio.com/')"
+          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE, force = TRUE)"
+          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2', 'e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE, force = TRUE)"
+          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE, force = TRUE)"
           R -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
+          R -e "install.packages('devtools', repos = 'https://cran.rstudio.com/')"
 
       - name: Check package installation
         run: |
@@ -69,7 +50,7 @@ jobs:
 
       - name: R CMD check
         run: |
-          R -e "devtools::check()"
+          R -e "if (requireNamespace('devtools', quietly = TRUE)) { devtools::check() } else { message('devtools not available, skipping R CMD check'); rcmdcheck::rcmdcheck() }"
 
       - name: Run tests
         run: |

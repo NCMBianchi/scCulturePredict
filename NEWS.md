@@ -1,3 +1,12 @@
+# scCulturePredict 0.99.7 (2025-07-31)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Consolidated package installation steps to ensure devtools is installed properly
+* Made R CMD check step more robust by using rcmdcheck as fallback
+* Fixed workflow execution issues causing empty installation logs
+
 # scCulturePredict 0.99.6 (2025-07-31)
 
 ## GitHub Actions Improvements
