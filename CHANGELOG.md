@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.14] - 2025-08-01
+
+### Changed
+- Removed Docker container approach for Linux to fix setup failures
+- Simplified workflow to use standard R setup across all platforms
+- Updated to Bioconductor 3.19 (current release) from 3.18
+
+### Fixed
+- Fixed infrastructure issues preventing tests from running
+- Maintained R 4.3 compatibility as established in version 0.99.3
+- Ensured consistent setup process for Ubuntu, macOS, and Windows
+
 ## [0.99.13] - 2025-08-01
 
 ### Fixed

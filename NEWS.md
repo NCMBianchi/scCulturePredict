@@ -1,3 +1,15 @@
+# scCulturePredict 0.99.14 (2025-08-01)
+
+## Simplified Workflow for Better Reliability
+
+### GitHub Actions Workflow
+* Removed Docker container approach for Linux to fix setup failures
+* Simplified workflow to use standard R setup across all platforms
+* Updated to Bioconductor 3.19 (current release) from 3.18
+* Maintained R 4.3 compatibility as established in version 0.99.3
+* Fixed infrastructure issues preventing tests from running
+* Ensured consistent setup process for Ubuntu, macOS, and Windows
+
 # scCulturePredict 0.99.13 (2025-08-01)
 
 ## Workflow Debugging and Fixes
