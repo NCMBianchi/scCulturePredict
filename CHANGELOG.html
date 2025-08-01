@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,9 +47,20 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="id_09910---2025-08-01">[0.99.10] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_09910---2025-08-01"></a></h2>
+<h2 id="id_09911---2025-08-01">[0.99.11] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_09911---2025-08-01"></a></h2>
 <div class="section level3">
 <h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Rewrote GitHub Actions workflow using r-lib/actions best practices</li>
+<li>Replaced manual package installation with r-lib/actions/setup-r-dependencies</li>
+<li>Used r-lib/actions/check-r-package for standardized R CMD check</li>
+<li>Simplified BiocCheck execution with direct Rscript calls</li>
+<li>Improved workflow reliability and maintainability</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_09910---2025-08-01">[0.99.10] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_09910---2025-08-01"></a></h2>
+<div class="section level3">
+<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
 <ul><li>Added <em>R_CHECK_FORCE_SUGGESTS</em>=false environment variable to fix R CMD check error</li>
 <li>Fixed “Package suggested but not available: ‘devtools’” error during package checking</li>
 <li>Set explicit R_LIBS_USER path for consistent package installation</li>
@@ -58,7 +69,7 @@
 <div class="section level2">
 <h2 id="id_0999---2025-08-01">[0.99.9] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_0999---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
+<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
 <ul><li>Fixed empty log issues by reverting from Rscript to R -e for better command execution</li>
 <li>Changed R CMD check to use rcmdcheck::rcmdcheck() directly to avoid devtools dependency</li>
 <li>Updated test runner to use testthat::test_local() instead of devtools::test()</li>
@@ -69,7 +80,7 @@
 <div class="section level2">
 <h2 id="id_0998---2025-08-01">[0.99.8] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_0998---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
+<h3 id="fixed-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-3"></a></h3>
 <ul><li>Added pandoc to system dependencies for vignette building</li>
 <li>Changed R -e to Rscript -e for more reliable command execution</li>
 <li>Removed force = TRUE parameter from BiocManager::install() calls</li>
@@ -79,7 +90,7 @@
 <div class="section level2">
 <h2 id="id_0997---2025-07-31">[0.99.7] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0997---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-3"></a></h3>
+<h3 id="fixed-4">Fixed<a class="anchor" aria-label="anchor" href="#fixed-4"></a></h3>
 <ul><li>Consolidated package installation steps to ensure devtools is installed properly</li>
 <li>Made R CMD check step more robust by using rcmdcheck as fallback</li>
 <li>Fixed workflow execution issues causing empty installation logs</li>
@@ -88,7 +99,7 @@
 <div class="section level2">
 <h2 id="id_0996---2025-07-31">[0.99.6] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0996---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-4">Fixed<a class="anchor" aria-label="anchor" href="#fixed-4"></a></h3>
+<h3 id="fixed-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-5"></a></h3>
 <ul><li>Added missing system dependencies (libfontconfig1-dev, libfreetype6-dev, libpng-dev, libharfbuzz-dev, libfribidi-dev) required for Seurat installation</li>
 <li>Fixed package installation failures caused by missing system libraries for graphics packages</li>
 </ul></div>
@@ -96,7 +107,7 @@
 <div class="section level2">
 <h2 id="id_0995---2025-07-31">[0.99.5] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0995---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-5"></a></h3>
+<h3 id="fixed-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-6"></a></h3>
 <ul><li>Fixed GitHub Actions workflow by removing base R packages (parallel, methods, stats, utils, tools) from BiocManager installation commands</li>
 <li>Split dependency installation into smaller, more manageable steps for better error tracking</li>
 <li>Added explicit package installation check before running BiocCheck</li>
@@ -107,7 +118,7 @@
 <div class="section level2">
 <h2 id="id_0994---2025-07-31">[0.99.4] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0994---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-6"></a></h3>
+<h3 id="fixed-7">Fixed<a class="anchor" aria-label="anchor" href="#fixed-7"></a></h3>
 <ul><li>Fixed GitHub Actions workflow to properly install all package dependencies before running checks</li>
 <li>Improved dependency installation order to ensure BiocManager packages are available</li>
 <li>Enhanced workflow reliability for automated testing and validation</li>
@@ -123,7 +134,7 @@
 <div class="section level2">
 <h2 id="id_0992---2025-07-31">[0.99.2] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0992---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-7">Fixed<a class="anchor" aria-label="anchor" href="#fixed-7"></a></h3>
+<h3 id="fixed-8">Fixed<a class="anchor" aria-label="anchor" href="#fixed-8"></a></h3>
 <ul><li>Fixed syntax error in <code>train_cell_type_classifier</code> function where <code>seq_len(min)(...)</code> was incorrectly parenthesized</li>
 <li>Fixed <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> calls in <code>build_fingerprints</code> and <code>calculate_pathway_activities</code> functions by changing to <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> for variable-length outputs</li>
 <li>Restored accidentally removed F1 score calculation block in <code>evaluate_cell_type_predictions</code> function</li>
@@ -141,7 +152,7 @@
 <ul><li>BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
 </ul></div>
 <div class="section level3">
-<h3 id="fixed-8">Fixed<a class="anchor" aria-label="anchor" href="#fixed-8"></a></h3>
+<h3 id="fixed-9">Fixed<a class="anchor" aria-label="anchor" href="#fixed-9"></a></h3>
 <ul><li>Fixed all <code>1:n</code> patterns in examples, replaced with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> for BiocCheck compliance</li>
 <li>Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)</li>
 <li>Corrected SVM column name handling in <code><a href="reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
@@ -217,7 +228,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="fixed-9">Fixed<a class="anchor" aria-label="anchor" href="#fixed-9"></a></h3>
+<h3 id="fixed-10">Fixed<a class="anchor" aria-label="anchor" href="#fixed-10"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
