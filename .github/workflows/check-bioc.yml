@@ -24,7 +24,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libharfbuzz-dev libfribidi-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libfreetype6-dev libpng-dev libharfbuzz-dev libfribidi-dev pandoc
 
       - name: Install BiocManager
         run: |
@@ -32,12 +32,11 @@ jobs:
 
       - name: Install all package dependencies
         run: |
-          R -e "install.packages(c('remotes'), repos = 'https://cran.rstudio.com/')"
-          R -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE, force = TRUE)"
-          R -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2', 'e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE, force = TRUE)"
-          R -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE, force = TRUE)"
-          R -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
-          R -e "install.packages('devtools', repos = 'https://cran.rstudio.com/')"
+          Rscript -e "install.packages(c('remotes', 'devtools'), repos = 'https://cran.rstudio.com/')"
+          Rscript -e "BiocManager::install(c('BiocCheck', 'BiocStyle', 'testthat', 'knitr', 'rmarkdown', 'covr', 'rcmdcheck', 'lintr', 'styler'), update = FALSE, ask = FALSE)"
+          Rscript -e "BiocManager::install(c('Seurat', 'dplyr', 'ggplot2', 'reshape2', 'e1071', 'caret', 'doParallel'), update = FALSE, ask = FALSE)"
+          Rscript -e "BiocManager::install(c('PRROC', 'R.utils', 'pROC', 'randomForest', 'xgboost'), update = FALSE, ask = FALSE)"
+          Rscript -e "remotes::install_deps(dependencies = TRUE, upgrade = 'never')"
 
       - name: Check package installation
         run: |

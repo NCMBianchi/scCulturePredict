@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.8] - 2025-08-01
+
+### Fixed
+- Added pandoc to system dependencies for vignette building
+- Changed R -e to Rscript -e for more reliable command execution
+- Removed force = TRUE parameter from BiocManager::install() calls
+- Fixed package installation workflow to ensure all dependencies are properly installed
+
 ## [0.99.7] - 2025-07-31
 
 ### Fixed

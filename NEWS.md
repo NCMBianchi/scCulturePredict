@@ -1,3 +1,13 @@
+# scCulturePredict 0.99.8 (2025-08-01)
+
+## GitHub Actions Improvements
+
+### CI/CD Workflow
+* Added pandoc to system dependencies for vignette building
+* Changed R -e to Rscript -e for more reliable command execution
+* Removed force = TRUE parameter from BiocManager::install() calls
+* Fixed package installation workflow to ensure all dependencies are properly installed
+
 # scCulturePredict 0.99.7 (2025-07-31)
 
 ## GitHub Actions Improvements
