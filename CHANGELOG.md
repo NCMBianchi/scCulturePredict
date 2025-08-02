@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.15] - 2025-08-01
+
+### Changed
+- Reverted to simpler r-lib/actions workflow that worked in versions 0.99.8-11
+- Removed complex biocthis workflow that was causing early setup failures
+- Simplified dependency installation to single-pass approach
+- Removed Docker containers and complex caching mechanisms
+
+### Fixed
+- Maintained BiocCheck integration for Bioconductor compliance
+- Tests should now run successfully as in earlier versions
+
 ## [0.99.14] - 2025-08-01
 
 ### Changed

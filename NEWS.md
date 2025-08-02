@@ -1,3 +1,15 @@
+# scCulturePredict 0.99.15 (2025-08-01)
+
+## Return to Proven r-lib/actions Workflow
+
+### GitHub Actions Workflow
+* Reverted to simpler r-lib/actions workflow that worked in versions 0.99.8-11
+* Removed complex biocthis workflow that was causing early setup failures
+* Maintained BiocCheck integration for Bioconductor compliance
+* Simplified dependency installation to single-pass approach
+* Removed Docker containers and complex caching mechanisms
+* Tests should now run successfully as in earlier versions
+
 # scCulturePredict 0.99.14 (2025-08-01)
 
 ## Simplified Workflow for Better Reliability
