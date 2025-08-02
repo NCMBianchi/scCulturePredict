@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.16] - 2025-08-01
+
+### Changed
+- Created minimal, focused workflow to diagnose persistent setup failures
+- Single OS testing (Ubuntu only) to reduce complexity
+- Direct package installation without r-lib/actions/setup-r-dependencies
+- Removed all non-essential features (multi-OS, coverage, caching)
+- Focus on getting basic R CMD check and BiocCheck working
+- If successful, will gradually add features back
+
 ## [0.99.15] - 2025-08-01
 
 ### Changed
