@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,30 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.18" id="scculturepredict-09918-2025-08-04">scCulturePredict 0.99.18 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09918-2025-08-04"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-and-code-improvements-0-99-18">Bug Fixes and Code Improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-code-improvements-0-99-18"></a></h3>
+<div class="section level4">
+<h4 id="fixed-function-documentation-0-99-18">Fixed Function Documentation<a class="anchor" aria-label="anchor" href="#fixed-function-documentation-0-99-18"></a></h4>
+<ul><li>Fixed analyze_pathway_activity example that used incorrect parameter names</li>
+<li>Example was using <code>group_by</code> parameter that doesn’t exist in function signature</li>
+<li>Updated example to use correct function parameters: seurat_object, pathway_results, condition</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-test-suite-issues-0-99-18">Fixed Test Suite Issues<a class="anchor" aria-label="anchor" href="#fixed-test-suite-issues-0-99-18"></a></h4>
+<ul><li>Fixed create_mock_data function that was deleting test directories prematurely</li>
+<li>Removed on.exit cleanup that was causing “Data directory not found” errors</li>
+<li>Fixed save_visualization_plots tests to handle verbose messages correctly</li>
+<li>Tests now pass verbose=FALSE to avoid expected messages</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-missing-dependencies-0-99-18">Fixed Missing Dependencies<a class="anchor" aria-label="anchor" href="#fixed-missing-dependencies-0-99-18"></a></h4>
+<ul><li>Added patchwork to Suggests in DESCRIPTION</li>
+<li>Package is used in visualization vignette examples</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.17" id="scculturepredict-09917-2025-08-04">scCulturePredict 0.99.17 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09917-2025-08-04"></a></h2>
 <div class="section level3">
