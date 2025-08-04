@@ -1,3 +1,22 @@
+# scCulturePredict 0.99.22 (2025-08-04)
+
+## Bug Fixes
+
+### Fixed BiocCheck Parse Error
+* Removed extra closing parenthesis in scCulture() function examples
+* This was causing "unexpected ')'" error during BiocCheck
+* Examples now parse correctly without syntax errors
+
+### Fixed Test Suite Issues
+* Fixed sparse matrix handling in test-pipeline.R
+* Changed colSums() to Matrix::colSums() for sparse matrix compatibility
+* Resolves test failures related to matrix dimension errors
+
+### Documentation Updates
+* Updated introduction vignette to use correct function name (scCulture instead of scumap)
+* Added @keywords internal to internal functions to suppress roxygen2 warnings
+* Regenerated all documentation with roxygen2::roxygenise()
+
 # scCulturePredict 0.99.21 (2025-08-04)
 
 ## Bug Fixes

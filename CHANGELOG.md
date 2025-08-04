@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.22] - 2025-08-04
+
+### Fixed
+- Fixed BiocCheck parse error by removing extra closing parenthesis in scCulture() function examples
+- Fixed sparse matrix handling in test-pipeline.R by using Matrix::colSums() for sparse matrix compatibility
+- Updated introduction vignette to use correct function name (scCulture instead of scumap)
+- Added @keywords internal to internal functions to suppress roxygen2 warnings
+- Regenerated all documentation with roxygen2::roxygenise()
+
 ## [0.99.21] - 2025-08-04
 
 ### Fixed

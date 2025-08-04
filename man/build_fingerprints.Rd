@@ -32,22 +32,21 @@ counts <- matrix(rpois(2000, 5), nrow = 200)
 rownames(counts) <- paste0("Gene", seq_len(200))
 colnames(counts) <- paste0("Cell", seq_len(10))
 metadata <- data.frame(
-    row.names = colnames(counts),
-    culture = rep(c("TypeA", "TypeB"), each = 5)
+  row.names = colnames(counts),
+  culture = rep(c("TypeA", "TypeB"), each = 5)
 )
 seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 
 # Create mock pathway database
 pathways <- list(
-    Pathway1 = sample(rownames(counts), 10),
-    Pathway2 = sample(rownames(counts), 15),
-    Pathway3 = sample(rownames(counts), 12)
+  Pathway1 = sample(rownames(counts), 10),
+  Pathway2 = sample(rownames(counts), 15),
+  Pathway3 = sample(rownames(counts), 12)
 )
 
 # Build fingerprints
 fingerprints <- build_fingerprints(
-    seurat_obj,
-    group_by = "culture",
-    pathways = pathways
+  seurat_obj,
+  kegg_pathways = pathways
 )
 }

@@ -61,15 +61,15 @@ informative error messages for common issues.
 # Example with mock scCulture results
 # Create mock result structure
 mock_results <- list(
-    predictions = data.frame(
-        cell_id = paste0("Cell", seq_len(100)),
-        predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
-        confidence = runif(100, 0.6, 0.95)
-    ),
-    umap_coords = data.frame(
-        UMAP_1 = rnorm(100),
-        UMAP_2 = rnorm(100)
-    )
+  predictions = data.frame(
+    cell_id = paste0("Cell", seq_len(100)),
+    predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
+    confidence = runif(100, 0.6, 0.95)
+  ),
+  umap_coords = data.frame(
+    UMAP_1 = rnorm(100),
+    UMAP_2 = rnorm(100)
+  )
 )
 class(mock_results) <- "scCulture"
 

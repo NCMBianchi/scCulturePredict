@@ -124,11 +124,19 @@ Output files automatically saved to \code{output_dir}:
 }
 \examples{
 # Build mode - generate fingerprints from labeled training data
+# Using default KEGG file
 training_results <- scCulture(
-    data_dir = "./DATA_labeled",
-    kegg_file = "sce00001.keg",
-    output_dir = "./training_results",
-    mode = "build"
+  data_dir = "./DATA_labeled",
+  output_dir = "./training_results",
+  mode = "build"
+)
+
+# Or specify custom KEGG file
+training_results_custom <- scCulture(
+  data_dir = "./DATA_labeled",
+  kegg_file = "custom_pathways.keg",
+  output_dir = "./training_results",
+  mode = "build"
 )
 
 # Access training results
@@ -137,10 +145,10 @@ training_accuracy <- training_results$evaluation_results$overall_accuracy
 
 # Predict mode - apply fingerprints to new unlabeled data
 prediction_results <- scCulture(
-    data_dir = "./DATA_unlabeled",
-    output_dir = "./prediction_results",
-    mode = "predict",
-    fingerprint_file = fingerprint_file
+  data_dir = "./DATA_unlabeled",
+  output_dir = "./prediction_results",
+  mode = "predict",
+  fingerprint_file = fingerprint_file
 )
 
 # Access predictions
@@ -148,15 +156,15 @@ predictions <- prediction_results$seurat_object$classification_pred
 confidence_scores <- prediction_results$seurat_object$prediction_confidence
 
 # Advanced usage with progress tracking and parallel processing
+# Using default KEGG file
 results <- scCulture(
-    data_dir = "./DATA_edit",
-    kegg_file = "sce00001.keg",
-    output_dir = "./results",
-    mode = "build",
-    experiment_id = "my_experiment",
-    progress = TRUE,
-    parallel = TRUE,
-    verbose = TRUE
+  data_dir = "./DATA_edit",
+  output_dir = "./results",
+  mode = "build",
+  experiment_id = "my_experiment",
+  progress = TRUE,
+  parallel = TRUE,
+  verbose = TRUE
 )
 
 }

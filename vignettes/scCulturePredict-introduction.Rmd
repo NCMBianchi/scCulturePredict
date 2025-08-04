@@ -99,14 +99,14 @@ The typical workflow for using `scCulturePredict` consists of the following step
 
 ## Quick Start: Complete Analysis with One Function
 
-For most users, the easiest way to run the complete scCulturePredict analysis is using the main `scumap()` function, which performs all steps automatically:
+For most users, the easiest way to run the complete scCulturePredict analysis is using the main `scCulture()` function, which performs all steps automatically:
 
 ```{r complete_analysis, eval=FALSE}
 # Complete analysis with one function call
-results <- scumap(
+results <- scCulture(
     data_dir = csv_data_dir,
     kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./scumap_results",
+    output_dir = "./scCulture_results",
     experiment_id = "example_analysis",
     progress = TRUE, # Show progress bar
     verbose = TRUE # Print detailed messages
@@ -125,7 +125,7 @@ head(seurat_object@meta.data[, c("UMAP_1", "UMAP_2", "sample", "classification_p
 table(seurat_object$sample, seurat_object$classification_pred)
 ```
 
-The `scumap()` function automatically:
+The `scCulture()` function automatically:
 - Loads and validates your data
 - Performs preprocessing and quality control
 - Generates UMAP coordinates
@@ -135,7 +135,7 @@ The `scumap()` function automatically:
 - Creates publication-ready visualizations
 - Saves all results to the specified output directory
 
-All plots and results are automatically saved to `./scumap_results/` for immediate use!
+All plots and results are automatically saved to `./scCulture_results/` for immediate use!
 
 ## Advanced Usage: Step-by-Step Workflow
 

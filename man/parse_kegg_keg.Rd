@@ -22,15 +22,15 @@ Parses a KEGG pathway file (.keg) and extracts gene names for each pathway.
 # Example with mock KEG file
 # Create a temporary KEG file
 keg_content <- c(
-    "ENTRY       hsa00010                    Pathway",
-    "NAME        Glycolysis / Gluconeogenesis - Homo sapiens (human)",
-    "DESCRIPTION Glycolysis is the process of converting glucose into pyruvate",
-    "CLASS       Metabolism; Carbohydrate metabolism",
-    "PATHWAY_MAP hsa00010  Glycolysis / Gluconeogenesis",
-    "GENE        5213  PFKM; phosphofructokinase, muscle [KO:K00850] [EC:2.7.1.11]",
-    "GENE        5214  PFKL; phosphofructokinase, liver [KO:K00850] [EC:2.7.1.11]",
-    "GENE        5211  PFKP; phosphofructokinase, platelet [KO:K00850] [EC:2.7.1.11]",
-    "///"
+  "ENTRY       hsa00010                    Pathway",
+  "NAME        Glycolysis / Gluconeogenesis - Homo sapiens (human)",
+  "DESCRIPTION Glycolysis is the process of converting glucose into pyruvate",
+  "CLASS       Metabolism; Carbohydrate metabolism",
+  "PATHWAY_MAP hsa00010  Glycolysis / Gluconeogenesis",
+  "GENE        5213  PFKM; phosphofructokinase, muscle [KO:K00850] [EC:2.7.1.11]",
+  "GENE        5214  PFKL; phosphofructokinase, liver [KO:K00850] [EC:2.7.1.11]",
+  "GENE        5211  PFKP; phosphofructokinase, platelet [KO:K00850] [EC:2.7.1.11]",
+  "///"
 )
 
 temp_file <- tempfile(fileext = ".keg")
