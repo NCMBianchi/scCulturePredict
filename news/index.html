@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,24 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.21" id="scculturepredict-09921-2025-08-04">scCulturePredict 0.99.21 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09921-2025-08-04"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-99-21">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-21"></a></h3>
+<div class="section level4">
+<h4 id="fixed-function-examples-0-99-21">Fixed Function Examples<a class="anchor" aria-label="anchor" href="#fixed-function-examples-0-99-21"></a></h4>
+<ul><li>Fixed build_fingerprints example that used incorrect arguments</li>
+<li>Example was using ‘group_by’ and ‘pathways’ parameters that don’t exist</li>
+<li>Updated to use correct parameters: seurat_object, kegg_pathways</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-test-data-creation-0-99-21">Fixed Test Data Creation<a class="anchor" aria-label="anchor" href="#fixed-test-data-creation-0-99-21"></a></h4>
+<ul><li>Fixed metadata file creation to include proper row names</li>
+<li>Ensures row names match between counts and metadata for Seurat compatibility</li>
+<li>Resolves remaining LogMap object errors in test suite</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.20" id="scculturepredict-09920-2025-08-04">scCulturePredict 0.99.20 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09920-2025-08-04"></a></h2>
 <div class="section level3">
