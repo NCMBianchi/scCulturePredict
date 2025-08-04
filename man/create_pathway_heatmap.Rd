@@ -59,29 +59,29 @@ The heatmap features:
 \donttest{
 # Basic usage
 p <- create_pathway_heatmap(
-    seurat_obj = seurat_obj,
-    pathway_results = pathway_results
+  seurat_obj = seurat_obj,
+  pathway_results = pathway_results
 )
 
 # Show top 10 pathways
 p <- create_pathway_heatmap(
-    seurat_obj = seurat_obj,
-    pathway_results = pathway_results,
-    top_n = 10
+  seurat_obj = seurat_obj,
+  pathway_results = pathway_results,
+  top_n = 10
 )
 
 # Use specific cells
 p <- create_pathway_heatmap(
-    seurat_obj = seurat_obj,
-    pathway_results = pathway_results,
-    cells.use = c("cell1", "cell2", "cell3")
+  seurat_obj = seurat_obj,
+  pathway_results = pathway_results,
+  cells.use = c("cell1", "cell2", "cell3")
 )
 
 # Custom title
 p <- create_pathway_heatmap(
-    seurat_obj = seurat_obj,
-    pathway_results = pathway_results,
-    title = "My Custom Heatmap"
+  seurat_obj = seurat_obj,
+  pathway_results = pathway_results,
+  title = "My Custom Heatmap"
 )
 }
 

@@ -1,3 +1,22 @@
+# scCulturePredict 0.99.18 (2025-08-04)
+
+## Bug Fixes and Code Improvements
+
+### Fixed Function Documentation
+* Fixed analyze_pathway_activity example that used incorrect parameter names
+* Example was using `group_by` parameter that doesn't exist in function signature
+* Updated example to use correct function parameters: seurat_object, pathway_results, condition
+
+### Fixed Test Suite Issues
+* Fixed create_mock_data function that was deleting test directories prematurely
+* Removed on.exit cleanup that was causing "Data directory not found" errors
+* Fixed save_visualization_plots tests to handle verbose messages correctly
+* Tests now pass verbose=FALSE to avoid expected messages
+
+### Fixed Missing Dependencies
+* Added patchwork to Suggests in DESCRIPTION
+* Package is used in visualization vignette examples
+
 # scCulturePredict 0.99.17 (2025-08-04)
 
 ## Workflow Improvements to Handle Known Issues

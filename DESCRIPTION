@@ -1,7 +1,7 @@
 Package: scCulturePredict
 Type: Package
 Title: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints
-Version: 0.99.17
+Version: 0.99.18
 Date: 2025-08-04
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
@@ -51,6 +51,7 @@ Suggests:
     PRROC,
     R.utils,
     pROC,
+    patchwork,
     randomForest,
     xgboost
 biocViews:

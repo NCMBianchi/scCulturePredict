@@ -29,27 +29,29 @@ A data frame containing pathway activity statistics by condition with columns:
 Analyzes pathway activity across different conditions or cell types.
 }
 \examples{
-# Example with mock pathway activities
-# Create mock pathway activity matrix
-pathway_activities <- matrix(
+\dontrun{
+# Example with mock Seurat object and pathway results
+# Assuming you have a Seurat object with pathway analysis results
+
+# Create mock pathway results
+pathway_results <- list(
+  pathway_matrix = matrix(
     rnorm(200, mean = 0, sd = 1),
     nrow = 20,
+    ncol = 100, # number of cells
     dimnames = list(
-        paste0("Pathway", seq_len(20)),
-        paste0("Sample", seq_len(10))
+      paste0("Pathway", seq_len(20)),
+      paste0("Cell", seq_len(100))
     )
+  )
 )
 
-# Create mock metadata
-sample_metadata <- data.frame(
-    sample_id = paste0("Sample", seq_len(10)),
-    condition = rep(c("Control", "Treatment"), each = 5)
-)
-
-# Analyze pathway activities
+# Analyze pathway activities by condition
+# Assumes seurat_object has a "condition" column in metadata
 analysis_results <- analyze_pathway_activity(
-    pathway_activities,
-    sample_metadata,
-    group_by = "condition"
+  seurat_object,
+  pathway_results,
+  condition = "condition"
 )
+}
 }

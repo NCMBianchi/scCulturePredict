@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.18] - 2025-08-04
+
+### Fixed
+- Fixed analyze_pathway_activity example that used incorrect parameter names
+- Example was using `group_by` parameter that doesn't exist in function signature
+- Updated example to use correct function parameters: seurat_object, pathway_results, condition
+- Fixed create_mock_data function that was deleting test directories prematurely
+- Removed on.exit cleanup that was causing "Data directory not found" errors
+- Fixed save_visualization_plots tests to handle verbose messages correctly
+- Tests now pass verbose=FALSE to avoid expected messages
+
+### Added
+- Added patchwork to Suggests in DESCRIPTION
+- Package is used in visualization vignette examples
+
 ## [0.99.17] - 2025-08-04
 
 ### Changed
