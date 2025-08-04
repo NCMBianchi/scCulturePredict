@@ -1,3 +1,17 @@
+# scCulturePredict 0.99.21 (2025-08-04)
+
+## Bug Fixes
+
+### Fixed Function Examples
+* Fixed build_fingerprints example that used incorrect arguments
+* Example was using 'group_by' and 'pathways' parameters that don't exist
+* Updated to use correct parameters: seurat_object, kegg_pathways
+
+### Fixed Test Data Creation
+* Fixed metadata file creation to include proper row names
+* Ensures row names match between counts and metadata for Seurat compatibility
+* Resolves remaining LogMap object errors in test suite
+
 # scCulturePredict 0.99.20 (2025-08-04)
 
 ## Bug Fixes

@@ -16,12 +16,16 @@ create_mock_data <- function() {
     file.path(temp_dir, "GSE165686_counts.csv"),
     row.names = TRUE
   )
+
+  # Create metadata with matching row names
+  metadata <- data.frame(
+    sample = rep(c("A", "B"), each = 5),
+    row.names = paste0("cell", 1:10)
+  )
   write.csv(
-    data.frame(
-      cell = paste0("cell", 1:10),
-      sample = rep(c("A", "B"), each = 5)
-    ),
-    file.path(temp_dir, "GSE165686_metadata.csv")
+    metadata,
+    file.path(temp_dir, "GSE165686_metadata.csv"),
+    row.names = TRUE
   )
 
   # Create mock KEGG file
