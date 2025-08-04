@@ -8,9 +8,13 @@ create_mock_data <- function() {
   # Directory cleanup handled by test framework
 
   # Create mock data files
+  count_matrix <- matrix(rpois(100, 10), nrow = 10, ncol = 10)
+  rownames(count_matrix) <- paste0("gene", 1:10)
+  colnames(count_matrix) <- paste0("cell", 1:10)
   write.csv(
-    matrix(rpois(100, 10), nrow = 10, ncol = 10),
-    file.path(temp_dir, "GSE165686_counts.csv")
+    count_matrix,
+    file.path(temp_dir, "GSE165686_counts.csv"),
+    row.names = TRUE
   )
   write.csv(
     data.frame(
