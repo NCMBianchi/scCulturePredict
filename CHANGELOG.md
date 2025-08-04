@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.19] - 2025-08-04
+
+### Fixed
+- Fixed analyze_pathway_enrichment example that incorrectly used create_pathway_heatmap
+- Example was passing a matrix instead of required Seurat object
+- Updated example to show proper usage with mock KEGG pathways
+- Removed stray scCulturePredict.BiocCheck folder from package directory
+- Folder was causing BiocCheck ERROR during package checks
+
 ## [0.99.18] - 2025-08-04
 
 ### Fixed

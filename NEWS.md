@@ -1,3 +1,16 @@
+# scCulturePredict 0.99.19 (2025-08-04)
+
+## Bug Fixes
+
+### Fixed Function Examples
+* Fixed analyze_pathway_enrichment example that incorrectly used create_pathway_heatmap
+* Example was passing a matrix instead of required Seurat object
+* Updated example to show proper usage with mock KEGG pathways
+
+### Fixed BiocCheck Issues
+* Removed stray scCulturePredict.BiocCheck folder from package directory
+* Folder was causing BiocCheck ERROR during package checks
+
 # scCulturePredict 0.99.18 (2025-08-04)
 
 ## Bug Fixes and Code Improvements

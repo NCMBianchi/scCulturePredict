@@ -36,16 +36,26 @@
 #' }
 #'
 #' @examples
-#' # Example with mock pathway activity matrix
-#' pathway_activities <- matrix(
-#'   rnorm(150),
-#'   nrow = 15,
-#'   dimnames = list(
-#'     paste0("Pathway", seq_len(15)),
-#'     paste0("Sample", seq_len(10))
-#'   )
+#' \dontrun{
+#' # Example with mock Seurat object and KEGG pathways
+#' # Assuming you have a Seurat object and KEGG pathways loaded
+#'
+#' # Create mock KEGG pathways
+#' kegg_pathways <- list(
+#'   pathway1 = c("gene1", "gene2", "gene3", "gene4", "gene5"),
+#'   pathway2 = c("gene3", "gene4", "gene5", "gene6", "gene7"),
+#'   pathway3 = c("gene5", "gene6", "gene7", "gene8", "gene9")
 #' )
-#' plot <- create_pathway_heatmap(pathway_activities)
+#'
+#' # Analyze pathway enrichment
+#' results <- analyze_pathway_enrichment(
+#'   seurat_obj,
+#'   kegg_pathways,
+#'   min_genes = 5,
+#'   max_genes = 500,
+#'   p_cutoff = 0.05
+#' )
+#' }
 #' @seealso
 #' \code{\link{create_pathway_heatmap}} for visualizing pathway results
 #' \code{\link{analyze_pathway_activity}} for analyzing pathway activity
