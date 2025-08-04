@@ -11,7 +11,7 @@ to new unlabeled data for cell culture media prediction.'><link rel="stylesheet"
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -190,13 +190,22 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Build mode - generate fingerprints from labeled training data</span></span></span>
+<span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
-<span class="r-in"><span>    kegg_file <span class="op">=</span> <span class="st">"sce00001.keg"</span>,</span></span>
-<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
-<span class="r-in"><span>    mode <span class="op">=</span> <span class="st">"build"</span></span></span>
+<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_labeled", kegg_file = "sce00001.keg",     output_dir = "./training_results", mode = "build"):</span> Data directory not found: ./DATA_labeled</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_labeled", output_dir = "./training_results",     mode = "build"):</span> Data directory not found: ./DATA_labeled</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Or specify custom KEGG file</span></span></span>
+<span class="r-in"><span><span class="va">training_results_custom</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  kegg_file <span class="op">=</span> <span class="st">"custom_pathways.keg"</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_labeled", kegg_file = "custom_pathways.keg",     output_dir = "./training_results", mode = "build"):</span> Data directory not found: ./DATA_labeled</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access training results</span></span></span>
 <span class="r-in"><span><span class="va">fingerprint_file</span> <span class="op">&lt;-</span> <span class="va">training_results</span><span class="op">$</span><span class="va">fingerprint_file</span></span></span>
@@ -206,10 +215,10 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Predict mode - apply fingerprints to new unlabeled data</span></span></span>
 <span class="r-in"><span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span></span>
-<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="st">"./prediction_results"</span>,</span></span>
-<span class="r-in"><span>    mode <span class="op">=</span> <span class="st">"predict"</span>,</span></span>
-<span class="r-in"><span>    fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span></span></span>
+<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./prediction_results"</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"predict"</span>,</span></span>
+<span class="r-in"><span>  fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_unlabeled", output_dir = "./prediction_results",     mode = "predict", fingerprint_file = fingerprint_file):</span> Data directory not found: ./DATA_unlabeled</span>
 <span class="r-in"><span></span></span>
@@ -220,17 +229,17 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'prediction_results' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Advanced usage with progress tracking and parallel processing</span></span></span>
+<span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    data_dir <span class="op">=</span> <span class="st">"./DATA_edit"</span>,</span></span>
-<span class="r-in"><span>    kegg_file <span class="op">=</span> <span class="st">"sce00001.keg"</span>,</span></span>
-<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="st">"./results"</span>,</span></span>
-<span class="r-in"><span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span></span>
-<span class="r-in"><span>    experiment_id <span class="op">=</span> <span class="st">"my_experiment"</span>,</span></span>
-<span class="r-in"><span>    progress <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_edit"</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./results"</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span></span>
+<span class="r-in"><span>  experiment_id <span class="op">=</span> <span class="st">"my_experiment"</span>,</span></span>
+<span class="r-in"><span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_edit", kegg_file = "sce00001.keg",     output_dir = "./results", mode = "build", experiment_id = "my_experiment",     progress = TRUE, parallel = TRUE, verbose = TRUE):</span> Data directory not found: ./DATA_edit</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_edit", output_dir = "./results",     mode = "build", experiment_id = "my_experiment", progress = TRUE,     parallel = TRUE, verbose = TRUE):</span> Data directory not found: ./DATA_edit</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

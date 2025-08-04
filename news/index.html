@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,30 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.22" id="scculturepredict-09922-2025-08-04">scCulturePredict 0.99.22 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09922-2025-08-04"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-99-22">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-22"></a></h3>
+<div class="section level4">
+<h4 id="fixed-bioccheck-parse-error-0-99-22">Fixed BiocCheck Parse Error<a class="anchor" aria-label="anchor" href="#fixed-bioccheck-parse-error-0-99-22"></a></h4>
+<ul><li>Removed extra closing parenthesis in scCulture() function examples</li>
+<li>This was causing “unexpected ‘)’” error during BiocCheck</li>
+<li>Examples now parse correctly without syntax errors</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-test-suite-issues-0-99-22">Fixed Test Suite Issues<a class="anchor" aria-label="anchor" href="#fixed-test-suite-issues-0-99-22"></a></h4>
+<ul><li>Fixed sparse matrix handling in test-pipeline.R</li>
+<li>Changed colSums() to Matrix::colSums() for sparse matrix compatibility</li>
+<li>Resolves test failures related to matrix dimension errors</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-updates-0-99-22">Documentation Updates<a class="anchor" aria-label="anchor" href="#documentation-updates-0-99-22"></a></h4>
+<ul><li>Updated introduction vignette to use correct function name (scCulture instead of scumap)</li>
+<li>Added <a href="https://github.com/keywords" class="external-link">@keywords</a> internal to internal functions to suppress roxygen2 warnings</li>
+<li>Regenerated all documentation with roxygen2::roxygenise()</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.21" id="scculturepredict-09921-2025-08-04">scCulturePredict 0.99.21 (2025-08-04)<a class="anchor" aria-label="anchor" href="#scculturepredict-09921-2025-08-04"></a></h2>
 <div class="section level3">

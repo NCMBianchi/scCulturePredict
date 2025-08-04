@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -172,14 +172,14 @@ of the following steps:</p>
 <h3 id="quick-start-complete-analysis-with-one-function">Quick Start: Complete Analysis with One Function<a class="anchor" aria-label="anchor" href="#quick-start-complete-analysis-with-one-function"></a>
 </h3>
 <p>For most users, the easiest way to run the complete scCulturePredict
-analysis is using the main <code>scumap()</code> function, which
+analysis is using the main <code><a href="../reference/scCulture.html">scCulture()</a></code> function, which
 performs all steps automatically:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Complete analysis with one function call</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
 <span>    data_dir <span class="op">=</span> <span class="va">csv_data_dir</span>,</span>
 <span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./scumap_results"</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./scCulture_results"</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"example_analysis"</span>,</span>
 <span>    progress <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># Show progress bar</span></span>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># Print detailed messages</span></span>
@@ -196,14 +196,14 @@ performs all steps automatically:</p>
 <span></span>
 <span><span class="co"># Check prediction accuracy</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">$</span><span class="va">sample</span>, <span class="va">seurat_object</span><span class="op">$</span><span class="va">classification_pred</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>scumap()</code> function automatically: - Loads and
+<p>The <code><a href="../reference/scCulture.html">scCulture()</a></code> function automatically: - Loads and
 validates your data - Performs preprocessing and quality control -
 Generates UMAP coordinates - Conducts KEGG pathway analysis - Makes
 predictions using both similarity and machine learning approaches -
 Evaluates prediction performance - Creates publication-ready
 visualizations - Saves all results to the specified output directory</p>
 <p>All plots and results are automatically saved to
-<code>./scumap_results/</code> for immediate use!</p>
+<code>./scCulture_results/</code> for immediate use!</p>
 </div>
 <div class="section level3">
 <h3 id="advanced-usage-step-by-step-workflow">Advanced Usage: Step-by-Step Workflow<a class="anchor" aria-label="anchor" href="#advanced-usage-step-by-step-workflow"></a>
@@ -446,7 +446,7 @@ documentation.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt; [1] ggplot2_3.5.2            Seurat_5.3.0             SeuratObject_5.1.0      </span></span>
-<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.21 BiocStyle_2.36.0        </span></span>
+<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.22 BiocStyle_2.36.0        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] deldir_2.0-4           pbapply_1.7-4          gridExtra_2.3         </span></span>

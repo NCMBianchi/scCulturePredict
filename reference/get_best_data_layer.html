@@ -11,7 +11,7 @@ Handles both Seurat v4 and v5 layer structures."><link rel="stylesheet" href="ht
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.21</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.22</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,11 +75,11 @@ Handles both Seurat v4 and v5 layer structures.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example with mock KEG file content</span></span></span>
 <span class="r-in"><span><span class="va">keg_content</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="st">"ENTRY       hsa00010                    Pathway"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"NAME        Glycolysis / Gluconeogenesis"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"GENE        1234  HK1; hexokinase 1"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"GENE        5678  GPI; glucose-6-phosphate isomerase"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"///"</span></span></span>
+<span class="r-in"><span>  <span class="st">"ENTRY       hsa00010                    Pathway"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"NAME        Glycolysis / Gluconeogenesis"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"GENE        1234  HK1; hexokinase 1"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"GENE        5678  GPI; glucose-6-phosphate isomerase"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"///"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">temp_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".keg"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">keg_content</span>, <span class="va">temp_file</span><span class="op">)</span></span></span>
