@@ -81,7 +81,13 @@ jobs:
         if: always()
         run: |
           if (requireNamespace("covr", quietly = TRUE)) {
-            covr::package_coverage()
+            cov <- covr::package_coverage(
+              type = "tests",
+              quiet = FALSE
+            )
+            print(cov)
+            covr::to_cobertura(cov, filename = "coverage.xml")
+            message("Coverage report saved to coverage.xml")
           } else {
             message("covr not available, skipping coverage")
           }
@@ -98,11 +104,15 @@ jobs:
         if: always()
         run: |
           if (requireNamespace("covr", quietly = TRUE)) {
-            covr::package_coverage(
+            cov <- covr::package_coverage(
+              type = "tests",
               quiet = FALSE,
               clean = FALSE,
               install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
             )
+            print(cov)
+            covr::to_cobertura(cov, filename = "coverage.xml")
+            message("Coverage XML report generated")
           } else {
             message("covr package not available, skipping coverage")
           }
@@ -113,4 +123,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
           fail_ci_if_error: false
+          verbose: true

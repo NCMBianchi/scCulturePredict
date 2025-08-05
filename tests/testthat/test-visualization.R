@@ -3,16 +3,16 @@
 # Create a mock Seurat object for testing
 create_mock_seurat <- function() {
   # Create a small Seurat object with UMAP coordinates
-  counts <- matrix(rpois(100, 10), nrow = 10, ncol = 10)
-  rownames(counts) <- paste0("gene", 1:10)
-  colnames(counts) <- paste0("cell", 1:10)
+  counts <- matrix(rpois(5000, 10), nrow = 100, ncol = 50)
+  rownames(counts) <- paste0("gene", 1:100)
+  colnames(counts) <- paste0("cell", 1:50)
 
   seurat <- Seurat::CreateSeuratObject(counts = counts)
 
   # Add UMAP coordinates
-  seurat@meta.data$UMAP_1 <- rnorm(10)
-  seurat@meta.data$UMAP_2 <- rnorm(10)
-  seurat@meta.data$sample <- rep(c("A", "B"), each = 5)
+  seurat@meta.data$UMAP_1 <- rnorm(50)
+  seurat@meta.data$UMAP_2 <- rnorm(50)
+  seurat@meta.data$sample <- rep(c("A", "B"), each = 25)
 
   return(seurat)
 }

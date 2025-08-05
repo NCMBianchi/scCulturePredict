@@ -1,3 +1,19 @@
+# scCulturePredict 0.99.24 (2025-08-05)
+
+## Test Suite Fixes
+
+### Fixed Test Failures
+* Increased mock data size in tests to avoid SVD errors in PCA calculations
+* Fixed dimensionality reduction tests by increasing cells from 10 to 50
+* Fixed visualization tests by increasing cells from 10 to 50
+* Mock data now properly supports requested number of principal components
+
+### Coverage Report Generation
+* Updated GitHub Actions workflow to generate coverage.xml file
+* Added explicit coverage report generation using covr::to_cobertura()
+* Coverage reports now properly uploaded to Codecov
+* Added verbose output to coverage steps for better debugging
+
 # scCulturePredict 0.99.23 (2025-08-05)
 
 ## CI/CD Improvements

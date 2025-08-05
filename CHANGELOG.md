@@ -1,9 +1,22 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the scCulturePredict package will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.99.24] - 2025-08-05
+
+### Fixed
+- Test failures due to SVD errors in PCA calculations
+- Dimensionality reduction tests now use 50 cells instead of 10
+- Visualization tests now use 50 cells instead of 10
+- Mock data now properly supports requested number of principal components
+
+### Changed
+- GitHub Actions workflow now generates coverage.xml file using covr::to_cobertura()
+- Added explicit coverage report generation for proper Codecov integration
+- Coverage reports now include verbose output for better debugging
 
 ## [0.99.23] - 2025-08-05
 
