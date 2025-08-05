@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,26 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.24" id="scculturepredict-09924-2025-08-05">scCulturePredict 0.99.24 (2025-08-05)<a class="anchor" aria-label="anchor" href="#scculturepredict-09924-2025-08-05"></a></h2>
+<div class="section level3">
+<h3 id="test-suite-fixes-0-99-24">Test Suite Fixes<a class="anchor" aria-label="anchor" href="#test-suite-fixes-0-99-24"></a></h3>
+<div class="section level4">
+<h4 id="fixed-test-failures-0-99-24">Fixed Test Failures<a class="anchor" aria-label="anchor" href="#fixed-test-failures-0-99-24"></a></h4>
+<ul><li>Increased mock data size in tests to avoid SVD errors in PCA calculations</li>
+<li>Fixed dimensionality reduction tests by increasing cells from 10 to 50</li>
+<li>Fixed visualization tests by increasing cells from 10 to 50</li>
+<li>Mock data now properly supports requested number of principal components</li>
+</ul></div>
+<div class="section level4">
+<h4 id="coverage-report-generation-0-99-24">Coverage Report Generation<a class="anchor" aria-label="anchor" href="#coverage-report-generation-0-99-24"></a></h4>
+<ul><li>Updated GitHub Actions workflow to generate coverage.xml file</li>
+<li>Added explicit coverage report generation using covr::to_cobertura()</li>
+<li>Coverage reports now properly uploaded to Codecov</li>
+<li>Added verbose output to coverage steps for better debugging</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.23" id="scculturepredict-09923-2025-08-05">scCulturePredict 0.99.23 (2025-08-05)<a class="anchor" aria-label="anchor" href="#scculturepredict-09923-2025-08-05"></a></h2>
 <div class="section level3">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,8 +44,24 @@
 
 <div id="changelog" class="section level1">
 
-<p>All notable changes to this project will be documented in this file.</p>
+<p>All notable changes to the scCulturePredict package will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
+<div class="section level2">
+<h2 id="id_09924---2025-08-05">[0.99.24] - 2025-08-05<a class="anchor" aria-label="anchor" href="#id_09924---2025-08-05"></a></h2>
+<div class="section level3">
+<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Test failures due to SVD errors in PCA calculations</li>
+<li>Dimensionality reduction tests now use 50 cells instead of 10</li>
+<li>Visualization tests now use 50 cells instead of 10</li>
+<li>Mock data now properly supports requested number of principal components</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>GitHub Actions workflow now generates coverage.xml file using covr::to_cobertura()</li>
+<li>Added explicit coverage report generation for proper Codecov integration</li>
+<li>Coverage reports now include verbose output for better debugging</li>
+</ul></div>
+</div>
 <div class="section level2">
 <h2 id="id_09923---2025-08-05">[0.99.23] - 2025-08-05<a class="anchor" aria-label="anchor" href="#id_09923---2025-08-05"></a></h2>
 <div class="section level3">
@@ -54,7 +70,7 @@
 <li>Coverage reports are now generated before codecov upload, fixing “No coverage reports found” error</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>Skipped tests for utility functions not used in main pipeline (analyze_pathway_enrichment, create_pathway_heatmap, analyze_pathway_activity, create_pathway_boxplot)</li>
 <li>Simplified test data creation to use CSV format instead of 10X format for better reliability</li>
 </ul></div>
@@ -62,7 +78,7 @@
 <div class="section level2">
 <h2 id="id_09922---2025-08-04">[0.99.22] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09922---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
 <ul><li>Fixed BiocCheck parse error by removing extra closing parenthesis in scCulture() function examples</li>
 <li>Fixed sparse matrix handling in test-pipeline.R by using Matrix::colSums() for sparse matrix compatibility</li>
 <li>Updated introduction vignette to use correct function name (scCulture instead of scumap)</li>
@@ -73,7 +89,7 @@
 <div class="section level2">
 <h2 id="id_09921---2025-08-04">[0.99.21] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09921---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
+<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
 <ul><li>Fixed build_fingerprints example that used incorrect arguments</li>
 <li>Example was using ‘group_by’ and ‘pathways’ parameters that don’t exist</li>
 <li>Updated to use correct parameters: seurat_object, kegg_pathways</li>
@@ -85,7 +101,7 @@
 <div class="section level2">
 <h2 id="id_09920---2025-08-04">[0.99.20] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09920---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
+<h3 id="fixed-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-3"></a></h3>
 <ul><li>Fixed mock data creation in tests to include row names</li>
 <li>Resolved “invalid class ‘LogMap’ object: Rownames must be supplied” error</li>
 <li>Mock count matrices now properly include gene and cell names</li>
@@ -97,7 +113,7 @@
 <div class="section level2">
 <h2 id="id_09919---2025-08-04">[0.99.19] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09919---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="fixed-3">Fixed<a class="anchor" aria-label="anchor" href="#fixed-3"></a></h3>
+<h3 id="fixed-4">Fixed<a class="anchor" aria-label="anchor" href="#fixed-4"></a></h3>
 <ul><li>Fixed analyze_pathway_enrichment example that incorrectly used create_pathway_heatmap</li>
 <li>Example was passing a matrix instead of required Seurat object</li>
 <li>Updated example to show proper usage with mock KEGG pathways</li>
@@ -108,7 +124,7 @@
 <div class="section level2">
 <h2 id="id_09918---2025-08-04">[0.99.18] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09918---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="fixed-4">Fixed<a class="anchor" aria-label="anchor" href="#fixed-4"></a></h3>
+<h3 id="fixed-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-5"></a></h3>
 <ul><li>Fixed analyze_pathway_activity example that used incorrect parameter names</li>
 <li>Example was using <code>group_by</code> parameter that doesn’t exist in function signature</li>
 <li>Updated example to use correct function parameters: seurat_object, pathway_results, condition</li>
@@ -126,13 +142,13 @@
 <div class="section level2">
 <h2 id="id_09917---2025-08-04">[0.99.17] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09917---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
 <ul><li>Set R CMD check to continue on errors to allow BiocCheck to run</li>
 <li>Added <code>if: always()</code> to BiocCheck step to run even if R CMD check has errors</li>
 <li>Updated codecov-action from v4 to v5 for better compatibility</li>
 </ul></div>
 <div class="section level3">
-<h3 id="fixed-5">Fixed<a class="anchor" aria-label="anchor" href="#fixed-5"></a></h3>
+<h3 id="fixed-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-6"></a></h3>
 <ul><li>Added testthat to dependencies to ensure test infrastructure is available</li>
 <li>Added error handling for test and coverage steps to prevent workflow failures</li>
 <li>Workflow now completes and provides full diagnostic information even with package errors</li>
@@ -148,7 +164,7 @@
 <div class="section level2">
 <h2 id="id_09911---2025-08-01">[0.99.11] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_09911---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-6"></a></h3>
+<h3 id="fixed-7">Fixed<a class="anchor" aria-label="anchor" href="#fixed-7"></a></h3>
 <ul><li>Rewrote GitHub Actions workflow using r-lib/actions best practices</li>
 <li>Replaced manual package installation with r-lib/actions/setup-r-dependencies</li>
 <li>Used r-lib/actions/check-r-package for standardized R CMD check</li>
@@ -159,7 +175,7 @@
 <div class="section level2">
 <h2 id="id_09910---2025-08-01">[0.99.10] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_09910---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-7">Fixed<a class="anchor" aria-label="anchor" href="#fixed-7"></a></h3>
+<h3 id="fixed-8">Fixed<a class="anchor" aria-label="anchor" href="#fixed-8"></a></h3>
 <ul><li>Added <em>R_CHECK_FORCE_SUGGESTS</em>=false environment variable to fix R CMD check error</li>
 <li>Fixed “Package suggested but not available: ‘devtools’” error during package checking</li>
 <li>Set explicit R_LIBS_USER path for consistent package installation</li>
@@ -168,7 +184,7 @@
 <div class="section level2">
 <h2 id="id_0999---2025-08-01">[0.99.9] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_0999---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-8">Fixed<a class="anchor" aria-label="anchor" href="#fixed-8"></a></h3>
+<h3 id="fixed-9">Fixed<a class="anchor" aria-label="anchor" href="#fixed-9"></a></h3>
 <ul><li>Fixed empty log issues by reverting from Rscript to R -e for better command execution</li>
 <li>Changed R CMD check to use rcmdcheck::rcmdcheck() directly to avoid devtools dependency</li>
 <li>Updated test runner to use testthat::test_local() instead of devtools::test()</li>
@@ -179,7 +195,7 @@
 <div class="section level2">
 <h2 id="id_0998---2025-08-01">[0.99.8] - 2025-08-01<a class="anchor" aria-label="anchor" href="#id_0998---2025-08-01"></a></h2>
 <div class="section level3">
-<h3 id="fixed-9">Fixed<a class="anchor" aria-label="anchor" href="#fixed-9"></a></h3>
+<h3 id="fixed-10">Fixed<a class="anchor" aria-label="anchor" href="#fixed-10"></a></h3>
 <ul><li>Added pandoc to system dependencies for vignette building</li>
 <li>Changed R -e to Rscript -e for more reliable command execution</li>
 <li>Removed force = TRUE parameter from BiocManager::install() calls</li>
@@ -189,7 +205,7 @@
 <div class="section level2">
 <h2 id="id_0997---2025-07-31">[0.99.7] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0997---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-10">Fixed<a class="anchor" aria-label="anchor" href="#fixed-10"></a></h3>
+<h3 id="fixed-11">Fixed<a class="anchor" aria-label="anchor" href="#fixed-11"></a></h3>
 <ul><li>Consolidated package installation steps to ensure devtools is installed properly</li>
 <li>Made R CMD check step more robust by using rcmdcheck as fallback</li>
 <li>Fixed workflow execution issues causing empty installation logs</li>
@@ -198,7 +214,7 @@
 <div class="section level2">
 <h2 id="id_0996---2025-07-31">[0.99.6] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0996---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-11">Fixed<a class="anchor" aria-label="anchor" href="#fixed-11"></a></h3>
+<h3 id="fixed-12">Fixed<a class="anchor" aria-label="anchor" href="#fixed-12"></a></h3>
 <ul><li>Added missing system dependencies (libfontconfig1-dev, libfreetype6-dev, libpng-dev, libharfbuzz-dev, libfribidi-dev) required for Seurat installation</li>
 <li>Fixed package installation failures caused by missing system libraries for graphics packages</li>
 </ul></div>
@@ -206,7 +222,7 @@
 <div class="section level2">
 <h2 id="id_0995---2025-07-31">[0.99.5] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0995---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-12">Fixed<a class="anchor" aria-label="anchor" href="#fixed-12"></a></h3>
+<h3 id="fixed-13">Fixed<a class="anchor" aria-label="anchor" href="#fixed-13"></a></h3>
 <ul><li>Fixed GitHub Actions workflow by removing base R packages (parallel, methods, stats, utils, tools) from BiocManager installation commands</li>
 <li>Split dependency installation into smaller, more manageable steps for better error tracking</li>
 <li>Added explicit package installation check before running BiocCheck</li>
@@ -217,7 +233,7 @@
 <div class="section level2">
 <h2 id="id_0994---2025-07-31">[0.99.4] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0994---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-13">Fixed<a class="anchor" aria-label="anchor" href="#fixed-13"></a></h3>
+<h3 id="fixed-14">Fixed<a class="anchor" aria-label="anchor" href="#fixed-14"></a></h3>
 <ul><li>Fixed GitHub Actions workflow to properly install all package dependencies before running checks</li>
 <li>Improved dependency installation order to ensure BiocManager packages are available</li>
 <li>Enhanced workflow reliability for automated testing and validation</li>
@@ -226,20 +242,20 @@
 <div class="section level2">
 <h2 id="id_0993---2025-07-31">[0.99.3] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0993---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
+<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
 <ul><li>Lowered R version requirement from 4.4.0 to 4.3.0 for broader compatibility with GitHub Actions and CI/CD environments</li>
 </ul></div>
 </div>
 <div class="section level2">
 <h2 id="id_0992---2025-07-31">[0.99.2] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0992---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="fixed-14">Fixed<a class="anchor" aria-label="anchor" href="#fixed-14"></a></h3>
+<h3 id="fixed-15">Fixed<a class="anchor" aria-label="anchor" href="#fixed-15"></a></h3>
 <ul><li>Fixed syntax error in <code>train_cell_type_classifier</code> function where <code>seq_len(min)(...)</code> was incorrectly parenthesized</li>
 <li>Fixed <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> calls in <code>build_fingerprints</code> and <code>calculate_pathway_activities</code> functions by changing to <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> for variable-length outputs</li>
 <li>Restored accidentally removed F1 score calculation block in <code>evaluate_cell_type_predictions</code> function</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
+<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
 <ul><li>Improved code indentation compliance using styler package (reduced from 12% to 5% non-compliant lines)</li>
 <li>Achieved 0 ERRORS status in BiocCheck validation for GitHub Actions compatibility</li>
 </ul></div>
@@ -251,13 +267,13 @@
 <ul><li>BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
 </ul></div>
 <div class="section level3">
-<h3 id="fixed-15">Fixed<a class="anchor" aria-label="anchor" href="#fixed-15"></a></h3>
+<h3 id="fixed-16">Fixed<a class="anchor" aria-label="anchor" href="#fixed-16"></a></h3>
 <ul><li>Fixed all <code>1:n</code> patterns in examples, replaced with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> for BiocCheck compliance</li>
 <li>Fixed code indentation issues using styler package (reduced from 11% to 7% non-compliant lines)</li>
 <li>Corrected SVM column name handling in <code><a href="reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
+<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
 <ul><li>Improved BiocCheck compliance, achieving 0 ERRORS status</li>
 <li>Updated documentation with properly formatted examples</li>
 </ul></div>
@@ -327,11 +343,11 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="fixed-16">Fixed<a class="anchor" aria-label="anchor" href="#fixed-16"></a></h3>
+<h3 id="fixed-17">Fixed<a class="anchor" aria-label="anchor" href="#fixed-17"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
+<h3 id="changed-6">Changed<a class="anchor" aria-label="anchor" href="#changed-6"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
