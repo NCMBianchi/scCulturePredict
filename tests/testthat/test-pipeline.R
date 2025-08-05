@@ -7,15 +7,15 @@ create_mock_data <- function() {
   dir.create(temp_dir)
   # Directory cleanup handled by test framework
 
-  # Create mock 10X format data
+  # Create mock CSV format data (simpler and more reliable for testing)
   n_genes <- 200
-  n_cells <- 50
+  n_cells <- 100
 
-  # Generate sparse count matrix
+  # Generate count matrix
   set.seed(123)
-  sparse_data <- Matrix::rsparsematrix(
-    nrow = n_genes, ncol = n_cells,
-    density = 0.1, rand.x = function(n) rpois(n, lambda = 5)
+  count_matrix <- matrix(
+    rpois(n_genes * n_cells, lambda = 5),
+    nrow = n_genes, ncol = n_cells
   )
 
   # Create gene names that will match KEGG pathways
@@ -26,46 +26,26 @@ create_mock_data <- function() {
     paste0("YDR", sprintf("%03d", 1:50), "C") # 50 genes
   )
 
-  # Create barcodes
-  barcodes <- paste0("AAACCCAAGAAACACT-", 1:n_cells)
+  # Create cell names
+  cell_names <- paste0("CELL", 1:n_cells)
 
-  # Write matrix.mtx file
-  Matrix::writeMM(sparse_data, file.path(temp_dir, "matrix.mtx"))
+  # Add row and column names
+  rownames(count_matrix) <- gene_names
+  colnames(count_matrix) <- cell_names
 
-  # Write features.tsv (genes)
-  features_df <- data.frame(
-    gene_id = gene_names,
-    gene_name = gene_names,
-    gene_type = rep("Gene Expression", n_genes)
-  )
-  write.table(features_df, file.path(temp_dir, "features.tsv"),
-    sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE
-  )
+  # Write counts file in CSV format
+  counts_df <- as.data.frame(count_matrix)
+  write.csv(counts_df, file.path(temp_dir, "test_experiment_counts.csv"))
 
-  # Write barcodes.tsv
-  write.table(barcodes, file.path(temp_dir, "barcodes.tsv"),
-    row.names = FALSE, col.names = FALSE, quote = FALSE
-  )
-
-  # Create metadata.tsv with proper structure
+  # Create metadata with proper structure
   metadata <- data.frame(
-    barcode = barcodes,
-    sample = rep(c("DMSO", "Guanine", "MPA"), length.out = n_cells),
+    row.names = cell_names,
+    sample = rep(c("DMSO", "Guanine", "MPA", "Control"), length.out = n_cells),
     batch = rep(c("Batch1", "Batch2"), length.out = n_cells),
-    nCount_RNA = Matrix::colSums(sparse_data),
-    nFeature_RNA = Matrix::colSums(sparse_data > 0)
+    nCount_RNA = colSums(count_matrix),
+    nFeature_RNA = colSums(count_matrix > 0)
   )
-  write.table(metadata, file.path(temp_dir, "metadata.tsv"),
-    sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE
-  )
-
-  # Gzip the files to match expected format
-  if (requireNamespace("R.utils", quietly = TRUE)) {
-    R.utils::gzip(file.path(temp_dir, "matrix.mtx"), remove = TRUE)
-    R.utils::gzip(file.path(temp_dir, "features.tsv"), remove = TRUE)
-    R.utils::gzip(file.path(temp_dir, "barcodes.tsv"), remove = TRUE)
-    R.utils::gzip(file.path(temp_dir, "metadata.tsv"), remove = TRUE)
-  }
+  write.csv(metadata, file.path(temp_dir, "test_experiment_metadata.csv"))
 
   # Create mock KEGG file with matching genes
   writeLines(

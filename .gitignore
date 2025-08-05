@@ -43,13 +43,18 @@ temp/
 
 # Output files from R CMD build
 /*.tar.gz
-/*.Rcheck/
 
 # Output files from R CMD check
-/*.Rcheck/
+*.Rcheck/
+*.Rcheck
+..Rcheck/
+..Rcheck
 
 # BiocCheck output
+*.BiocCheck/
+*.BiocCheck
 BiocCheck/
+scCulturePredict.BiocCheck/
 
 # Compiled documentation
 docs/

@@ -94,6 +94,20 @@ jobs:
           name: check-results
           path: check
 
+      - name: Test coverage
+        if: always()
+        run: |
+          if (requireNamespace("covr", quietly = TRUE)) {
+            covr::package_coverage(
+              quiet = FALSE,
+              clean = FALSE,
+              install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
+            )
+          } else {
+            message("covr package not available, skipping coverage")
+          }
+        shell: Rscript {0}
+
       - name: Upload coverage reports
         if: always()
         uses: codecov/codecov-action@v5
