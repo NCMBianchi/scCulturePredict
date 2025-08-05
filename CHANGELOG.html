@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.22</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.23</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,19 @@
 
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
+<div class="section level2">
+<h2 id="id_09923---2025-08-05">[0.99.23] - 2025-08-05<a class="anchor" aria-label="anchor" href="#id_09923---2025-08-05"></a></h2>
+<div class="section level3">
+<h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<ul><li>Code coverage report generation in GitHub Actions workflow using covr package</li>
+<li>Coverage reports are now generated before codecov upload, fixing “No coverage reports found” error</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>Skipped tests for utility functions not used in main pipeline (analyze_pathway_enrichment, create_pathway_heatmap, analyze_pathway_activity, create_pathway_boxplot)</li>
+<li>Simplified test data creation to use CSV format instead of 10X format for better reliability</li>
+</ul></div>
+</div>
 <div class="section level2">
 <h2 id="id_09922---2025-08-04">[0.99.22] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09922---2025-08-04"></a></h2>
 <div class="section level3">
@@ -105,7 +118,7 @@
 <li>Tests now pass verbose=FALSE to avoid expected messages</li>
 </ul></div>
 <div class="section level3">
-<h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
 <ul><li>Added patchwork to Suggests in DESCRIPTION</li>
 <li>Package is used in visualization vignette examples</li>
 </ul></div>
@@ -113,7 +126,7 @@
 <div class="section level2">
 <h2 id="id_09917---2025-08-04">[0.99.17] - 2025-08-04<a class="anchor" aria-label="anchor" href="#id_09917---2025-08-04"></a></h2>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>Set R CMD check to continue on errors to allow BiocCheck to run</li>
 <li>Added <code>if: always()</code> to BiocCheck step to run even if R CMD check has errors</li>
 <li>Updated codecov-action from v4 to v5 for better compatibility</li>
@@ -213,7 +226,7 @@
 <div class="section level2">
 <h2 id="id_0993---2025-07-31">[0.99.3] - 2025-07-31<a class="anchor" aria-label="anchor" href="#id_0993---2025-07-31"></a></h2>
 <div class="section level3">
-<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
 <ul><li>Lowered R version requirement from 4.4.0 to 4.3.0 for broader compatibility with GitHub Actions and CI/CD environments</li>
 </ul></div>
 </div>
@@ -226,7 +239,7 @@
 <li>Restored accidentally removed F1 score calculation block in <code>evaluate_cell_type_predictions</code> function</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
+<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
 <ul><li>Improved code indentation compliance using styler package (reduced from 12% to 5% non-compliant lines)</li>
 <li>Achieved 0 ERRORS status in BiocCheck validation for GitHub Actions compatibility</li>
 </ul></div>
@@ -234,7 +247,7 @@
 <div class="section level2">
 <h2 id="id_0991---2025-07-04">[0.99.1] - 2025-07-04<a class="anchor" aria-label="anchor" href="#id_0991---2025-07-04"></a></h2>
 <div class="section level3">
-<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
+<h3 id="added-2">Added<a class="anchor" aria-label="anchor" href="#added-2"></a></h3>
 <ul><li>BiocCheck output folder pattern to <code>.Rbuildignore</code> to prevent build errors</li>
 </ul></div>
 <div class="section level3">
@@ -244,7 +257,7 @@
 <li>Corrected SVM column name handling in <code><a href="reference/predict_by_svm.html">predict_by_svm()</a></code> function</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
+<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
 <ul><li>Improved BiocCheck compliance, achieving 0 ERRORS status</li>
 <li>Updated documentation with properly formatted examples</li>
 </ul></div>
@@ -256,7 +269,7 @@
 <div class="section level2">
 <h2 id="id_0990---2025-06-20">[0.99.0] - 2025-06-20<a class="anchor" aria-label="anchor" href="#id_0990---2025-06-20"></a></h2>
 <div class="section level3">
-<h3 id="added-2">Added<a class="anchor" aria-label="anchor" href="#added-2"></a></h3>
+<h3 id="added-3">Added<a class="anchor" aria-label="anchor" href="#added-3"></a></h3>
 <div class="section level4">
 <h4 id="core-functionality">Core Functionality<a class="anchor" aria-label="anchor" href="#core-functionality"></a></h4>
 <ul><li>
@@ -318,7 +331,7 @@
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
+<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
 <ul><li>None in this initial release</li>
 </ul></div>
 <div class="section level3">
