@@ -78,34 +78,34 @@ seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
 
 # Create mock pathway activities
 pathway_activities <- matrix(
-    rnorm(50, mean = 0, sd = 1),
-    nrow = 10,
-    dimnames = list(
-        colnames(seurat_obj),
-        paste0("Pathway", seq_len(5))
-    )
+  rnorm(50, mean = 0, sd = 1),
+  nrow = 10,
+  dimnames = list(
+    colnames(seurat_obj),
+    paste0("Pathway", seq_len(5))
+  )
 )
 
 # Create mock models list
 mock_fingerprints <- matrix(
-    rnorm(15, mean = 0, sd = 0.5),
-    nrow = 3,
-    dimnames = list(
-        c("TypeA", "TypeB", "TypeC"),
-        paste0("Pathway", seq_len(5))
-    )
+  rnorm(15, mean = 0, sd = 0.5),
+  nrow = 3,
+  dimnames = list(
+    c("TypeA", "TypeB", "TypeC"),
+    paste0("Pathway", seq_len(5))
+  )
 )
 
 models_list <- list(
-    direct = list(fingerprints = mock_fingerprints),
-    pathway_activities = pathway_activities
+  direct = list(fingerprints = mock_fingerprints),
+  pathway_activities = pathway_activities
 )
 
 # Predict cell types
 predictions <- predict_cell_types(
-    seurat_obj,
-    models_list,
-    method = "direct"
+  seurat_obj,
+  models_list,
+  method = "direct"
 )
 }
 \seealso{

@@ -7,9 +7,7 @@
 load_data(
   data_dir,
   experiment_id,
-  use_shell_script = TRUE,
   metadata_file = NULL,
-  counts_file = NULL,
   min_cells = 3,
   min_features = 200,
   verbose = TRUE
@@ -26,14 +24,7 @@ The directory should contain files with the following naming pattern:
 \item{experiment_id}{Character string specifying the experiment ID prefix in filenames.
 This should match the prefix used in your data files.}
 
-\item{use_shell_script}{Logical indicating whether to use shell script for file preparation.
-If TRUE, attempts to use shell script first, falling back to R-based preparation if it fails.
-Default is TRUE.}
-
-\item{metadata_file}{Character string specifying the name of the metadata file.
-If NULL, will be automatically detected based on experiment_id.}
-
-\item{counts_file}{Character string specifying the name of the counts file.
+\item{metadata_file}{Optional. Character string specifying the name of the metadata file.
 If NULL, will be automatically detected based on experiment_id.}
 
 \item{min_cells}{Integer specifying the minimum number of cells expressing a gene
@@ -91,8 +82,7 @@ write.csv(metadata, metadata_file, row.names = FALSE)
 # Load the data
 seurat_obj <- load_data(
   data_dir = temp_dir,
-  experiment_id = exp_id,
-  use_shell_script = FALSE
+  experiment_id = exp_id
 )
 
 # Clean up

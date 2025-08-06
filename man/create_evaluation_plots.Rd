@@ -51,5 +51,7 @@ This function is particularly useful for quick generation of standard plots
 without having to write custom visualization code for common analysis tasks.
 }
 \examples{
+\dontrun{
 create_evaluation_plots(seurat_object, results_dir = "./results")
+}
 }

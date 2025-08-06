@@ -137,7 +137,6 @@ test_that("plot_scCulture works with BUILD mode results", {
     experiment_id = "test_viz",
     kegg_file = kegg_file,
     output_dir = tempfile("test_viz_output"),
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE
@@ -189,7 +188,6 @@ test_that("plot_scCulture works with PREDICT mode results", {
     experiment_id = "build_viz",
     kegg_file = kegg_file,
     output_dir = tempfile("build_viz_output"),
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE
@@ -202,7 +200,6 @@ test_that("plot_scCulture works with PREDICT mode results", {
     experiment_id = "predict_viz",
     fingerprint_file = build_results$fingerprint_file,
     output_dir = tempfile("predict_viz_output"),
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE
@@ -268,7 +265,6 @@ test_that("plot_scCulture returns data when return_data = TRUE", {
     experiment_id = "test_data_return",
     kegg_file = kegg_file,
     output_dir = tempfile("test_data_output"),
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE
@@ -326,7 +322,6 @@ test_that("plot_scCulture handles invalid inputs gracefully", {
     experiment_id = "test_invalid",
     kegg_file = kegg_file,
     output_dir = tempfile("test_invalid_output"),
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE
@@ -372,7 +367,6 @@ test_that("plot_scCulture saves plots to file when requested", {
     experiment_id = "test_save",
     kegg_file = kegg_file,
     output_dir = output_dir,
-    use_shell_script = FALSE,
     perform_tsne = FALSE,
     verbose = FALSE,
     progress = FALSE

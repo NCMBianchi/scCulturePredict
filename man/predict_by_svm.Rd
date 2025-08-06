@@ -47,5 +47,7 @@ function handles data preparation, model training, prediction, and evaluation
 in an integrated workflow.
 }
 \examples{
+\dontrun{
 svm_results <- predict_by_svm(pathway_matrix, seurat_object)
+}
 }

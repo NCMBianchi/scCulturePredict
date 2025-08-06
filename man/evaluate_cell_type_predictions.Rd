@@ -62,16 +62,16 @@ counts <- matrix(rpois(1000, 5), nrow = 100)
 rownames(counts) <- paste0("Gene", seq_len(100))
 colnames(counts) <- paste0("Cell", seq_len(10))
 metadata <- data.frame(
-    true_cell_type = rep(c("TypeA", "TypeB"), each = 5),
-    predicted_cell_type = rep(c("TypeA", "TypeB"), 5)
+  true_cell_type = rep(c("TypeA", "TypeB"), each = 5),
+  predicted_cell_type = rep(c("TypeA", "TypeB"), 5)
 )
 seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 
 # Evaluate predictions
 evaluation <- evaluate_cell_type_predictions(
-    seurat_obj,
-    true_labels_col = "true_cell_type",
-    pred_labels_col = "predicted_cell_type"
+  seurat_obj,
+  true_labels_col = "true_cell_type",
+  pred_labels_col = "predicted_cell_type"
 )
 }
 \seealso{

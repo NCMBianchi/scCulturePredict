@@ -16,8 +16,6 @@
 #'   Required for "predict" mode, ignored in "build" mode.
 #' @param experiment_id Character string specifying the experiment ID prefix in filenames.
 #'   Default is "experiment".
-#' @param use_shell_script Logical indicating whether to use the shell script for file preparation.
-#'   Default is TRUE.
 #' @param perform_tsne Logical indicating whether to perform t-SNE. Default is TRUE.
 #' @param progress Logical indicating whether to show progress bar. Default is FALSE.
 #' @param parallel Logical indicating whether to use parallel processing. Default is FALSE.
@@ -149,7 +147,7 @@
 scCulture <- function(data_dir, kegg_file = NULL, output_dir,
                       mode = "build", fingerprint_file = NULL,
                       experiment_id = "experiment",
-                      use_shell_script = TRUE, perform_tsne = TRUE,
+                      perform_tsne = TRUE,
                       progress = FALSE, parallel = FALSE, n_cores = NULL,
                       verbose = TRUE) {
   # Input validation
@@ -206,10 +204,6 @@ scCulture <- function(data_dir, kegg_file = NULL, output_dir,
     stop("experiment_id must be a single character string")
   }
 
-  if (!is.logical(use_shell_script) || length(use_shell_script) != 1) {
-    stop("use_shell_script must be a single logical value")
-  }
-
   if (!is.logical(perform_tsne) || length(perform_tsne) != 1) {
     stop("perform_tsne must be a single logical value")
   }
@@ -263,7 +257,7 @@ scCulture <- function(data_dir, kegg_file = NULL, output_dir,
 
       # Load data (10%)
       if (verbose) message("Loading single-cell data...")
-      seurat_object <- load_data(data_dir, experiment_id, use_shell_script = use_shell_script, verbose = verbose)
+      seurat_object <- load_data(data_dir, experiment_id, verbose = verbose)
       if (progress) {
         setTxtProgressBar(pb, 15)
         message("")

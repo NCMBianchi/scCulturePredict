@@ -1,9 +1,9 @@
 # scCulturePredict
 
 [![Bioconductor](https://img.shields.io/badge/Bioconductor-devel-brightgreen)](https://bioconductor.org/)
-[![Version](https://img.shields.io/badge/Version-0.99.26-orange)](https://github.com/nccb/scCulturePredict)
-[![R-CMD-check](https://github.com/NCMBianchi/scCulturePredict/workflows/R-CMD-check/badge.svg)](https://github.com/NCMBianchi/scCulturePredict/actions)
-[![codecov](https://codecov.io/gh/nccb/scCulturePredict/branch/main/graph/badge.svg)](https://codecov.io/gh/nccb/scCulturePredict)
+[![Version](https://img.shields.io/badge/Version-0.99.27-orange)](https://github.com/nccb/scCulturePredict)
+[![R-CMD-check-BiocCheck](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml)
+[![codecov](https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg)](https://codecov.io/gh/NCMBianchi/scCulturePredict)
 [![R](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)](https://www.r-project.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -29,7 +29,7 @@ scCulturePredict is an R package that provides dual functionality for cell cultu
 - Generate prediction-specific visualizations
 
 ### Core Capabilities
-- Load and preprocess single-cell data (supports both CSV and 10X Genomics formats)
+- Load and preprocess single-cell data (10X Genomics format)
 - Perform dimensionality reduction with UMAP and t-SNE
 - Integrate with Seurat workflows
 - Comprehensive evaluation and visualization tools
@@ -141,6 +141,32 @@ seurat_object <- reduce_dimensions(seurat_object)
 # Continue with pathway analysis and predictions...
 ```
 
+## Data Format Requirements
+
+scCulturePredict requires single-cell RNA-seq data in **10X Genomics format**:
+- `matrix.mtx.gz` or `matrix.mtx` - Gene expression matrix
+- `barcodes.tsv.gz` or `barcodes.tsv` - Cell barcodes
+- `features.tsv.gz` or `features.tsv` - Gene information
+- `metadata.tsv.gz` or `metadata.tsv` (optional) - Cell metadata with sample information
+
+### Preprocessing GSE165686 Data (Optional)
+
+If you're working with GSE165686 format files that have malformed headers (e.g., "x" in the first row), you can use the included shell script to preprocess the data:
+
+```bash
+# Location: inst/scripts/transform_files.sh
+# Make script executable
+chmod +x inst/scripts/transform_files.sh
+
+# Run preprocessing
+./inst/scripts/transform_files.sh input_directory output_directory
+```
+
+This script will:
+- Remove malformed "x" headers from barcodes and features files
+- Rename GSE165686-formatted files to standard 10X names
+- Handle gzip compression automatically
+
 ## Documentation
 
 Comprehensive documentation is available in the package:
@@ -148,6 +174,23 @@ Comprehensive documentation is available in the package:
 - `vignette("scCulturePredict-introduction")` - Introduction to scCulturePredict
 - `vignette("scCulturePredict-visualization")` - Visualisation guide
 - `vignette("scCulturePredict-advanced")` - Advanced usage
+
+## Alternative Implementations
+
+The package includes additional functions that provide extended functionality but are not part of the main pipeline. These are preserved in `inst/extras/alternative_implementations.R` for advanced users or future development:
+
+- **Enhanced dimensionality reduction**: PCA with variance explained, UMAP with clustering
+- **Statistical pathway analysis**: Pathway enrichment with p-values and FDR correction
+- **Advanced visualizations**: Heatmaps, boxplots, and customizable plots
+
+These functions can be sourced and used independently:
+```r
+source(system.file("extras", "alternative_implementations.R", package = "scCulturePredict"))
+# Use enhanced PCA with variance explained
+pca_results <- perform_pca(seurat_object)
+```
+
+See the file for detailed documentation and integration instructions.
 
 ## Code Quality
 
@@ -228,7 +271,7 @@ If you use scCulturePredict in your research, please cite (bibtex format):
   title = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},
   author = {Niccolò Bianchi},
   year = {2025},
-  note = {R package version 0.99.26},
+  note = {R package version 0.99.27},
   url = {https://github.com/ncmbianchi/scCulturePredict},
 }
 ```

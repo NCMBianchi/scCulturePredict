@@ -87,14 +87,14 @@ n_cells <- 60
 n_pathways <- 10
 
 pathway_activity <- matrix(
-    c(
-        rnorm(20 * n_pathways, mean = 1, sd = 0.5), # TypeA pattern
-        rnorm(20 * n_pathways, mean = -1, sd = 0.5), # TypeB pattern
-        rnorm(20 * n_pathways, mean = 0, sd = 0.5) # TypeC pattern
-    ),
-    nrow = n_cells,
-    ncol = n_pathways,
-    byrow = TRUE
+  c(
+    rnorm(20 * n_pathways, mean = 1, sd = 0.5), # TypeA pattern
+    rnorm(20 * n_pathways, mean = -1, sd = 0.5), # TypeB pattern
+    rnorm(20 * n_pathways, mean = 0, sd = 0.5) # TypeC pattern
+  ),
+  nrow = n_cells,
+  ncol = n_pathways,
+  byrow = TRUE
 )
 
 rownames(pathway_activity) <- paste0("Cell", seq_len(n_cells))
@@ -105,10 +105,10 @@ labels <- factor(rep(c("TypeA", "TypeB", "TypeC"), each = 20))
 
 # Train classifier
 classifier <- train_cell_type_classifier(
-    pathway_activity,
-    labels,
-    method = "svm",
-    cross_validate = FALSE # Disable CV for speed
+  pathway_activity,
+  labels,
+  method = "svm",
+  cross_validate = FALSE # Disable CV for speed
 )
 
 # Check model

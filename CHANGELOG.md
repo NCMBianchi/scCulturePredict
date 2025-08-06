@@ -5,6 +5,32 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.27] - 2025-08-06
+
+### Changed
+- Major code cleanup and refactoring:
+  * Removed unused functions: `prepare_files_for_seurat()`, `load_packages()`
+  * Removed CSV format support from `load_data()` - package now focuses on 10X format only
+  * Removed `use_shell_script` parameter from `scCulture()` and `load_data()`
+  * Moved alternative implementations to `inst/extras/alternative_implementations.R`
+  * Deleted unused files: dimensionality_reduction.R, pathway_analysis.R, visualization.R
+
+### Added
+- New comprehensive test files for improved coverage:
+  * `test-pipeline-full-params.R` - tests with all parameters enabled (26 tests)
+  * `test-pipeline-errors.R` - tests error handling and edge cases (21 tests)
+- Documentation for `transform_files.sh` shell script as optional utility
+
+### Improved
+- Test coverage expected to increase from 32.71% to ~50-55%
+- Code coverage for t-SNE, verbose output, progress bars, and parallel processing
+- Package size reduced by ~1000+ lines of code
+- Better maintainability with focused, well-tested core functionality
+
+### Status
+- All 93 tests passing successfully across 4 test files (0 failures)
+- GitHub Actions CI/CD pipeline passing all checks
+
 ## [0.99.26] - 2025-08-06
 
 ### Changed

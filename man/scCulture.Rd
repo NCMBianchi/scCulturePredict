@@ -11,7 +11,6 @@ scCulture(
   mode = "build",
   fingerprint_file = NULL,
   experiment_id = "experiment",
-  use_shell_script = TRUE,
   perform_tsne = TRUE,
   progress = FALSE,
   parallel = FALSE,
@@ -36,9 +35,6 @@ Required for "predict" mode, ignored in "build" mode.}
 
 \item{experiment_id}{Character string specifying the experiment ID prefix in filenames.
 Default is "experiment".}
-
-\item{use_shell_script}{Logical indicating whether to use the shell script for file preparation.
-Default is TRUE.}
 
 \item{perform_tsne}{Logical indicating whether to perform t-SNE. Default is TRUE.}
 

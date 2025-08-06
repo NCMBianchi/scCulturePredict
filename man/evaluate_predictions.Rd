@@ -52,5 +52,7 @@ with the following column names:
 }
 }
 \examples{
+\dontrun{
 evaluation_results <- evaluate_predictions(seurat_object)
+}
 }

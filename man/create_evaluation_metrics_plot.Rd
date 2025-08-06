@@ -68,9 +68,9 @@ ROC and PR curves visualize classifier performance across different thresholds.
 \examples{
 # Example with mock evaluation metrics
 metrics_data <- data.frame(
-    metric = rep(c("Accuracy", "Precision", "Recall", "F1"), 3),
-    value = c(0.85, 0.82, 0.88, 0.85, 0.79, 0.77, 0.81, 0.79, 0.91, 0.89, 0.93, 0.91),
-    method = rep(c("Method1", "Method2", "Method3"), each = 4)
+  metric = rep(c("Accuracy", "Precision", "Recall", "F1"), 3),
+  value = c(0.85, 0.82, 0.88, 0.85, 0.79, 0.77, 0.81, 0.79, 0.91, 0.89, 0.93, 0.91),
+  method = rep(c("Method1", "Method2", "Method3"), each = 4)
 )
 plot <- create_evaluation_metrics_plot(metrics_data)
 }

@@ -140,9 +140,9 @@ test_that("scCulture BUILD mode works with 10X format data", {
       experiment_id = "test_experiment",
       kegg_file = kegg_file, # Use real KEGG file
       output_dir = tempfile("test_output"),
-      perform_tsne = FALSE,
-      verbose = FALSE,
-      progress = FALSE
+      perform_tsne = TRUE,
+      verbose = TRUE,
+      progress = TRUE
     )
   })
 
