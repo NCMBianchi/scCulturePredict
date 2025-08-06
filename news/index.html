@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.24</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,38 @@
       <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.25" id="scculturepredict-09925-2025-08-06">scCulturePredict 0.99.25 (2025-08-06)<a class="anchor" aria-label="anchor" href="#scculturepredict-09925-2025-08-06"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-99-25">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-25"></a></h3>
+<div class="section level4">
+<h4 id="fixed-r-cmd-check-errors-0-99-25">Fixed R CMD Check Errors<a class="anchor" aria-label="anchor" href="#fixed-r-cmd-check-errors-0-99-25"></a></h4>
+<ul><li>Removed examples from internal functions that were causing check failures</li>
+<li>Fixed <code>calculate_prediction_confidence</code> example execution error</li>
+<li>Fixed <code>validate_and_fix_file</code> example execution error<br></li>
+<li>Fixed <code>process_metadata</code> example execution error</li>
+<li>Cleaned up leftover example code from <code>get_best_data_layer</code>
+</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-test-failures-svdpca-errors-0-99-25">Fixed Test Failures (SVD/PCA Errors)<a class="anchor" aria-label="anchor" href="#fixed-test-failures-svdpca-errors-0-99-25"></a></h4>
+<ul><li>Fixed PCA calls in test-dimensionality_reduction.R to specify <code>npcs = 10</code> instead of default 50</li>
+<li>With 50 cells, maximum PCs is 49, so default of 50 caused SVD errors</li>
+<li>Fixed mock data in test-pathway_analysis.R from 10 to 50 cells</li>
+<li>This resolves all “max(nu, nv) must be strictly less than min(nrow(A), ncol(A))” errors</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-fixes-0-99-25">Documentation Fixes<a class="anchor" aria-label="anchor" href="#documentation-fixes-0-99-25"></a></h4>
+<ul><li>Internal functions marked with <code>@keywords internal</code> no longer have <code>@examples</code> sections</li>
+<li>This resolves “could not find function” errors during R CMD check</li>
+</ul></div>
+<div class="section level4">
+<h4 id="test-infrastructure-0-99-25">Test Infrastructure<a class="anchor" aria-label="anchor" href="#test-infrastructure-0-99-25"></a></h4>
+<ul><li>All 5 test failures and 10 total R CMD check errors now properly addressed</li>
+<li>Coverage report generation working correctly with fixed tests</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.24" id="scculturepredict-09924-2025-08-05">scCulturePredict 0.99.24 (2025-08-05)<a class="anchor" aria-label="anchor" href="#scculturepredict-09924-2025-08-05"></a></h2>
 <div class="section level3">
