@@ -1,7 +1,8 @@
 # scCulturePredict
 
 [![Bioconductor](https://img.shields.io/badge/Bioconductor-devel-brightgreen)](https://bioconductor.org/)
-[![Version](https://img.shields.io/badge/Version-0.99.25-orange)](https://github.com/nccb/scCulturePredict)
+[![Version](https://img.shields.io/badge/Version-0.99.26-orange)](https://github.com/nccb/scCulturePredict)
+[![R-CMD-check](https://github.com/NCMBianchi/scCulturePredict/workflows/R-CMD-check/badge.svg)](https://github.com/NCMBianchi/scCulturePredict/actions)
 [![codecov](https://codecov.io/gh/nccb/scCulturePredict/branch/main/graph/badge.svg)](https://codecov.io/gh/nccb/scCulturePredict)
 [![R](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)](https://www.r-project.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -227,7 +228,7 @@ If you use scCulturePredict in your research, please cite (bibtex format):
   title = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},
   author = {Niccolò Bianchi},
   year = {2025},
-  note = {R package version 0.99.25},
+  note = {R package version 0.99.26},
   url = {https://github.com/ncmbianchi/scCulturePredict},
 }
 ```

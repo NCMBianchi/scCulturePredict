@@ -5,6 +5,32 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.26] - 2025-08-06
+
+### Changed
+- Major test suite refactoring - all tests now passing
+- Removed 7 unnecessary test files that were testing internal functions:
+  * test-data_loading.R, test-dimensionality_reduction.R, test-evaluation.R
+  * test-pathway_analysis.R, test-prediction.R, test-preprocessing.R, test-utils.R
+- Kept only test-pipeline.R and test-visualization.R
+- Tests now focus exclusively on user-facing functions: `scCulture()` and `plot_scCulture()`
+
+### Fixed
+- Mock data generation now matches real 10X Genomics format:
+  * Line numbers in barcodes.tsv and features.tsv
+  * Row names in metadata.tsv with proper columns
+  * Realistic yeast gene names (YAL###W format)
+  * 500 cells × 1000 genes to ensure sufficient data survives QC filtering
+- Now uses actual KEGG file from package (inst/extdata/kegg/sce00001.keg)
+- All 46 tests now passing (was 16 failures, now 0 failures)
+
+### Added
+- GitHub Actions build status badge to README
+
+### Improved
+- Reduces maintenance burden significantly
+- Aligns tests with package philosophy of single entry point with two modes
+
 ## [0.99.25] - 2025-08-06
 
 ### Fixed
