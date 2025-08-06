@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.25</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.26</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,39 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.26" id="scculturepredict-09926-2025-08-06">scCulturePredict 0.99.26 (2025-08-06)<a class="anchor" aria-label="anchor" href="#scculturepredict-09926-2025-08-06"></a></h2>
+<div class="section level3">
+<h3 id="major-test-suite-refactoring---all-tests-now-passing-0-99-26">Major Test Suite Refactoring - All Tests Now Passing<a class="anchor" aria-label="anchor" href="#major-test-suite-refactoring---all-tests-now-passing-0-99-26"></a></h3>
+<div class="section level4">
+<h4 id="removed-unnecessary-test-files-0-99-26">Removed Unnecessary Test Files<a class="anchor" aria-label="anchor" href="#removed-unnecessary-test-files-0-99-26"></a></h4>
+<ul><li>Removed 7 test files that were testing internal functions:
+<ul><li>test-data_loading.R, test-dimensionality_reduction.R, test-evaluation.R</li>
+<li>test-pathway_analysis.R, test-prediction.R, test-preprocessing.R, test-utils.R</li>
+</ul></li>
+<li>Kept only test-pipeline.R and test-visualization.R</li>
+<li>Tests now focus exclusively on user-facing functions: <code><a href="../reference/scCulture.html">scCulture()</a></code> and <code><a href="../reference/plot_scCulture.html">plot_scCulture()</a></code>
+</li>
+</ul></div>
+<div class="section level4">
+<h4 id="fixed-mock-data-generation-0-99-26">Fixed Mock Data Generation<a class="anchor" aria-label="anchor" href="#fixed-mock-data-generation-0-99-26"></a></h4>
+<ul><li>Mock data now matches real 10X Genomics format:
+<ul><li>Line numbers in barcodes.tsv and features.tsv</li>
+<li>Row names in metadata.tsv with proper columns</li>
+<li>Realistic yeast gene names (YAL###W format)</li>
+<li>500 cells × 1000 genes to ensure sufficient data survives QC filtering</li>
+</ul></li>
+<li>Now uses actual KEGG file from package (inst/extdata/kegg/sce00001.keg)</li>
+</ul></div>
+<div class="section level4">
+<h4 id="other-improvements-0-99-26">Other Improvements<a class="anchor" aria-label="anchor" href="#other-improvements-0-99-26"></a></h4>
+<ul><li>Added GitHub Actions build status badge to README</li>
+<li>All 46 tests now passing (was 16 failures, now 0 failures)</li>
+<li>Reduces maintenance burden significantly</li>
+<li>Aligns tests with package philosophy of single entry point with two modes</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.25" id="scculturepredict-09925-2025-08-06">scCulturePredict 0.99.25 (2025-08-06)<a class="anchor" aria-label="anchor" href="#scculturepredict-09925-2025-08-06"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-0-99-25">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-25"></a></h3>
@@ -50,7 +83,7 @@
 <h4 id="fixed-r-cmd-check-errors-0-99-25">Fixed R CMD Check Errors<a class="anchor" aria-label="anchor" href="#fixed-r-cmd-check-errors-0-99-25"></a></h4>
 <ul><li>Removed examples from internal functions that were causing check failures</li>
 <li>Fixed <code>calculate_prediction_confidence</code> example execution error</li>
-<li>Fixed <code>validate_and_fix_file</code> example execution error<br></li>
+<li>Fixed <code>validate_and_fix_file</code> example execution error</li>
 <li>Fixed <code>process_metadata</code> example execution error</li>
 <li>Cleaned up leftover example code from <code>get_best_data_layer</code>
 </li>
