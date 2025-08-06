@@ -12,10 +12,4 @@ A numeric vector of confidence scores between 0 and 1 for each prediction. Highe
 \description{
 Calculate prediction confidence scores
 }
-\examples{
-# Example with mock predictions
-predictions <- matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2)
-confidence <- calculate_prediction_confidence(predictions)
-print(confidence)
-}
 \keyword{internal}

@@ -39,7 +39,7 @@ test_that("perform_umap works correctly", {
   seurat <- create_mock_seurat()
 
   # Run PCA first
-  seurat <- Seurat::RunPCA(seurat, features = Seurat::VariableFeatures(seurat))
+  seurat <- Seurat::RunPCA(seurat, features = Seurat::VariableFeatures(seurat), npcs = 10)
 
   # Test basic UMAP
   result <- perform_umap(seurat, dims = 1:5)
@@ -60,7 +60,7 @@ test_that("perform_tsne works correctly", {
   seurat <- create_mock_seurat()
 
   # Run PCA first
-  seurat <- Seurat::RunPCA(seurat, features = Seurat::VariableFeatures(seurat))
+  seurat <- Seurat::RunPCA(seurat, features = Seurat::VariableFeatures(seurat), npcs = 10)
 
   # Test basic t-SNE
   result <- perform_tsne(seurat, dims = 1:5)

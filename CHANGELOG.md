@@ -5,6 +5,22 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.25] - 2025-08-06
+
+### Fixed
+- Removed examples from internal functions that were causing R CMD check failures
+- Fixed `calculate_prediction_confidence` example execution error
+- Fixed `validate_and_fix_file` example execution error
+- Fixed `process_metadata` example execution error
+- Cleaned up leftover example code from `get_best_data_layer`
+- Internal functions marked with `@keywords internal` no longer have `@examples` sections
+- Resolved "could not find function" errors during R CMD check
+- Fixed PCA calls in test-dimensionality_reduction.R to specify `npcs = 10` instead of default 50
+- Fixed mock data in test-pathway_analysis.R from 10 to 50 cells
+- Resolved all "max(nu, nv) must be strictly less than min(nrow(A), ncol(A))" SVD errors
+- All 5 test failures and 10 total R CMD check errors now properly addressed
+- Coverage report generation working correctly with fixed tests
+
 ## [0.99.24] - 2025-08-05
 
 ### Fixed

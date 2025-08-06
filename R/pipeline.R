@@ -618,11 +618,6 @@ run_predict_mode <- function(seurat_object, fingerprint_file, output_dir, progre
 #' @keywords internal
 #'
 #' @return A numeric vector of confidence scores between 0 and 1 for each prediction. Higher values indicate more confident predictions.
-#' @examples
-#' # Example with mock predictions
-#' predictions <- matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2)
-#' confidence <- calculate_prediction_confidence(predictions)
-#' print(confidence)
 calculate_prediction_confidence <- function(new_pathway_matrix, reference_pathway_matrix) {
   # Calculate correlation-based confidence scores
   correlations <- cor(new_pathway_matrix, reference_pathway_matrix, method = "pearson")

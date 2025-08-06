@@ -1,3 +1,28 @@
+# scCulturePredict 0.99.25 (2025-08-06)
+
+## Bug Fixes
+
+### Fixed R CMD Check Errors
+* Removed examples from internal functions that were causing check failures
+* Fixed `calculate_prediction_confidence` example execution error
+* Fixed `validate_and_fix_file` example execution error  
+* Fixed `process_metadata` example execution error
+* Cleaned up leftover example code from `get_best_data_layer`
+
+### Fixed Test Failures (SVD/PCA Errors)
+* Fixed PCA calls in test-dimensionality_reduction.R to specify `npcs = 10` instead of default 50
+* With 50 cells, maximum PCs is 49, so default of 50 caused SVD errors
+* Fixed mock data in test-pathway_analysis.R from 10 to 50 cells
+* This resolves all "max(nu, nv) must be strictly less than min(nrow(A), ncol(A))" errors
+
+### Documentation Fixes
+* Internal functions marked with `@keywords internal` no longer have `@examples` sections
+* This resolves "could not find function" errors during R CMD check
+
+### Test Infrastructure
+* All 5 test failures and 10 total R CMD check errors now properly addressed
+* Coverage report generation working correctly with fixed tests
+
 # scCulturePredict 0.99.24 (2025-08-05)
 
 ## Test Suite Fixes

@@ -3,9 +3,9 @@
 # Create a mock Seurat object for testing
 create_mock_seurat <- function() {
   # Create a small Seurat object with gene expression data
-  counts <- matrix(rpois(1000, 10), nrow = 100, ncol = 10)
+  counts <- matrix(rpois(5000, 10), nrow = 100, ncol = 50)
   rownames(counts) <- paste0("gene", 1:100)
-  colnames(counts) <- paste0("cell", 1:10)
+  colnames(counts) <- paste0("cell", 1:50)
 
   seurat <- Seurat::CreateSeuratObject(counts = counts)
   seurat <- Seurat::NormalizeData(seurat)
@@ -13,7 +13,7 @@ create_mock_seurat <- function() {
   seurat <- Seurat::ScaleData(seurat)
 
   # Add sample information
-  seurat$sample <- rep(c("A", "B"), each = 5)
+  seurat$sample <- rep(c("A", "B"), each = 25)
 
   return(seurat)
 }

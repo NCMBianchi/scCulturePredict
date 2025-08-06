@@ -1,8 +1,8 @@
 Package: scCulturePredict
 Type: Package
 Title: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints
-Version: 0.99.24
-Date: 2025-08-05
+Version: 0.99.25
+Date: 2025-08-06
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-4202-7154"))

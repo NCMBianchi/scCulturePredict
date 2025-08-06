@@ -17,19 +17,4 @@ Helper function to determine the best available data layer for FetchData.
 Checks for normalized data layers and falls back to counts if needed.
 Handles both Seurat v4 and v5 layer structures.
 }
-\examples{
-# Example with mock KEG file content
-keg_content <- c(
-  "ENTRY       hsa00010                    Pathway",
-  "NAME        Glycolysis / Gluconeogenesis",
-  "GENE        1234  HK1; hexokinase 1",
-  "GENE        5678  GPI; glucose-6-phosphate isomerase",
-  "///"
-)
-temp_file <- tempfile(fileext = ".keg")
-writeLines(keg_content, temp_file)
-kegg_data <- parse_kegg_keg(temp_file)
-print(kegg_data)
-unlink(temp_file)
-}
 \keyword{internal}

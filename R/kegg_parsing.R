@@ -8,20 +8,6 @@
 #' @param seurat_object A Seurat object
 #' @return Character string specifying the best layer to use
 #' @keywords internal
-#' @examples
-#' # Example with mock KEG file content
-#' keg_content <- c(
-#'   "ENTRY       hsa00010                    Pathway",
-#'   "NAME        Glycolysis / Gluconeogenesis",
-#'   "GENE        1234  HK1; hexokinase 1",
-#'   "GENE        5678  GPI; glucose-6-phosphate isomerase",
-#'   "///"
-#' )
-#' temp_file <- tempfile(fileext = ".keg")
-#' writeLines(keg_content, temp_file)
-#' kegg_data <- parse_kegg_keg(temp_file)
-#' print(kegg_data)
-#' unlink(temp_file)
 get_best_data_layer <- function(seurat_object) {
   # Get the default assay (usually "RNA")
   default_assay <- Seurat::DefaultAssay(seurat_object)

@@ -82,17 +82,17 @@ write.csv(counts_data, counts_file)
 
 # Create mock metadata file
 metadata <- data.frame(
-    cell_id = colnames(counts_data),
-    sample = rep(c("Sample1", "Sample2"), each = 5)
+  cell_id = colnames(counts_data),
+  sample = rep(c("Sample1", "Sample2"), each = 5)
 )
 metadata_file <- file.path(temp_dir, paste0(exp_id, "_metadata.csv"))
 write.csv(metadata, metadata_file, row.names = FALSE)
 
 # Load the data
 seurat_obj <- load_data(
-    data_dir = temp_dir,
-    experiment_id = exp_id,
-    use_shell_script = FALSE
+  data_dir = temp_dir,
+  experiment_id = exp_id,
+  use_shell_script = FALSE
 )
 
 # Clean up

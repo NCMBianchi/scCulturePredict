@@ -21,12 +21,4 @@ A data frame with the corrected data
 \description{
 Checks for malformed input files (e.g., files with "x" in first row) and fixes them.
 }
-\examples{
-# Example with temporary file
-tmp_file <- tempfile(fileext = ".csv")
-write.csv(iris[1:5, ], tmp_file, row.names = FALSE)
-result <- validate_and_fix_file(tmp_file)
-print(result)
-unlink(tmp_file)
-}
 \keyword{internal}
