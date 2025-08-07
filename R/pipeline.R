@@ -89,6 +89,7 @@
 #' }
 #'
 #' @examples
+#' \dontrun{
 #' # Build mode - generate fingerprints from labeled training data
 #' # Using default KEGG file
 #' training_results <- scCulture(
@@ -108,7 +109,9 @@
 #' # Access training results
 #' fingerprint_file <- training_results$fingerprint_file
 #' training_accuracy <- training_results$evaluation_results$overall_accuracy
+#' }
 #'
+#' \dontrun{
 #' # Predict mode - apply fingerprints to new unlabeled data
 #' prediction_results <- scCulture(
 #'   data_dir = "./DATA_unlabeled",
@@ -120,7 +123,9 @@
 #' # Access predictions
 #' predictions <- prediction_results$seurat_object$classification_pred
 #' confidence_scores <- prediction_results$seurat_object$prediction_confidence
+#' }
 #'
+#' \dontrun{
 #' # Advanced usage with progress tracking and parallel processing
 #' # Using default KEGG file
 #' results <- scCulture(
@@ -132,7 +137,7 @@
 #'   parallel = TRUE,
 #'   verbose = TRUE
 #' )
-#'
+#' }
 #' @seealso
 #' \code{\link{load_data}} for data loading
 #' \code{\link{preprocess_data}} for data preprocessing

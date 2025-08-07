@@ -42,7 +42,15 @@ The function ensures:
 }
 }
 \examples{
-save_object(seurat_object, "./results/seurat_object.rds")
+# Create a simple object to save
+test_object <- list(data = 1:10, name = "test")
+
+# Save to temporary file
+temp_file <- tempfile(fileext = ".rds")
+save_object(test_object, temp_file)
+
+# Clean up
+unlink(temp_file)
 
 }
 \seealso{

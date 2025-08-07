@@ -13,10 +13,10 @@ A character string indicating the detected analysis mode: either 'BUILD' (for tr
 Detect scCulture Analysis Mode
 }
 \examples{
-# Check mode based on column names
-columns <- c("gene", "cell", "culture_condition")
-mode <- detect_scCulture_mode(columns)
-print(mode)
+\dontrun{
+# This function is internal and requires scCulture results
+# mode <- detect_scCulture_mode(scCulture_results)
+}
 \donttest{
 # Example requires a Seurat object with predictions
 # plots <- create_build_plots(seurat_obj, output_dir = tempdir())

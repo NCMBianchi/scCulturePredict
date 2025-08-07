@@ -98,15 +98,20 @@ evaluation_results <- create_mock_evaluation()
 
 ## UMAP Visualization
 
-The `create_umap_plot` function generates UMAP visualizations from a Seurat object:
+For UMAP visualizations, use Seurat's built-in `DimPlot` function or `plot_scCulture` for scCulture results:
 
 ```{r umap_basic}
-# Basic UMAP plot
-umap_plot <- create_umap_plot(
-    seurat_object = seurat_object,
-    color_by = "sample",
-    title = "UMAP of Example Data"
-)
+# Basic UMAP plot using metadata coordinates
+library(ggplot2)
+umap_plot <- ggplot(seurat_object@meta.data,
+                    aes(x = UMAP_1, y = UMAP_2, color = sample)) +
+    geom_point(size = 2) +
+    theme_minimal() +
+    labs(title = "UMAP of Example Data",
+         x = "UMAP_1",
+         y = "UMAP_2",
+         color = "Sample") +
+    scale_color_manual(values = c("A" = "#E41A1C", "B" = "#377EB8", "C" = "#4DAF4A"))
 
 print(umap_plot)
 ```
@@ -117,13 +122,15 @@ You can customize various aspects of the UMAP plot:
 
 ```{r umap_custom}
 # Customized UMAP plot
-umap_custom <- create_umap_plot(
-    seurat_object = seurat_object,
-    color_by = "cluster",
-    point_size = 2.5,
-    title = "UMAP by Cluster",
-    legend_title = "Cluster ID"
-)
+umap_custom <- ggplot(seurat_object@meta.data,
+                      aes(x = UMAP_1, y = UMAP_2, color = factor(cluster))) +
+    geom_point(size = 2.5) +
+    theme_minimal() +
+    labs(title = "UMAP by Cluster",
+         x = "UMAP_1",
+         y = "UMAP_2",
+         color = "Cluster ID") +
+    scale_color_discrete()
 
 print(umap_custom)
 ```
@@ -132,13 +139,15 @@ You can also use other metadata columns for coloring:
 
 ```{r umap_continuous}
 # UMAP with continuous variable
-umap_continuous <- create_umap_plot(
-    seurat_object = seurat_object,
-    color_by = "percent_mito",
-    point_size = 2,
-    title = "UMAP by Mitochondrial Percentage",
-    legend_title = "% Mito"
-)
+umap_continuous <- ggplot(seurat_object@meta.data,
+                          aes(x = UMAP_1, y = UMAP_2, color = percent_mito)) +
+    geom_point(size = 2) +
+    theme_minimal() +
+    labs(title = "UMAP by Mitochondrial Percentage",
+         x = "UMAP_1",
+         y = "UMAP_2",
+         color = "% Mito") +
+    scale_color_viridis_c()
 
 print(umap_continuous)
 ```
@@ -158,27 +167,28 @@ print(combined_plot)
 
 # Prediction Evaluation Visualizations
 
-## Accuracy Plots
+## Evaluation Metrics Plots
 
-The `create_accuracy_plot` function visualizes prediction accuracy:
+Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
 
 ```{r accuracy}
-# Direct method accuracy plot
-direct_accuracy <- create_accuracy_plot(
-    evaluation_results = evaluation_results,
-    method = "direct",
-    title = "Direct Prediction Accuracy"
+# Metrics visualization
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# metrics_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = evaluation_results,
+#     plot_type = "metrics",
+#     title = "Direct Prediction Accuracy"
+# )
+
+# Alternative: Use create_evaluation_plots for comprehensive visualization
+evaluation_plots <- create_evaluation_plots(
+    seurat_object = seurat_object,
+    results_dir = "./results",
+    verbose = FALSE
 )
 
-# SVM method accuracy plot
-svm_accuracy <- create_accuracy_plot(
-    evaluation_results = evaluation_results,
-    method = "svm",
-    title = "SVM Prediction Accuracy"
-)
-
-# Display the plots side by side
-direct_accuracy + svm_accuracy + plot_layout(ncol = 2)
+# Display the plots (plots are saved to results directory)
+# evaluation_plots
 ```
 
 ### Customizing Accuracy Plots
@@ -190,46 +200,52 @@ You can customize the color palette:
 custom_colors <- c("A" = "#E41A1C", "B" = "#377EB8", "C" = "#4DAF4A")
 
 # Customized accuracy plot
-custom_accuracy <- create_accuracy_plot(
-    evaluation_results = evaluation_results,
-    method = "direct",
-    title = "Customized Accuracy Plot",
-    color_palette = custom_colors
-)
-
-print(custom_accuracy)
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# custom_accuracy <- create_evaluation_metrics_plot(
+#     evaluation_results = evaluation_results,
+#     plot_type = "metrics",
+#     title = "Custom Accuracy Plot",
+#     color_palette = c("#2E86AB", "#A23B72", "#F18F01")
+# )
+#
+# print(custom_accuracy)
 ```
 
-## Confusion Matrix Heatmaps
+## Confusion Matrix Visualization
 
-The `create_confusion_heatmap` function visualizes confusion matrices:
+Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
 
 ```{r confusion}
-# Direct method confusion matrix
-direct_confusion <- create_confusion_heatmap(
-    evaluation_results = evaluation_results,
-    method = "direct",
-    title = "Direct Prediction Confusion Matrix"
+# Confusion matrix visualization
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# confusion_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = evaluation_results,
+#     plot_type = "confusion",
+#     title = "Direct Prediction Confusion Matrix"
+# )
+
+# Alternative confusion matrix view
+# Note: Individual confusion matrix functions have been moved to inst/extras/alternative_implementations.R
+# svm_confusion <- create_evaluation_metrics_plot(
+#     evaluation_results = evaluation_results,
+#     plot_type = "confusion",
+#     title = "SVM Prediction Confusion Matrix"
+# )
+
+# For comprehensive evaluation including all methods
+# Use create_evaluation_plots which generates multiple visualizations
+all_plots <- create_evaluation_plots(
+    seurat_object = seurat_object,
+    results_dir = "./results",
+    verbose = FALSE
 )
 
-# SVM method confusion matrix
-svm_confusion <- create_confusion_heatmap(
-    evaluation_results = evaluation_results,
-    method = "svm",
-    title = "SVM Prediction Confusion Matrix"
-)
-
-# Threshold method confusion matrix
-threshold_confusion <- create_confusion_heatmap(
-    evaluation_results = evaluation_results,
-    method = "threshold",
-    title = "Threshold Prediction Confusion Matrix"
-)
-
+# Individual plots can be accessed from the results
 # Display the plots
-direct_confusion
-svm_confusion
-threshold_confusion
+# Note: Individual plot objects would need to be created separately
+# direct_confusion
+# svm_confusion
+# threshold_confusion
 ```
 
 ### Customizing Confusion Heatmaps
@@ -240,98 +256,122 @@ You can customize the color gradient:
 # Custom color gradient
 custom_gradient <- c("white", "navy")
 
-# Customized confusion heatmap
-custom_confusion <- create_confusion_heatmap(
-    evaluation_results = evaluation_results,
-    method = "svm",
-    title = "Customized Confusion Matrix",
-    color_palette = custom_gradient
-)
-
-print(custom_confusion)
+# Customized confusion matrix visualization
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# custom_confusion <- create_evaluation_metrics_plot(
+#     evaluation_results = evaluation_results,
+#     plot_type = "confusion",
+#     color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
+#     title = "Custom Confusion Matrix"
+# )
+#
+# print(custom_confusion)
 ```
 
 # Evaluation Metrics Visualization
 
-The `create_evaluation_metrics_plot` function provides detailed evaluation metrics:
+Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
 
 ```{r eval_metrics, eval=FALSE}
 # For this demonstration, we need additional metrics that would come from a real evaluation
 # This code is provided as an example but not evaluated in this vignette
 
 # Create evaluation metrics plot
-metrics_plot <- create_evaluation_metrics_plot(
-    evaluation_results = complete_evaluation_results,
-    plot_type = "metrics",
-    title = "Prediction Performance Metrics"
-)
-
-print(metrics_plot)
-
-# ROC curve
-roc_plot <- create_evaluation_metrics_plot(
-    evaluation_results = complete_evaluation_results,
-    plot_type = "roc",
-    title = "ROC Curve"
-)
-
-print(roc_plot)
-
-# Precision-Recall curve
-pr_plot <- create_evaluation_metrics_plot(
-    evaluation_results = complete_evaluation_results,
-    plot_type = "pr",
-    title = "Precision-Recall Curve"
-)
-
-print(pr_plot)
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# metrics_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = complete_evaluation_results,
+#     plot_type = "metrics",
+#     title = "Prediction Performance Metrics"
+# )
+#
+# print(metrics_plot)
+#
+# # ROC curve
+# roc_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = complete_evaluation_results,
+#     plot_type = "roc",
+#     title = "ROC Curve"
+# )
+#
+# print(roc_plot)
+#
+# # Precision-Recall curve
+# pr_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = complete_evaluation_results,
+#     plot_type = "pr",
+#     title = "Precision-Recall Curve"
+# )
+#
+# print(pr_plot)
 ```
 
 # Saving Visualization Results
 
-The `save_visualization_plots` function saves all visualization plots to a specified directory:
+Visualization plots can be saved using `ggplot2::ggsave()` or base R graphics functions:
 
 ```{r save_plots, eval=FALSE}
 # Create directory for results
 results_dir <- "scCulturePredict_results"
 if (!dir.exists(results_dir)) dir.create(results_dir)
 
-# Save visualization plots
-save_visualization_plots(
-    seurat_object = seurat_object,
-    evaluation_results = evaluation_results,
-    output_dir = results_dir,
-    prefix = "example",
-    color_palette = custom_colors,
-    verbose = TRUE
-)
+# Save individual plots using ggplot2::ggsave
+# Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R
+
+# Save confusion matrix plot
+if (exists("confusion_plot")) {
+  ggplot2::ggsave(
+    filename = file.path(results_dir, "example_confusion.png"),
+    plot = confusion_plot,
+    width = 10,
+    height = 8,
+    dpi = 300
+  )
+}
+
+# Save metrics plot
+if (exists("metrics_plot")) {
+  ggplot2::ggsave(
+    filename = file.path(results_dir, "example_metrics.png"),
+    plot = metrics_plot,
+    width = 10,
+    height = 8,
+    dpi = 300
+  )
+}
+
+# Save UMAP plot
+if (exists("umap_plot")) {
+  ggplot2::ggsave(
+    filename = file.path(results_dir, "example_umap.png"),
+    plot = umap_plot,
+    width = 10,
+    height = 8,
+    dpi = 300
+  )
+}
 ```
 
 This will save the following files to the specified directory:
 - example_umap.png
-- example_direct_accuracy.png
-- example_svm_accuracy.png
-- example_direct_confusion.png
-- example_svm_confusion.png
+- umap_experimental.png (from create_evaluation_plots)
 
 # Advanced Customization
 
 Since all visualization functions return `ggplot` objects, you can further customize them using standard `ggplot2` functions:
 
 ```{r ggplot_customize}
-# Start with a basic plot
-base_plot <- create_umap_plot(
-    seurat_object = seurat_object,
-    color_by = "sample"
-)
-
-# Add custom ggplot2 elements
-customized_plot <- base_plot +
+# Create a highly customized plot using ggplot2 directly
+customized_plot <- ggplot(seurat_object@meta.data,
+                          aes(x = UMAP_1, y = UMAP_2, color = sample)) +
+    geom_point(size = 2) +
     theme_minimal() +
     labs(
         title = "Highly Customized UMAP Plot",
         subtitle = "With additional annotations",
-        caption = "Created with scCulturePredict"
+        caption = "Created with scCulturePredict",
+        x = "UMAP_1",
+        y = "UMAP_2",
+        color = "Sample"
     ) +
     theme(
         plot.title = element_text(size = 16, face = "bold"),

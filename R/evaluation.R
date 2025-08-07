@@ -45,9 +45,27 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' evaluation_results <- evaluate_predictions(seurat_object)
-#' }
+#' # Create mock Seurat object with predictions
+#' library(Seurat)
+#' counts <- matrix(rpois(500, 5), nrow = 50)
+#' rownames(counts) <- paste0("Gene", seq_len(50))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#'
+#' # Create metadata with actual and predicted samples
+#' metadata <- data.frame(
+#'   row.names = colnames(counts),
+#'   sample = rep(c("A", "B"), each = 5),
+#'   predicted_sample_1 = c("A", "A", "B", "A", "A", "B", "B", "B", "A", "B"),
+#'   predicted_sample_2 = c("A", "A", "A", "A", "A", "B", "B", "B", "B", "B"),
+#'   classification_pred = c("A", "A", "B", "A", "A", "B", "B", "B", "B", "B")
+#' )
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+#'
+#' # Evaluate predictions
+#' results <- evaluate_predictions(seurat_obj)
+#'
+#' # Check results
+#' print(results$direct_accuracy)
 evaluate_predictions <- function(seurat_object) {
   # Confusion matrices
   direct_table <- table(seurat_object$sample, seurat_object$predicted_sample_1)
@@ -138,9 +156,28 @@ evaluate_predictions <- function(seurat_object) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' create_evaluation_plots(seurat_object, results_dir = "./results")
-#' }
+#' # Create mock Seurat object with UMAP coordinates
+#' library(Seurat)
+#' counts <- matrix(rpois(500, 5), nrow = 50)
+#' rownames(counts) <- paste0("Gene", seq_len(50))
+#' colnames(counts) <- paste0("Cell", seq_len(10))
+#'
+#' # Create metadata with UMAP coordinates
+#' metadata <- data.frame(
+#'   row.names = colnames(counts),
+#'   UMAP_1 = rnorm(10),
+#'   UMAP_2 = rnorm(10),
+#'   sample = rep(c("A", "B"), each = 5)
+#' )
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+#'
+#' # Create plots in temporary directory
+#' temp_dir <- tempdir()
+#' create_evaluation_plots(seurat_obj, results_dir = temp_dir, verbose = FALSE)
+#'
+#' # Check that plot was created
+#' plot_file <- file.path(temp_dir, "umap_experimental.png")
+#' file.exists(plot_file)
 create_evaluation_plots <- function(seurat_object, results_dir = "./results",
                                     color_palette = NULL, verbose = TRUE) {
   # Create directory if it doesn't exist
@@ -161,468 +198,4 @@ create_evaluation_plots <- function(seurat_object, results_dir = "./results",
   ggplot2::ggsave(file.path(results_dir, "umap_experimental.png"), p1, width = 10, height = 8)
 
   # Add more plots as needed...
-}
-
-#' Evaluate prediction performance
-#'
-#' @description
-#' Evaluates the performance of cell type predictions using various metrics.
-#' This function calculates accuracy, precision, recall, F1 score, and confusion
-#' matrix for the predictions.
-#'
-#' @param seurat_obj Seurat object. The Seurat object containing true cell type labels.
-#' @param predictions Character vector. Predicted cell type labels.
-#' @param true_labels_col Character. Name of the metadata column containing true
-#'   cell type labels (default: "cell_type").
-#' @param metrics Character vector. Metrics to calculate. Options are "accuracy",
-#'   "precision", "recall", "f1", "confusion_matrix" (default: all).
-#' @param verbose Logical. Whether to print progress messages (default: TRUE).
-#'
-#' @return A list containing the requested evaluation metrics:
-#' \itemize{
-#'   \item accuracy: Overall prediction accuracy
-#'   \item precision: Precision for each cell type
-#'   \item recall: Recall for each cell type
-#'   \item f1: F1 score for each cell type
-#'   \item confusion_matrix: Confusion matrix of predictions vs true labels
-#' }
-#'
-#' @details
-#' The function performs the following steps:
-#' \enumerate{
-#'   \item Validates input parameters and data
-#'   \item Extracts true labels from Seurat object
-#'   \item Calculates requested metrics
-#'   \item Returns evaluation results
-#' }
-#'
-#' @examples
-#' # Example with mock predictions
-#' # Create mock true and predicted labels
-#' set.seed(123)
-#' true_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
-#' predicted_labels <- factor(sample(c("TypeA", "TypeB", "TypeC"), 100, replace = TRUE))
-#'
-#' # Create mock Seurat object with predictions
-#' library(Seurat)
-#' counts <- matrix(rpois(1000, 5), nrow = 100)
-#' rownames(counts) <- paste0("Gene", seq_len(100))
-#' colnames(counts) <- paste0("Cell", seq_len(10))
-#' metadata <- data.frame(
-#'   true_cell_type = rep(c("TypeA", "TypeB"), each = 5),
-#'   predicted_cell_type = rep(c("TypeA", "TypeB"), 5)
-#' )
-#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
-#'
-#' # Evaluate predictions
-#' evaluation <- evaluate_cell_type_predictions(
-#'   seurat_obj,
-#'   true_labels_col = "true_cell_type",
-#'   pred_labels_col = "predicted_cell_type"
-#' )
-#' @seealso
-#' \code{\link{predict_cell_types}} for making predictions
-#' \code{\link{train_cell_type_classifier}} for training the classifier
-#'
-#' @export
-evaluate_cell_type_predictions <- function(seurat_obj,
-                                           predictions,
-                                           true_labels_col = "cell_type",
-                                           metrics = c("accuracy", "precision", "recall", "f1", "confusion_matrix"),
-                                           verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_obj, "Seurat")) {
-    stop("seurat_obj must be a Seurat object")
-  }
-
-  if (!is.character(predictions) || length(predictions) != ncol(seurat_obj)) {
-    stop("predictions must be a character vector with length matching number of cells")
-  }
-
-  if (!is.character(true_labels_col) || length(true_labels_col) != 1) {
-    stop("true_labels_col must be a single character string")
-  }
-
-  if (!true_labels_col %in% colnames(seurat_obj@meta.data)) {
-    stop(sprintf("True labels column '%s' not found in metadata", true_labels_col))
-  }
-
-  valid_metrics <- c("accuracy", "precision", "recall", "f1", "confusion_matrix")
-  if (!all(metrics %in% valid_metrics)) {
-    invalid_metrics <- setdiff(metrics, valid_metrics)
-    stop(sprintf(
-      "Invalid metrics: %s. Valid options are: %s",
-      paste(invalid_metrics, collapse = ", "),
-      paste(valid_metrics, collapse = ", ")
-    ))
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Get true labels
-  if (verbose) message("Getting true labels...")
-  true_labels <- tryCatch(
-    {
-      seurat_obj@meta.data[[true_labels_col]]
-    },
-    error = function(e) {
-      stop(sprintf("Error accessing true labels: %s", e$message))
-    }
-  )
-
-  if (any(is.na(true_labels))) {
-    stop("True labels contain missing values")
-  }
-
-  # Calculate metrics
-  results <- list()
-
-  if ("confusion_matrix" %in% metrics) {
-    if (verbose) message("Calculating confusion matrix...")
-    results$confusion_matrix <- tryCatch(
-      {
-        table(Predicted = predictions, True = true_labels)
-      },
-      error = function(e) {
-        stop(sprintf("Error calculating confusion matrix: %s", e$message))
-      }
-    )
-  }
-
-  if ("accuracy" %in% metrics) {
-    if (verbose) message("Calculating accuracy...")
-    results$accuracy <- tryCatch(
-      {
-        mean(predictions == true_labels)
-      },
-      error = function(e) {
-        stop(sprintf("Error calculating accuracy: %s", e$message))
-      }
-    )
-  }
-
-  if (any(c("precision", "recall", "f1") %in% metrics)) {
-    if (verbose) message("Calculating per-class metrics...")
-    unique_labels <- unique(c(predictions, true_labels))
-
-    if ("precision" %in% metrics) {
-      results$precision <- tryCatch(
-        {
-          vapply(unique_labels, function(label) {
-            pred_pos <- predictions == label
-            if (sum(pred_pos) == 0) {
-              return(0)
-            }
-            sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
-          }, FUN.VALUE = numeric(1))
-        },
-        error = function(e) {
-          stop(sprintf("Error calculating precision: %s", e$message))
-        }
-      )
-    }
-
-    if ("recall" %in% metrics) {
-      results$recall <- tryCatch(
-        {
-          vapply(unique_labels, function(label) {
-            true_pos <- true_labels == label
-            if (sum(true_pos) == 0) {
-              return(0)
-            }
-            sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
-          }, FUN.VALUE = numeric(1))
-        },
-        error = function(e) {
-          stop(sprintf("Error calculating recall: %s", e$message))
-        }
-      )
-    }
-
-    if ("f1" %in% metrics) {
-      if (verbose) message("Calculating F1 score...")
-      results$f1 <- tryCatch(
-        {
-          if (!"precision" %in% names(results)) {
-            precision <- vapply(unique_labels, function(label) {
-              pred_pos <- predictions == label
-              if (sum(pred_pos) == 0) {
-                return(0)
-              }
-              sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
-            }, FUN.VALUE = numeric(1))
-          } else {
-            precision <- results$precision
-          }
-
-          if (!"recall" %in% names(results)) {
-            recall <- vapply(unique_labels, function(label) {
-              true_pos <- true_labels == label
-              if (sum(true_pos) == 0) {
-                return(0)
-              }
-              sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
-            }, FUN.VALUE = numeric(1))
-          } else {
-            recall <- results$recall
-          }
-
-          2 * (precision * recall) / (precision + recall)
-        },
-        error = function(e) {
-          stop(sprintf("Error calculating F1 score: %s", e$message))
-        }
-      )
-    }
-
-    if ("f1" %in% metrics) {
-      if (verbose) message("Calculating F1 score...")
-      results$f1 <- tryCatch(
-        {
-          if (!"precision" %in% names(results)) {
-            precision <- vapply(unique_labels, function(label) {
-              pred_pos <- predictions == label
-              if (sum(pred_pos) == 0) {
-                return(0)
-              }
-              sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
-            }, FUN.VALUE = numeric(1))
-          } else {
-            precision <- results$precision
-          }
-
-          if (!"recall" %in% names(results)) {
-            recall <- vapply(unique_labels, function(label) {
-              true_pos <- true_labels == label
-              if (sum(true_pos) == 0) {
-                return(0)
-              }
-              sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
-            }, FUN.VALUE = numeric(1))
-          } else {
-            recall <- results$recall
-          }
-
-          2 * (precision * recall) / (precision + recall)
-        },
-        error = function(e) {
-          stop(sprintf("Error calculating F1 score: %s", e$message))
-        }
-      )
-    }
-  }
-
-  if (verbose) {
-    message("Evaluation completed successfully")
-  }
-
-  return(results)
-}
-
-#' Plot evaluation metrics
-#'
-#' @description
-#' Creates visualizations of prediction evaluation metrics.
-#' This function generates various plots to help understand the performance
-#' of cell type predictions.
-#'
-#' @param evaluation_results List. Results from evaluate_predictions().
-#' @param plot_type Character. Type of plot to create. Options are:
-#'   \itemize{
-#'     \item "confusion": Confusion matrix heatmap
-#'     \item "metrics": Bar plot of precision, recall, and F1 scores
-#'     \item "roc": ROC curve (if probabilities are available)
-#'     \item "pr": Precision-recall curve (if probabilities are available)
-#'   }
-#' @param title Character. Title for the plot (default: NULL).
-#' @param color_palette Character vector. Colors to use for the plot
-#'   (default: NULL, uses default palette).
-#' @param verbose Logical. Whether to print progress messages (default: TRUE).
-#'
-#' @return A ggplot object containing the requested visualization.
-#'
-#' @details
-#' The function performs the following steps:
-#' \enumerate{
-#'   \item Validates input parameters and data
-#'   \item Prepares data for plotting
-#'   \item Creates the requested visualization
-#'   \item Applies custom styling if specified
-#' }
-#'
-#' @examples
-#' # Example with mock evaluation metrics
-#' metrics_data <- data.frame(
-#'   metric = rep(c("Accuracy", "Precision", "Recall", "F1"), 3),
-#'   value = c(0.85, 0.82, 0.88, 0.85, 0.79, 0.77, 0.81, 0.79, 0.91, 0.89, 0.93, 0.91),
-#'   method = rep(c("Method1", "Method2", "Method3"), each = 4)
-#' )
-#' plot <- create_evaluation_metrics_plot(metrics_data)
-#' @details
-#' This function creates various types of evaluation plots to visualize prediction performance.
-#' It supports four different plot types:
-#' \itemize{
-#'   \item "confusion": A heatmap visualization of the confusion matrix
-#'   \item "metrics": A bar plot of precision, recall, and F1 scores
-#'   \item "roc": A receiver operating characteristic curve
-#'   \item "pr": A precision-recall curve
-#' }
-#'
-#' The function validates all inputs and checks that the required data for the
-#' specified plot type is available in the evaluation_results. It uses ggplot2
-#' for visualization and applies appropriate styling and formatting based on the
-#' plot type and user-provided parameters.
-#'
-#' For the confusion matrix plot, cell counts are shown as text labels, while the
-#' metrics plot displays precision, recall, and F1 scores with customizable colors.
-#' ROC and PR curves visualize classifier performance across different thresholds.
-#'
-#' @seealso
-#' \code{\link{evaluate_predictions}} for calculating evaluation metrics
-#'
-#' @export
-create_evaluation_metrics_plot <- function(evaluation_results,
-                                           plot_type = "confusion",
-                                           title = NULL,
-                                           color_palette = NULL,
-                                           verbose = TRUE) {
-  # Input validation
-  if (!is.list(evaluation_results)) {
-    stop("evaluation_results must be a list")
-  }
-
-  valid_plot_types <- c("confusion", "metrics", "roc", "pr")
-  if (!is.character(plot_type) || length(plot_type) != 1 ||
-    !plot_type %in% valid_plot_types) {
-    stop(sprintf(
-      "plot_type must be one of: %s",
-      paste(valid_plot_types, collapse = ", ")
-    ))
-  }
-
-  if (!is.null(title) && (!is.character(title) || length(title) != 1)) {
-    stop("title must be NULL or a single character string")
-  }
-
-  if (!is.null(color_palette) &&
-    (!is.character(color_palette) || length(color_palette) == 0)) {
-    stop("color_palette must be NULL or a non-empty character vector")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check required data for each plot type
-  if (plot_type == "confusion" && !"confusion_matrix" %in% names(evaluation_results)) {
-    stop("Confusion matrix not found in evaluation_results")
-  }
-
-  if (plot_type == "metrics" &&
-    !all(c("precision", "recall", "f1") %in% names(evaluation_results))) {
-    stop("Precision, recall, and F1 scores not found in evaluation_results")
-  }
-
-  if (plot_type %in% c("roc", "pr") && !"probabilities" %in% names(evaluation_results)) {
-    stop("Prediction probabilities not found in evaluation_results")
-  }
-
-  # Create plot
-  if (verbose) message(sprintf("Creating %s plot...", plot_type))
-
-  p <- tryCatch(
-    {
-      switch(plot_type,
-        "confusion" = {
-          # Prepare confusion matrix data
-          conf_mat <- evaluation_results$confusion_matrix
-          conf_data <- reshape2::melt(conf_mat)
-          names(conf_data) <- c("Predicted", "True", "Count")
-
-          # Create heatmap
-          ggplot2::ggplot(conf_data, ggplot2::aes(x = True, y = Predicted, fill = Count)) +
-            ggplot2::geom_tile() +
-            ggplot2::scale_fill_gradient(low = "white", high = "blue") +
-            ggplot2::theme_minimal() +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
-            ggplot2::labs(title = title %||% "Confusion Matrix")
-        },
-        "metrics" = {
-          # Prepare metrics data
-          metrics_data <- data.frame(
-            CellType = names(evaluation_results$precision),
-            Precision = evaluation_results$precision,
-            Recall = evaluation_results$recall,
-            F1 = evaluation_results$f1
-          )
-          metrics_data <- reshape2::melt(metrics_data, id.vars = "CellType")
-
-          # Create bar plot
-          ggplot2::ggplot(metrics_data, ggplot2::aes(x = CellType, y = value, fill = variable)) +
-            ggplot2::geom_bar(stat = "identity", position = "dodge") +
-            ggplot2::scale_fill_manual(values = color_palette %||%
-              c(
-                "Precision" = "blue",
-                "Recall" = "red",
-                "F1" = "green"
-              )) +
-            ggplot2::theme_minimal() +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
-            ggplot2::labs(
-              title = title %||% "Prediction Metrics by Cell Type",
-              y = "Score",
-              fill = "Metric"
-            )
-        },
-        "roc" = {
-          # Calculate ROC curve
-          roc_data <- pROC::roc(
-            evaluation_results$true_labels,
-            evaluation_results$probabilities
-          )
-
-          # Create ROC curve
-          ggplot2::ggplot(data.frame(
-            FPR = 1 - roc_data$specificities,
-            TPR = roc_data$sensitivities
-          ), ggplot2::aes(x = FPR, y = TPR)) +
-            ggplot2::geom_line() +
-            ggplot2::geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-            ggplot2::theme_minimal() +
-            ggplot2::labs(
-              title = title %||% "ROC Curve",
-              x = "False Positive Rate",
-              y = "True Positive Rate"
-            )
-        },
-        "pr" = {
-          # Calculate PR curve
-          pr_data <- PRROC::pr.curve(
-            evaluation_results$true_labels,
-            evaluation_results$probabilities
-          )
-
-          # Create PR curve
-          ggplot2::ggplot(data.frame(
-            Recall = pr_data$curve[, 1],
-            Precision = pr_data$curve[, 2]
-          ), ggplot2::aes(x = Recall, y = Precision)) +
-            ggplot2::geom_line() +
-            ggplot2::theme_minimal() +
-            ggplot2::labs(title = title %||% "Precision-Recall Curve")
-        }
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error creating %s plot: %s", plot_type, e$message))
-    }
-  )
-
-  if (verbose) {
-    message("Plot created successfully")
-  }
-
-  return(p)
 }

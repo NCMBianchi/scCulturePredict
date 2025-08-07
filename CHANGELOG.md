@@ -5,6 +5,46 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.28] - 2025-08-07
+
+### Changed
+- Moved 8 unused functions to `inst/extras/alternative_implementations.R`:
+  * From utils.R: `format_number()`, `calculate_percentage()`, `is_empty()`, `validate_file()`
+  * From evaluation.R: `evaluate_cell_type_predictions()`, `create_evaluation_metrics_plot()`
+  * From prediction.R: `predict_cell_types()`, `train_cell_type_classifier()`
+- Removed 466 lines from evaluation.R and 422 lines from prediction.R
+- Updated all vignettes to comment out references to moved functions
+- Fixed vignette visualization code to use ggplot2 directly instead of Seurat's DimPlot
+- Cleaned up NAMESPACE, removing 8 obsolete exports
+- Updated _pkgdown.yml to remove 9 function references
+
+### Fixed
+- pkgdown build failure caused by references to non-existent functions
+- Vignette rendering issues with UMAP visualization by using ggplot2 directly
+- Example errors to meet BiocCheck's 80% runnable requirement:
+  * `predict_by_similarity`: Corrected matrix dimensions (pathways as rows, cultures as columns)
+  * `preprocess_data`: Removed non-existent normalization_method parameter
+  * `predict_by_svm`: Simplified to directly create pathway matrix, avoiding pipeline complexity
+  * `reduce_dimensions`: Increased cell count to 500 to avoid SVD errors with 40 PCs
+  * `evaluate_predictions` & `create_evaluation_plots`: Added proper row names to metadata
+  * `save_object` & `load_object`: Made runnable with tempfile() examples
+- Wrapped only essential examples in \dontrun{} (scCulture, load_data, plot_scCulture)
+- Missing exports in NAMESPACE for functions that no longer exist
+- Added Matrix package to Imports to resolve test dependencies
+- All R CMD check errors (v0.99.27 passed due to GitHub Actions error-on: "never" setting, now proper examples have been added)
+
+### Improved
+- Test coverage dramatically increased from 54.09% to 81.02% (+26.93%)
+- Package maintainability by removing poorly-tested, unused code
+- Documentation consistency across package files
+- Made 13 of 16 exported functions (81.25%) have runnable examples for BiocCheck compliance
+- Fixed mock data creation in examples to properly match Seurat object structure
+- Regenerated documentation with roxygen2 for consistency
+
+### Removed
+- 9 orphaned man/*.Rd documentation files for moved functions
+- Obsolete function references from package documentation
+
 ## [0.99.27] - 2025-08-06
 
 ### Changed

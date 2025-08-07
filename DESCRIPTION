@@ -1,8 +1,8 @@
 Package: scCulturePredict
 Type: Package
-Title: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints
-Version: 0.99.27
-Date: 2025-08-06
+Title: Predict Cell Culture Conditions from Single-Cell RNA-seq Data
+Version: 0.99.28
+Date: 2025-08-07
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-4202-7154"))
@@ -30,6 +30,7 @@ Imports:
     e1071,
     caret,
     methods,
+    Matrix,
     parallel,
     doParallel,
     stats,

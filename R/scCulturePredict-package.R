@@ -90,8 +90,8 @@
 #' approaches.
 #'
 #' @section Evaluation:
-#' Results can be evaluated and visualized using \code{\link{evaluate_predictions}},
-#' \code{\link{create_evaluation_plots}}, and \code{\link{create_evaluation_metrics_plot}} functions.
+#' Results can be evaluated and visualized using \code{\link{evaluate_predictions}}
+#' and \code{\link{create_evaluation_plots}} functions.
 #'
 #' @author
 #' Your Name <your.email@example.com>
@@ -107,9 +107,6 @@
 #' \code{\link{predict_by_svm}} for SVM-based prediction
 #' \code{\link{evaluate_predictions}} for result evaluation
 #' \code{\link{create_evaluation_plots}} for creating evaluation plots
-#' \code{\link{create_evaluation_metrics_plot}} for creating detailed metrics plots
-#' \code{\link{create_umap_plot}} for UMAP visualization
-#' \code{\link{create_accuracy_plot}} for accuracy visualization
-#' \code{\link{create_confusion_heatmap}} for confusion matrix visualization
+
 #' @keywords internal
 "_PACKAGE"

@@ -72,16 +72,13 @@ counts <- matrix(rpois(1000, 5), nrow = 100)
 rownames(counts) <- paste0("Gene", seq_len(100))
 colnames(counts) <- paste0("Cell", seq_len(10))
 metadata <- data.frame(
-    row.names = colnames(counts),
-    condition = rep(c("A", "B"), each = 5)
+  row.names = colnames(counts),
+  condition = rep(c("A", "B"), each = 5)
 )
 seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 
 # Preprocess the data
-processed_obj <- preprocess_data(
-    seurat_obj,
-    normalization_method = "LogNormalize"
-)
+processed_obj <- preprocess_data(seurat_obj)
 }
 \seealso{
 \code{\link{load_data}} for loading the data

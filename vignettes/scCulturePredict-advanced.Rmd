@@ -71,7 +71,6 @@ results <- scumap(
     parallel = TRUE, # Enable parallel processing
     n_cores = 4, # Use 4 CPU cores
     perform_tsne = TRUE, # Include t-SNE analysis
-    use_shell_script = FALSE, # Use R-only data loading
     verbose = TRUE # Detailed progress messages
 )
 
@@ -415,12 +414,13 @@ advanced_metrics <- calculate_advanced_metrics(
 )
 
 # Create detailed metrics visualization
-metrics_plot <- create_evaluation_metrics_plot(
-    evaluation_results = advanced_metrics,
-    plot_type = "metrics",
-    title = "Advanced Evaluation Metrics"
-)
-print(metrics_plot)
+# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
+# metrics_plot <- create_evaluation_metrics_plot(
+#     evaluation_results = advanced_metrics,
+#     plot_type = "metrics",
+#     title = "Advanced Evaluation Metrics"
+# )
+# print(metrics_plot)
 ```
 
 # Integration with Other Tools
@@ -604,13 +604,20 @@ custom_analysis_pipeline <- function(
     if (verbose) message("8. Creating visualizations...")
     if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
-    save_visualization_plots(
+    # Save plots using ggplot2::ggsave
+    # Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R
+
+    # Save evaluation plots if they exist
+    evaluation_plots <- create_evaluation_plots(
         seurat_object = seurat_object,
-        evaluation_results = evaluation_results,
-        output_dir = output_dir,
-        prefix = experiment_id,
-        verbose = verbose
+        results_dir = output_dir
     )
+
+    # Save individual plots
+    for (i in seq_along(evaluation_plots)) {
+        filename <- file.path(output_dir, paste0(experiment_name, "_plot_", i, ".png"))
+        ggplot2::ggsave(filename, evaluation_plots[[i]], width = 10, height = 8, dpi = 300)
+    }
 
     # 9. Return results
     return(list(

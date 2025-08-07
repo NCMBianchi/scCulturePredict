@@ -129,7 +129,15 @@ create_dir_if_not_exists <- function(dir_path, recursive = TRUE) {
 #' }
 #'
 #' @examples
-#' save_object(seurat_object, "./results/seurat_object.rds")
+#' # Create a simple object to save
+#' test_object <- list(data = 1:10, name = "test")
+#'
+#' # Save to temporary file
+#' temp_file <- tempfile(fileext = ".rds")
+#' save_object(test_object, temp_file)
+#'
+#' # Clean up
+#' unlink(temp_file)
 #'
 #' @seealso
 #' \code{\link{saveRDS}} for the base R function
@@ -184,7 +192,19 @@ save_object <- function(object, file_path, compress = TRUE) {
 #' }
 #'
 #' @examples
-#' seurat_object <- load_object("./results/seurat_object.rds")
+#' # Create and save a test object
+#' test_data <- list(values = 1:5, type = "example")
+#' temp_file <- tempfile(fileext = ".rds")
+#' saveRDS(test_data, temp_file)
+#'
+#' # Load the object
+#' loaded_object <- load_object(temp_file)
+#'
+#' # Verify it loaded correctly
+#' print(loaded_object$type)
+#'
+#' # Clean up
+#' unlink(temp_file)
 #'
 #' @seealso
 #' \code{\link{readRDS}} for the base R function
@@ -204,257 +224,4 @@ load_object <- function(file_path) {
       stop(sprintf("Failed to load object from %s: %s", file_path, e$message))
     }
   )
-}
-
-#' Format numeric values
-#'
-#' @description
-#' Formats numeric values with specified number of decimal places.
-#'
-#' @param x Numeric vector to format.
-#' @param digits Integer specifying the number of decimal places. Default is 2.
-#'
-#' @return Character vector of formatted numbers.
-#'
-#' @details
-#' The function performs the following steps:
-#' \enumerate{
-#'   \item Validates input parameters
-#'   \item Formats numbers using sprintf()
-#'   \item Returns formatted character vector
-#' }
-#'
-#' This function is useful for:
-#' \itemize{
-#'   \item Formatting p-values
-#'   \item Formatting statistics
-#'   \item Formatting plot labels
-#' }
-#'
-#' The function ensures:
-#' \itemize{
-#'   \item Consistent decimal places
-#'   \item Proper rounding
-#'   \item Clean output format
-#' }
-#'
-#' @examples
-#' format_number(c(1.23456, 2.34567), digits = 2)
-#'
-#' @seealso
-#' \code{\link{sprintf}} for the base R function
-#'
-#' @export
-format_number <- function(x, digits = 2) {
-  sprintf(paste0("%.", digits, "f"), x)
-}
-
-#' Calculate percentage
-#'
-#' @description
-#' Calculates percentage with proper formatting.
-#'
-#' @param x Numeric vector of values.
-#' @param total Numeric value representing the total. Default is sum(x).
-#' @param digits Integer specifying the number of decimal places. Default is 1.
-#'
-#' @return Character vector of formatted percentages.
-#'
-#' @details
-#' The function performs the following steps:
-#' \enumerate{
-#'   \item Validates input parameters
-#'   \item Calculates percentages
-#'   \item Formats with proper decimal places
-#'   \item Adds percentage symbol
-#' }
-#'
-#' This function is useful for:
-#' \itemize{
-#'   \item Calculating cell type percentages
-#'   \item Formatting plot labels
-#'   \item Reporting statistics
-#' }
-#'
-#' The function ensures:
-#' \itemize{
-#'   \item Proper percentage calculation
-#'   \item Consistent decimal places
-#'   \item Clean output format with % symbol
-#' }
-#'
-#' @examples
-#' calculate_percentage(c(10, 20, 30))
-#'
-#' @seealso
-#' \code{\link{format_number}} for number formatting
-#'
-#' @export
-calculate_percentage <- function(x, total = sum(x), digits = 1) {
-  sprintf(paste0("%.", digits, "f%%"), 100 * x / total)
-}
-
-#' Check if object is empty
-#'
-#' @description
-#' Checks if an object is empty (NULL, NA, empty vector, or empty data frame).
-#'
-#' @param x Object to check.
-#'
-#' @return Logical value indicating whether the object is empty.
-#'
-#' @details
-#' The function performs the following checks in order:
-#' \enumerate{
-#'   \item Checks if the object is NULL
-#'   \item Checks if the object has length 0
-#'   \item Checks if the object is an empty data frame
-#'   \item Checks if all values are NA
-#' }
-#'
-#' This function is useful for:
-#' \itemize{
-#'   \item Validating function inputs
-#'   \item Checking data frame contents
-#'   \item Handling edge cases
-#' }
-#'
-#' The function handles:
-#' \itemize{
-#'   \item NULL values
-#'   \item Empty vectors
-#'   \item Empty data frames
-#'   \item NA values
-#' }
-#'
-#' @examples
-#' is_empty(NULL)
-#' is_empty(c())
-#' is_empty(data.frame())
-#'
-#' @seealso
-#' \code{\link{is.null}} for NULL checking
-#' \code{\link{length}} for vector length checking
-#'
-#' @export
-is_empty <- function(x) {
-  if (is.null(x)) {
-    return(TRUE)
-  }
-  if (length(x) == 0) {
-    return(TRUE)
-  }
-  if (is.data.frame(x) && nrow(x) == 0) {
-    return(TRUE)
-  }
-  if (all(is.na(x))) {
-    return(TRUE)
-  }
-  FALSE
-}
-
-#' Get file extension
-#'
-#' @description
-#' Extracts the file extension from a file path.
-#'
-#' @param file_path Character string specifying the file path.
-#'
-#' @return Character string containing the file extension (without the dot).
-#'
-#' @details
-#' The function performs the following steps:
-#' \enumerate{
-#'   \item Uses tools::file_ext() to extract the extension
-#'   \item Returns the extension without the leading dot
-#' }
-#'
-#' This function is useful for:
-#' \itemize{
-#'   \item File type validation
-#'   \item File processing
-#'   \item File organization
-#' }
-#'
-#' The function ensures:
-#' \itemize{
-#'   \item Consistent extension format
-#'   \item No leading dot in output
-#'   \item Proper handling of files without extensions
-#' }
-#'
-#' @examples
-#' get_file_extension("data.csv")
-#'
-#' @seealso
-#' \code{\link{tools::file_ext}} for the base function
-#'
-#' @export
-get_file_extension <- function(file_path) {
-  tools::file_ext(file_path)
-}
-
-#' Validate file exists
-#'
-#' @description
-#' Validates that a file exists and is readable.
-#'
-#' @param file_path Character string specifying the file path.
-#' @param extension Character string specifying the expected file extension.
-#'   If NULL, no extension check is performed. Default is NULL.
-#'
-#' @return Logical value indicating whether the file is valid.
-#'
-#' @details
-#' The function performs the following checks:
-#' \enumerate{
-#'   \item Validates file existence using file.exists()
-#'   \item Optionally checks file extension
-#'   \item Verifies file readability using file.access()
-#' }
-#'
-#' This function is useful for:
-#' \itemize{
-#'   \item Input validation
-#'   \item File processing
-#'   \item Error handling
-#' }
-#'
-#' The function ensures:
-#' \itemize{
-#'   \item File exists
-#'   \item File has correct extension (if specified)
-#'   \item File is readable
-#'   \item Informative warning messages
-#' }
-#'
-#' @examples
-#' validate_file("data.csv", extension = "csv")
-#'
-#' @seealso
-#' \code{\link{file.exists}} for existence checking
-#' \code{\link{file.access}} for permission checking
-#' \code{\link{get_file_extension}} for extension checking
-#'
-#' @export
-validate_file <- function(file_path, extension = NULL) {
-  if (!file.exists(file_path)) {
-    warning(sprintf("File not found: %s", file_path))
-    return(FALSE)
-  }
-
-  if (!is.null(extension)) {
-    file_ext <- get_file_extension(file_path)
-    if (file_ext != extension) {
-      warning(sprintf("File extension mismatch. Expected: %s, Got: %s", extension, file_ext))
-      return(FALSE)
-    }
-  }
-
-  if (!file.access(file_path, 4) == 0) {
-    warning(sprintf("File is not readable: %s", file_path))
-    return(FALSE)
-  }
-
-  TRUE
 }

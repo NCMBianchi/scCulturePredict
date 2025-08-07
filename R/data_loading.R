@@ -95,35 +95,24 @@ validate_and_fix_file <- function(file_path, sep = "\t", header = TRUE, verbose 
 #' }
 #'
 #' @examples
-#' # Example with temporary files
-#' # Create temporary directory and files
-#' temp_dir <- tempdir()
-#' exp_id <- "test_exp"
+#' \dontrun{
+#' # Example for loading 10X Genomics data
+#' # Assumes you have a directory with 10X format files:
+#' # - matrix.mtx.gz (or matrix.mtx)
+#' # - barcodes.tsv.gz (or barcodes.tsv)
+#' # - features.tsv.gz (or genes.tsv.gz, or features.tsv, or genes.tsv)
+#' # - metadata.csv (optional)
 #'
-#' # Create mock counts file
-#' counts_data <- matrix(rpois(500, 5), nrow = 50)
-#' rownames(counts_data) <- paste0("Gene", seq_len(50))
-#' colnames(counts_data) <- paste0("Cell", seq_len(10))
-#' counts_file <- file.path(temp_dir, paste0(exp_id, "_counts.csv"))
-#' write.csv(counts_data, counts_file)
-#'
-#' # Create mock metadata file
-#' metadata <- data.frame(
-#'   cell_id = colnames(counts_data),
-#'   sample = rep(c("Sample1", "Sample2"), each = 5)
-#' )
-#' metadata_file <- file.path(temp_dir, paste0(exp_id, "_metadata.csv"))
-#' write.csv(metadata, metadata_file, row.names = FALSE)
-#'
-#' # Load the data
+#' # Load 10X data
 #' seurat_obj <- load_data(
-#'   data_dir = temp_dir,
+#'   data_dir = "path/to/10x/data",
 #'   experiment_id = exp_id
 #' )
 #'
 #' # Clean up
 #' unlink(counts_file)
 #' unlink(metadata_file)
+#' }
 #' @seealso
 #' \code{\link{preprocess_data}} for preprocessing the loaded data
 #' \code{\link{reduce_dimensions}} for dimensionality reduction

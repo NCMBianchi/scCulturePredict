@@ -224,16 +224,21 @@ seurat_object <- reduce_dimensions(
 Let's visualize the UMAP embedding:
 
 ```{r umap_vis}
-# Create UMAP visualization
-umap_plot <- create_umap_plot(
-    seurat_object = seurat_object,
-    color_by = "sample",
-    point_size = 1.2,
-    title = "UMAP of Example Data"
-)
+# Create visualization using plot_scCulture
+# Note: plot_scCulture expects the results from scCulture() function
+# If you have results from scCulture, you can visualize them:
+# umap_plot <- plot_scCulture(results)
 
-# Display the plot
-print(umap_plot)
+# For direct visualization when UMAP coordinates are in metadata:
+library(ggplot2)
+if(all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_object@meta.data))) {
+  ggplot(seurat_object@meta.data, aes(x = UMAP_1, y = UMAP_2, color = sample)) +
+    geom_point(size = 1.5) +
+    theme_minimal() +
+    labs(title = "UMAP of Example Data")
+} else {
+  message("UMAP coordinates not found in metadata")
+}
 ```
 
 ## 4. Pathway Analysis
@@ -337,25 +342,27 @@ Finally, we evaluate the prediction results and create visualizations:
 evaluation_results <- evaluate_predictions(seurat_object)
 ```
 
-# Create accuracy plot
-accuracy_plot <- create_accuracy_plot(
-  evaluation_results = evaluation_results,
-  method = "svm",
-  title = "SVM Prediction Accuracy"
+# Create evaluation plots
+# Note: Individual plotting functions have been moved to inst/extras/alternative_implementations.R
+# Use create_evaluation_plots() for comprehensive visualization
+evaluation_plots <- create_evaluation_plots(
+  seurat_object = seurat_object,
+  results_dir = "./results"
 )
 
-# Display the plot
-print(accuracy_plot)
+# Display the plots
+print(evaluation_plots)
 
-# Create confusion matrix heatmap
-confusion_plot <- create_confusion_heatmap(
-  evaluation_results = evaluation_results,
-  method = "direct",
-  title = "Direct Prediction Confusion Matrix"
-)
-
-# Display the plot
-print(confusion_plot)
+# For detailed evaluation metrics visualization
+# The create_evaluation_metrics_plot() function has been moved to inst/extras/alternative_implementations.R
+# metrics_plot <- create_evaluation_metrics_plot(
+#   evaluation_results = evaluation_results,
+#   plot_type = "confusion",
+#   title = "Prediction Results"
+# )
+#
+# # Display the plot
+# print(metrics_plot)
 ```
 
 # Saving Results
@@ -367,14 +374,22 @@ You can save all visualization plots to a directory:
 results_dir <- "scCulturePredict_results"
 if (!dir.exists(results_dir)) dir.create(results_dir)
 
-# Save visualization plots
-save_visualization_plots(
-    seurat_object = seurat_object,
-    evaluation_results = evaluation_results,
-    output_dir = results_dir,
-    prefix = "example",
-    verbose = TRUE
-)
+# Save plots using ggplot2::ggsave or base R functions
+# Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R
+
+# Save evaluation plots created earlier
+if (exists("evaluation_plots")) {
+  for (i in seq_along(evaluation_plots)) {
+    filename <- file.path(results_dir, paste0("example_plot_", i, ".png"))
+    ggplot2::ggsave(filename, evaluation_plots[[i]], width = 10, height = 8)
+  }
+}
+
+# Save metrics plot
+if (exists("metrics_plot")) {
+  ggplot2::ggsave(file.path(results_dir, "example_metrics.png"),
+                  metrics_plot, width = 10, height = 8)
+}
 ```
 
 # Working with Different Data Formats

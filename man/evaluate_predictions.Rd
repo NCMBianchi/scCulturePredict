@@ -52,7 +52,25 @@ with the following column names:
 }
 }
 \examples{
-\dontrun{
-evaluation_results <- evaluate_predictions(seurat_object)
-}
+# Create mock Seurat object with predictions
+library(Seurat)
+counts <- matrix(rpois(500, 5), nrow = 50)
+rownames(counts) <- paste0("Gene", seq_len(50))
+colnames(counts) <- paste0("Cell", seq_len(10))
+
+# Create metadata with actual and predicted samples
+metadata <- data.frame(
+  row.names = colnames(counts),
+  sample = rep(c("A", "B"), each = 5),
+  predicted_sample_1 = c("A", "A", "B", "A", "A", "B", "B", "B", "A", "B"),
+  predicted_sample_2 = c("A", "A", "A", "A", "A", "B", "B", "B", "B", "B"),
+  classification_pred = c("A", "A", "B", "A", "A", "B", "B", "B", "B", "B")
+)
+seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+
+# Evaluate predictions
+results <- evaluate_predictions(seurat_obj)
+
+# Check results
+print(results$direct_accuracy)
 }

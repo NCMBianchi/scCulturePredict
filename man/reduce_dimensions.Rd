@@ -22,6 +22,21 @@ Performs dimensionality reduction using PCA and UMAP on a Seurat object.
 Optionally performs t-SNE analysis.
 }
 \examples{
-seurat_object <- reduce_dimensions(seurat_object)
-seurat_object <- reduce_dimensions(seurat_object, perform_tsne = FALSE, verbose = FALSE)
+# Create mock Seurat object with enough cells for PCA
+library(Seurat)
+counts <- matrix(rpois(100000, 5), nrow = 200, ncol = 500)
+rownames(counts) <- paste0("Gene", seq_len(200))
+colnames(counts) <- paste0("Cell", seq_len(500))
+seurat_obj <- CreateSeuratObject(counts = counts)
+
+# Preprocess the data first (required for PCA)
+seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+seurat_obj <- FindVariableFeatures(seurat_obj, verbose = FALSE)
+seurat_obj <- ScaleData(seurat_obj, verbose = FALSE)
+
+# Run dimensionality reduction
+seurat_obj_reduced <- reduce_dimensions(seurat_obj, perform_tsne = FALSE, verbose = FALSE)
+
+# Check that UMAP coordinates were added
+head(seurat_obj_reduced@meta.data[, c("UMAP_1", "UMAP_2")])
 }

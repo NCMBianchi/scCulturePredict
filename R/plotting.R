@@ -41,23 +41,18 @@
 #' informative error messages for common issues.
 #'
 #' @examples
-#' # Example with mock scCulture results
-#' # Create mock result structure
-#' mock_results <- list(
-#'   predictions = data.frame(
-#'     cell_id = paste0("Cell", seq_len(100)),
-#'     predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
-#'     confidence = runif(100, 0.6, 0.95)
-#'   ),
-#'   umap_coords = data.frame(
-#'     UMAP_1 = rnorm(100),
-#'     UMAP_2 = rnorm(100)
-#'   )
+#' \dontrun{
+#' # Example requires actual scCulture results
+#' # Run scCulture first to get results object
+#' results <- scCulture(
+#'   data_dir = "path/to/data",
+#'   mode = "BUILD"
 #' )
-#' class(mock_results) <- "scCulture"
 #'
 #' # Create visualization
-#' plot <- plot_scCulture(mock_results, plot_type = "confidence")
+#' plot <- plot_scCulture(results, plot_type = "umap")
+#' print(plot)
+#' }
 #' @seealso
 #' \code{\link{scCulture}} for generating the results object
 #'
@@ -132,10 +127,10 @@ plot_scCulture <- function(scCulture_results,
 #'
 #' @return A character string indicating the detected analysis mode: either 'BUILD' (for training with labeled data) or 'PREDICT' (for prediction on unlabeled data).
 #' @examples
-#' # Check mode based on column names
-#' columns <- c("gene", "cell", "culture_condition")
-#' mode <- detect_scCulture_mode(columns)
-#' print(mode)
+#' \dontrun{
+#' # This function is internal and requires scCulture results
+#' # mode <- detect_scCulture_mode(scCulture_results)
+#' }
 detect_scCulture_mode <- function(scCulture_results) {
   seurat_obj <- scCulture_results$seurat_object
 

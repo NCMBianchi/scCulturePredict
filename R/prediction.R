@@ -48,12 +48,13 @@
 #' )
 #'
 #' # Create mock fingerprint profiles
+#' # Note: fingerprints should have pathways as rows and cultures as columns
 #' fingerprint_profiles <- matrix(
 #'   rnorm(30, mean = 0, sd = 0.5),
-#'   nrow = 3,
+#'   nrow = 10,
 #'   dimnames = list(
-#'     c("CultureA", "CultureB", "CultureC"),
-#'     paste0("Pathway", seq_len(10))
+#'     paste0("Pathway", seq_len(10)),
+#'     c("CultureA", "CultureB", "CultureC")
 #'   )
 #' )
 #'
@@ -140,9 +141,49 @@ predict_by_similarity <- function(pathway_matrix, signature_matrix, threshold = 
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' svm_results <- predict_by_svm(pathway_matrix, seurat_object)
-#' }
+#' # Create mock data with sufficient samples for SVM
+#' library(Seurat)
+#' set.seed(123)
+#'
+#' # Create a mock Seurat object with sample metadata
+#' # Need at least 20 cells for proper train/test split
+#' counts <- matrix(rpois(1000, 5), nrow = 50, ncol = 20)
+#' rownames(counts) <- paste0("Gene", seq_len(50))
+#' colnames(counts) <- paste0("Cell", seq_len(20))
+#'
+#' # Create metadata with proper row names
+#' metadata <- data.frame(
+#'   row.names = colnames(counts),
+#'   sample = rep(c("SampleA", "SampleB"), each = 10)
+#' )
+#' seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+#'
+#' # Create a mock pathway activity matrix directly
+#' # This represents pathway activities for each cell
+#' pathway_matrix <- matrix(
+#'   rnorm(20 * 5, mean = 0, sd = 1), # 20 cells x 5 pathways
+#'   nrow = 20,
+#'   ncol = 5,
+#'   dimnames = list(
+#'     colnames(counts), # Cell names must match Seurat object
+#'     paste0("Pathway", seq_len(5)) # Pathway names
+#'   )
+#' )
+#'
+#' # Make pathway activities slightly different between samples
+#' # to ensure SVM can find patterns
+#' pathway_matrix[1:10, ] <- pathway_matrix[1:10, ] + 0.5 # SampleA cells
+#' pathway_matrix[11:20, ] <- pathway_matrix[11:20, ] - 0.5 # SampleB cells
+#'
+#' # Run SVM prediction
+#' svm_results <- predict_by_svm(
+#'   pathway_matrix,
+#'   seurat_obj,
+#'   verbose = FALSE
+#' )
+#'
+#' # Check results
+#' print(svm_results$accuracy)
 predict_by_svm <- function(pathway_matrix, seurat_object, verbose = TRUE) {
   # Prepare data for classification
   pathway_df <- as.data.frame(pathway_matrix[, colSums(is.na(pathway_matrix)) == 0])
@@ -190,424 +231,4 @@ predict_by_svm <- function(pathway_matrix, seurat_object, verbose = TRUE) {
     confusion_matrix = confusion_matrix,
     accuracy = accuracy
   ))
-}
-
-#' Predict cell types using pathway activity
-#'
-#' @description
-#' Predicts cell types based on pathway activity patterns using a trained classifier.
-#' This function takes a Seurat object and pathway activity data, and returns
-#' predicted cell type labels for each cell.
-#'
-#' @details
-#' This function applies a pre-trained classifier to predict cell types based on
-#' pathway activity patterns. It's designed to work with classifiers trained using
-#' the \code{\link{train_cell_type_classifier}} function, but can work with any
-#' classifier that has a predict method.
-#'
-#' The function performs several validation checks to ensure the inputs are valid:
-#' \enumerate{
-#'   \item Validates that seurat_object is a proper Seurat object
-#'   \item Validates that pathway_activity is a matrix or data frame with the correct dimensions
-#'   \item Checks that the number of cells matches between the pathway_activity and seurat_object
-#'   \item Verifies that the classifier has a predict method
-#'   \item Ensures all required pathways are present in the pathway_activity matrix
-#' }
-#'
-#' After validation, the function:
-#' \enumerate{
-#'   \item Extracts the relevant pathway activity patterns based on the classifier's feature importance
-#'   \item Transposes the data to the format expected by the classifier
-#'   \item Makes predictions using the classifier's predict method
-#'   \item If probability=TRUE, returns both class predictions and probability estimates
-#'   \item If probability=FALSE, returns only class predictions
-#' }
-#'
-#' Error handling is implemented throughout to provide informative error messages
-#' if any step fails, making the function robust for both interactive and
-#' programmatic use.
-#'
-#' @param seurat_object A Seurat object containing gene expression data.
-#' @param pathway_activity Matrix. Pathway activity matrix where rows are pathways
-#'   and columns are cells.
-#' @param classifier Trained classifier object. Must have a predict method.
-#' @param probability Logical. Whether to return prediction probabilities
-#'   (default: FALSE).
-#' @param verbose Logical. Whether to print progress messages (default: TRUE).
-#'
-#' @return If probability is FALSE, returns a character vector of predicted cell types.
-#'   If probability is TRUE, returns a list containing:
-#'   \itemize{
-#'     \item predictions: Character vector of predicted cell types
-#'     \item probabilities: Matrix of prediction probabilities
-#'   }
-#'
-#' @examples
-#' # Example with mock data
-#' # Create mock Seurat object
-#' library(Seurat)
-#' counts <- matrix(rpois(1000, 5), nrow = 100)
-#' rownames(counts) <- paste0("Gene", seq_len(100))
-#' colnames(counts) <- paste0("Cell", seq_len(10))
-#' seurat_obj <- CreateSeuratObject(counts = counts)
-#' seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
-#'
-#' # Create mock pathway activities
-#' pathway_activities <- matrix(
-#'   rnorm(50, mean = 0, sd = 1),
-#'   nrow = 10,
-#'   dimnames = list(
-#'     colnames(seurat_obj),
-#'     paste0("Pathway", seq_len(5))
-#'   )
-#' )
-#'
-#' # Create mock models list
-#' mock_fingerprints <- matrix(
-#'   rnorm(15, mean = 0, sd = 0.5),
-#'   nrow = 3,
-#'   dimnames = list(
-#'     c("TypeA", "TypeB", "TypeC"),
-#'     paste0("Pathway", seq_len(5))
-#'   )
-#' )
-#'
-#' models_list <- list(
-#'   direct = list(fingerprints = mock_fingerprints),
-#'   pathway_activities = pathway_activities
-#' )
-#'
-#' # Predict cell types
-#' predictions <- predict_cell_types(
-#'   seurat_obj,
-#'   models_list,
-#'   method = "direct"
-#' )
-#' @seealso
-#' \code{\link{train_cell_type_classifier}} for training the classifier
-#' \code{\link{evaluate_predictions}} for evaluating prediction performance
-#'
-#' @export
-predict_cell_types <- function(seurat_object,
-                               pathway_activity,
-                               classifier,
-                               probability = FALSE,
-                               verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_object, "Seurat")) {
-    stop("seurat_object must be a Seurat object")
-  }
-
-  if (!is.matrix(pathway_activity) && !is.data.frame(pathway_activity)) {
-    stop("pathway_activity must be a matrix or data frame")
-  }
-
-  if (ncol(pathway_activity) != ncol(seurat_object)) {
-    stop("Number of cells in pathway_activity must match number of cells in seurat_object")
-  }
-
-  if (!hasMethod("predict", class(classifier)[1])) {
-    stop("classifier must have a predict method")
-  }
-
-  if (!is.logical(probability) || length(probability) != 1) {
-    stop("probability must be a single logical value")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Check if pathway data is available
-  if (verbose) message("Checking pathway data...")
-  if (!all(rownames(pathway_activity) %in% rownames(classifier$feature_importance))) {
-    missing_pathways <- setdiff(
-      rownames(pathway_activity),
-      rownames(classifier$feature_importance)
-    )
-    stop(sprintf(
-      "Missing pathway data for: %s",
-      paste(missing_pathways, collapse = ", ")
-    ))
-  }
-
-  # Prepare data for prediction
-  if (verbose) message("Preparing data for prediction...")
-  prediction_data <- tryCatch(
-    {
-      t(pathway_activity[rownames(classifier$feature_importance), ])
-    },
-    error = function(e) {
-      stop(sprintf("Error preparing prediction data: %s", e$message))
-    }
-  )
-
-  # Make predictions
-  if (verbose) message("Making predictions...")
-  predictions <- tryCatch(
-    {
-      if (probability) {
-        predict(classifier, prediction_data, type = "prob")
-      } else {
-        predict(classifier, prediction_data)
-      }
-    },
-    error = function(e) {
-      stop(sprintf("Error making predictions: %s", e$message))
-    }
-  )
-
-  if (verbose) {
-    message("Predictions completed successfully")
-  }
-
-  return(predictions)
-}
-
-#' Train cell type classifier
-#'
-#' @description
-#' Trains a classifier to predict cell types based on pathway activity patterns.
-#' This function takes a Seurat object with known cell types and pathway activity
-#' data, and returns a trained classifier.
-#'
-#' @details
-#' This function trains a machine learning classifier to predict cell types using
-#' pathway activity patterns as features. It supports multiple classification methods
-#' and implements a complete training workflow including feature selection,
-#' cross-validation, and model training.
-#'
-#' The function supports three classification methods:
-#' \itemize{
-#'   \item "rf": Random Forest - An ensemble method using multiple decision trees
-#'   \item "svm": Support Vector Machine - A powerful classifier that finds optimal boundaries
-#'   \item "xgb": XGBoost - A gradient boosting framework known for performance and accuracy
-#' }
-#'
-#' The workflow includes:
-#' \enumerate{
-#'   \item Extensive input validation to ensure data quality and compatibility
-#'   \item Extraction of cell type labels from the specified metadata column
-#'   \item Feature importance calculation to identify the most predictive pathways
-#'   \item Selection of top n_features pathways based on importance
-#'   \item k-fold cross-validation to assess model performance (using cv_folds)
-#'   \item Training of the final model on the complete dataset
-#'   \item Compilation of results including the model, feature importance, and performance metrics
-#' }
-#'
-#' Feature selection helps reduce dimensionality and focuses the model on the most
-#' informative pathways, which can improve both performance and interpretability.
-#' Cross-validation provides a robust estimate of model performance on unseen data.
-#'
-#' The function includes comprehensive error handling at each step of the workflow,
-#' with informative error messages to help diagnose any issues that arise during training.
-#'
-#' @param seurat_object A Seurat object containing gene expression data
-#'   and cell type labels.
-#' @param pathway_activity Matrix. Pathway activity matrix where rows are pathways
-#'   and columns are cells.
-#' @param cell_type_col Character. Name of the metadata column containing cell type
-#'   labels (default: "cell_type").
-#' @param method Character. Classification method to use. Options are "rf" (Random Forest),
-#'   "svm" (Support Vector Machine), or "xgb" (XGBoost) (default: "rf").
-#' @param n_features Integer. Number of top pathways to use for classification
-#'   (default: 100).
-#' @param cv_folds Integer. Number of cross-validation folds (default: 5).
-#' @param verbose Logical. Whether to print progress messages (default: TRUE).
-#'
-#' @return A trained classifier object with the following components:
-#' \itemize{
-#'   \item model: The trained classification model
-#'   \item feature_importance: Data frame of pathway importance scores
-#'   \item cv_performance: Cross-validation performance metrics
-#'   \item training_params: List of training parameters used
-#' }
-#'
-#' @examples
-#' # Example with mock data
-#' # Create mock pathway activity matrix
-#' set.seed(123)
-#' n_cells <- 60
-#' n_pathways <- 10
-#'
-#' pathway_activity <- matrix(
-#'   c(
-#'     rnorm(20 * n_pathways, mean = 1, sd = 0.5), # TypeA pattern
-#'     rnorm(20 * n_pathways, mean = -1, sd = 0.5), # TypeB pattern
-#'     rnorm(20 * n_pathways, mean = 0, sd = 0.5) # TypeC pattern
-#'   ),
-#'   nrow = n_cells,
-#'   ncol = n_pathways,
-#'   byrow = TRUE
-#' )
-#'
-#' rownames(pathway_activity) <- paste0("Cell", seq_len(n_cells))
-#' colnames(pathway_activity) <- paste0("Pathway", seq_len(n_pathways))
-#'
-#' # Create labels
-#' labels <- factor(rep(c("TypeA", "TypeB", "TypeC"), each = 20))
-#'
-#' # Train classifier
-#' classifier <- train_cell_type_classifier(
-#'   pathway_activity,
-#'   labels,
-#'   method = "svm",
-#'   cross_validate = FALSE # Disable CV for speed
-#' )
-#'
-#' # Check model
-#' print(classifier$method)
-#' print(table(classifier$predictions, labels))
-#' @seealso
-#' \code{\link{predict_cell_types}} for making predictions
-#' \code{\link{evaluate_predictions}} for evaluating prediction performance
-#'
-#' @export
-train_cell_type_classifier <- function(seurat_object,
-                                       pathway_activity,
-                                       cell_type_col = "cell_type",
-                                       method = "rf",
-                                       n_features = 100,
-                                       cv_folds = 5,
-                                       verbose = TRUE) {
-  # Input validation
-  if (!inherits(seurat_object, "Seurat")) {
-    stop("seurat_object must be a Seurat object")
-  }
-
-  if (!is.matrix(pathway_activity) && !is.data.frame(pathway_activity)) {
-    stop("pathway_activity must be a matrix or data frame")
-  }
-
-  if (ncol(pathway_activity) != ncol(seurat_object)) {
-    stop("Number of cells in pathway_activity must match number of cells in seurat_object")
-  }
-
-  if (!is.character(cell_type_col) || length(cell_type_col) != 1) {
-    stop("cell_type_col must be a single character string")
-  }
-
-  if (!cell_type_col %in% colnames(seurat_object@meta.data)) {
-    stop(sprintf("Cell type column '%s' not found in metadata", cell_type_col))
-  }
-
-  if (!is.character(method) || length(method) != 1 ||
-    !method %in% c("rf", "svm", "xgb")) {
-    stop("method must be one of: 'rf', 'svm', 'xgb'")
-  }
-
-  if (!is.numeric(n_features) || length(n_features) != 1 || n_features < 1) {
-    stop("n_features must be a single positive integer")
-  }
-
-  if (!is.numeric(cv_folds) || length(cv_folds) != 1 || cv_folds < 2) {
-    stop("cv_folds must be a single integer >= 2")
-  }
-
-  if (!is.logical(verbose) || length(verbose) != 1) {
-    stop("verbose must be a single logical value")
-  }
-
-  # Get cell type labels
-  if (verbose) message("Getting cell type labels...")
-  cell_types <- tryCatch(
-    {
-      seurat_object@meta.data[[cell_type_col]]
-    },
-    error = function(e) {
-      stop(sprintf("Error accessing cell type labels: %s", e$message))
-    }
-  )
-
-  if (any(is.na(cell_types))) {
-    stop("Cell type labels contain missing values")
-  }
-
-  # Prepare training data
-  if (verbose) message("Preparing training data...")
-  training_data <- tryCatch(
-    {
-      t(pathway_activity)
-    },
-    error = function(e) {
-      stop(sprintf("Error preparing training data: %s", e$message))
-    }
-  )
-
-  # Select top features
-  if (verbose) message("Selecting top features...")
-  feature_importance <- tryCatch(
-    {
-      if (method == "rf") {
-        caret::varImp(randomForest::randomForest(training_data, cell_types))
-      } else if (method == "svm") {
-        caret::varImp(e1071::svm(training_data, cell_types))
-      } else {
-        caret::varImp(xgboost::xgboost(training_data, cell_types))
-      }
-    },
-    error = function(e) {
-      stop(sprintf("Error calculating feature importance: %s", e$message))
-    }
-  )
-
-  top_features <- rownames(feature_importance)[seq_len(min(n_features, nrow(feature_importance)))]
-  training_data <- training_data[, top_features]
-
-  # Perform cross-validation
-  if (verbose) message("Performing cross-validation...")
-  cv_results <- tryCatch(
-    {
-      caret::train(
-        x = training_data,
-        y = cell_types,
-        method = switch(method,
-          "rf" = "rf",
-          "svm" = "svmRadial",
-          "xgb" = "xgbTree"
-        ),
-        trControl = caret::trainControl(
-          method = "cv",
-          number = cv_folds,
-          verboseIter = verbose
-        )
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error in cross-validation: %s", e$message))
-    }
-  )
-
-  # Train final model
-  if (verbose) message("Training final model...")
-  final_model <- tryCatch(
-    {
-      switch(method,
-        "rf" = randomForest::randomForest(training_data, cell_types),
-        "svm" = e1071::svm(training_data, cell_types),
-        "xgb" = xgboost::xgboost(training_data, cell_types)
-      )
-    },
-    error = function(e) {
-      stop(sprintf("Error training final model: %s", e$message))
-    }
-  )
-
-  # Create classifier object
-  classifier <- list(
-    model = final_model,
-    feature_importance = feature_importance,
-    cv_performance = cv_results$results,
-    training_params = list(
-      method = method,
-      n_features = n_features,
-      cv_folds = cv_folds
-    )
-  )
-
-  if (verbose) {
-    message("Classifier training completed successfully")
-  }
-
-  return(classifier)
 }

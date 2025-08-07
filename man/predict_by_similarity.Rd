@@ -63,12 +63,13 @@ pathway_activity <- matrix(
 )
 
 # Create mock fingerprint profiles
+# Note: fingerprints should have pathways as rows and cultures as columns
 fingerprint_profiles <- matrix(
   rnorm(30, mean = 0, sd = 0.5),
-  nrow = 3,
+  nrow = 10,
   dimnames = list(
-    c("CultureA", "CultureB", "CultureC"),
-    paste0("Pathway", seq_len(10))
+    paste0("Pathway", seq_len(10)),
+    c("CultureA", "CultureB", "CultureC")
   )
 )
 

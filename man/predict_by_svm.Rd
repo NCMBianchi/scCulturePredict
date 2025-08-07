@@ -47,7 +47,47 @@ function handles data preparation, model training, prediction, and evaluation
 in an integrated workflow.
 }
 \examples{
-\dontrun{
-svm_results <- predict_by_svm(pathway_matrix, seurat_object)
-}
+# Create mock data with sufficient samples for SVM
+library(Seurat)
+set.seed(123)
+
+# Create a mock Seurat object with sample metadata
+# Need at least 20 cells for proper train/test split
+counts <- matrix(rpois(1000, 5), nrow = 50, ncol = 20)
+rownames(counts) <- paste0("Gene", seq_len(50))
+colnames(counts) <- paste0("Cell", seq_len(20))
+
+# Create metadata with proper row names
+metadata <- data.frame(
+  row.names = colnames(counts),
+  sample = rep(c("SampleA", "SampleB"), each = 10)
+)
+seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+
+# Create a mock pathway activity matrix directly
+# This represents pathway activities for each cell
+pathway_matrix <- matrix(
+  rnorm(20 * 5, mean = 0, sd = 1), # 20 cells x 5 pathways
+  nrow = 20,
+  ncol = 5,
+  dimnames = list(
+    colnames(counts), # Cell names must match Seurat object
+    paste0("Pathway", seq_len(5)) # Pathway names
+  )
+)
+
+# Make pathway activities slightly different between samples
+# to ensure SVM can find patterns
+pathway_matrix[1:10, ] <- pathway_matrix[1:10, ] + 0.5 # SampleA cells
+pathway_matrix[11:20, ] <- pathway_matrix[11:20, ] - 0.5 # SampleB cells
+
+# Run SVM prediction
+svm_results <- predict_by_svm(
+  pathway_matrix,
+  seurat_obj,
+  verbose = FALSE
+)
+
+# Check results
+print(svm_results$accuracy)
 }

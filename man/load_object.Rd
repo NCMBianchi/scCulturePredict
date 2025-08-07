@@ -38,7 +38,19 @@ The function ensures:
 }
 }
 \examples{
-seurat_object <- load_object("./results/seurat_object.rds")
+# Create and save a test object
+test_data <- list(values = 1:5, type = "example")
+temp_file <- tempfile(fileext = ".rds")
+saveRDS(test_data, temp_file)
+
+# Load the object
+loaded_object <- load_object(temp_file)
+
+# Verify it loaded correctly
+print(loaded_object$type)
+
+# Clean up
+unlink(temp_file)
 
 }
 \seealso{

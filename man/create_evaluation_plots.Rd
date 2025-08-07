@@ -51,7 +51,26 @@ This function is particularly useful for quick generation of standard plots
 without having to write custom visualization code for common analysis tasks.
 }
 \examples{
-\dontrun{
-create_evaluation_plots(seurat_object, results_dir = "./results")
-}
+# Create mock Seurat object with UMAP coordinates
+library(Seurat)
+counts <- matrix(rpois(500, 5), nrow = 50)
+rownames(counts) <- paste0("Gene", seq_len(50))
+colnames(counts) <- paste0("Cell", seq_len(10))
+
+# Create metadata with UMAP coordinates
+metadata <- data.frame(
+  row.names = colnames(counts),
+  UMAP_1 = rnorm(10),
+  UMAP_2 = rnorm(10),
+  sample = rep(c("A", "B"), each = 5)
+)
+seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
+
+# Create plots in temporary directory
+temp_dir <- tempdir()
+create_evaluation_plots(seurat_obj, results_dir = temp_dir, verbose = FALSE)
+
+# Check that plot was created
+plot_file <- file.path(temp_dir, "umap_experimental.png")
+file.exists(plot_file)
 }

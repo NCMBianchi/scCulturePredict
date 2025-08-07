@@ -58,23 +58,18 @@ within the scCulture results. It handles missing data gracefully and provides
 informative error messages for common issues.
 }
 \examples{
-# Example with mock scCulture results
-# Create mock result structure
-mock_results <- list(
-  predictions = data.frame(
-    cell_id = paste0("Cell", seq_len(100)),
-    predicted_culture = sample(c("Culture1", "Culture2", "Culture3"), 100, replace = TRUE),
-    confidence = runif(100, 0.6, 0.95)
-  ),
-  umap_coords = data.frame(
-    UMAP_1 = rnorm(100),
-    UMAP_2 = rnorm(100)
-  )
+\dontrun{
+# Example requires actual scCulture results
+# Run scCulture first to get results object
+results <- scCulture(
+  data_dir = "path/to/data",
+  mode = "BUILD"
 )
-class(mock_results) <- "scCulture"
 
 # Create visualization
-plot <- plot_scCulture(mock_results, plot_type = "confidence")
+plot <- plot_scCulture(results, plot_type = "umap")
+print(plot)
+}
 }
 \seealso{
 \code{\link{scCulture}} for generating the results object

@@ -704,3 +704,461 @@ save_visualization_plots <- function(seurat_object, evaluation_results, output_d
 #    - Use the mock data generators from existing tests
 #
 # ==============================================================================
+
+# ==============================================================================
+# UTILITY FUNCTIONS (UNUSED)
+# ==============================================================================
+# Original location: R/utils.R
+# Status: Utility functions not used in main pipeline
+# Integration: Add to R/utils.R and export if needed
+# ==============================================================================
+
+#' Format numeric values
+#'
+#' @description
+#' Formats numeric values with specified number of decimal places.
+#'
+#' @param x Numeric vector to format.
+#' @param digits Integer specifying the number of decimal places. Default is 2.
+#'
+#' @return Character vector of formatted numbers.
+#'
+#' @examples
+#' format_number(c(1.23456, 2.34567), digits = 2)
+#'
+format_number <- function(x, digits = 2) {
+  sprintf(paste0("%.", digits, "f"), x)
+}
+
+#' Calculate percentage
+#'
+#' @description
+#' Calculates percentage with proper formatting.
+#'
+#' @param x Numeric vector of values.
+#' @param total Numeric value representing the total. Default is sum(x).
+#' @param digits Integer specifying the number of decimal places. Default is 1.
+#'
+#' @return Character vector of formatted percentages.
+#'
+#' @examples
+#' calculate_percentage(c(10, 20, 30))
+#'
+calculate_percentage <- function(x, total = sum(x), digits = 1) {
+  sprintf(paste0("%.", digits, "f%%"), 100 * x / total)
+}
+
+#' Check if object is empty
+#'
+#' @description
+#' Checks if an object is empty (NULL, NA, empty vector, or empty data frame).
+#'
+#' @param x Object to check.
+#'
+#' @return Logical value indicating whether the object is empty.
+#'
+#' @examples
+#' is_empty(NULL)
+#' is_empty(c())
+#' is_empty(data.frame())
+#'
+is_empty <- function(x) {
+  if (is.null(x)) {
+    return(TRUE)
+  }
+  if (length(x) == 0) {
+    return(TRUE)
+  }
+  if (is.data.frame(x) && nrow(x) == 0) {
+    return(TRUE)
+  }
+  if (all(is.na(x))) {
+    return(TRUE)
+  }
+  FALSE
+}
+
+#' Get file extension
+#'
+#' @description
+#' Extracts the file extension from a file path.
+#'
+#' @param file_path Character string specifying the file path.
+#'
+#' @return Character string containing the file extension (without the dot).
+#'
+#' @examples
+#' get_file_extension("data.csv")
+#'
+get_file_extension <- function(file_path) {
+  tools::file_ext(file_path)
+}
+
+#' Validate file exists
+#'
+#' @description
+#' Validates that a file exists and is readable.
+#'
+#' @param file_path Character string specifying the file path.
+#' @param extension Character string specifying the expected file extension.
+#'   If NULL, no extension check is performed. Default is NULL.
+#'
+#' @return Logical value indicating whether the file is valid.
+#'
+#' @examples
+#' validate_file("data.csv", extension = "csv")
+#'
+validate_file <- function(file_path, extension = NULL) {
+  if (!file.exists(file_path)) {
+    warning(sprintf("File not found: %s", file_path))
+    return(FALSE)
+  }
+
+  if (!is.null(extension)) {
+    file_ext <- get_file_extension(file_path)
+    if (file_ext != extension) {
+      warning(sprintf("File extension mismatch. Expected: %s, Got: %s", extension, file_ext))
+      return(FALSE)
+    }
+  }
+
+  if (!file.access(file_path, 4) == 0) {
+    warning(sprintf("File is not readable: %s", file_path))
+    return(FALSE)
+  }
+
+  TRUE
+}
+
+# ==============================================================================
+# EVALUATION FUNCTIONS (UNUSED)
+# ==============================================================================
+# Original location: R/evaluation.R
+# Status: Advanced evaluation functions not used in main pipeline
+# Integration: Add to R/evaluation.R and export if needed for cell type analysis
+# ==============================================================================
+
+#' Evaluate cell type predictions
+#'
+#' @description
+#' Evaluates the performance of cell type predictions using various metrics.
+#'
+#' @param seurat_obj A Seurat object containing predictions.
+#' @param predictions Character vector of predicted cell types.
+#' @param true_labels_col Character. Name of the metadata column containing true labels.
+#' @param metrics Character vector of metrics to calculate.
+#' @param verbose Logical. Whether to print progress messages.
+#'
+#' @return A list containing the requested evaluation metrics.
+#'
+evaluate_cell_type_predictions <- function(seurat_obj,
+                                           predictions,
+                                           true_labels_col = "cell_type",
+                                           metrics = c("accuracy", "precision", "recall", "f1", "confusion_matrix"),
+                                           verbose = TRUE) {
+  # Input validation
+  if (!inherits(seurat_obj, "Seurat")) {
+    stop("seurat_obj must be a Seurat object")
+  }
+
+  if (!is.character(predictions) || length(predictions) != ncol(seurat_obj)) {
+    stop("predictions must be a character vector with length matching number of cells")
+  }
+
+  if (!true_labels_col %in% colnames(seurat_obj@meta.data)) {
+    stop(sprintf("True labels column '%s' not found in metadata", true_labels_col))
+  }
+
+  # Get true labels
+  if (verbose) message("Getting true labels...")
+  true_labels <- seurat_obj@meta.data[[true_labels_col]]
+
+  if (any(is.na(true_labels))) {
+    stop("True labels contain missing values")
+  }
+
+  # Calculate metrics
+  results <- list()
+
+  if ("confusion_matrix" %in% metrics) {
+    if (verbose) message("Calculating confusion matrix...")
+    results$confusion_matrix <- table(Predicted = predictions, True = true_labels)
+  }
+
+  if ("accuracy" %in% metrics) {
+    if (verbose) message("Calculating accuracy...")
+    results$accuracy <- mean(predictions == true_labels)
+  }
+
+  if (any(c("precision", "recall", "f1") %in% metrics)) {
+    if (verbose) message("Calculating per-class metrics...")
+    unique_labels <- unique(c(predictions, true_labels))
+
+    if ("precision" %in% metrics) {
+      results$precision <- vapply(unique_labels, function(label) {
+        pred_pos <- predictions == label
+        if (sum(pred_pos) == 0) {
+          return(0)
+        }
+        sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
+      }, FUN.VALUE = numeric(1))
+    }
+
+    if ("recall" %in% metrics) {
+      results$recall <- vapply(unique_labels, function(label) {
+        true_pos <- true_labels == label
+        if (sum(true_pos) == 0) {
+          return(0)
+        }
+        sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
+      }, FUN.VALUE = numeric(1))
+    }
+
+    if ("f1" %in% metrics) {
+      if (verbose) message("Calculating F1 score...")
+      precision <- if ("precision" %in% names(results)) {
+        results$precision
+      } else {
+        vapply(unique_labels, function(label) {
+          pred_pos <- predictions == label
+          if (sum(pred_pos) == 0) {
+            return(0)
+          }
+          sum(predictions[pred_pos] == true_labels[pred_pos]) / sum(pred_pos)
+        }, FUN.VALUE = numeric(1))
+      }
+
+      recall <- if ("recall" %in% names(results)) {
+        results$recall
+      } else {
+        vapply(unique_labels, function(label) {
+          true_pos <- true_labels == label
+          if (sum(true_pos) == 0) {
+            return(0)
+          }
+          sum(predictions[true_pos] == true_labels[true_pos]) / sum(true_pos)
+        }, FUN.VALUE = numeric(1))
+      }
+
+      results$f1 <- 2 * (precision * recall) / (precision + recall)
+    }
+  }
+
+  if (verbose) message("Evaluation completed successfully")
+
+  return(results)
+}
+
+#' Create evaluation metrics plot
+#'
+#' @description
+#' Creates visualizations of prediction evaluation metrics.
+#'
+#' @param evaluation_results List. Results from evaluate_predictions().
+#' @param plot_type Character. Type of plot to create.
+#' @param title Character. Title for the plot.
+#' @param color_palette Character vector. Colors to use for the plot.
+#' @param verbose Logical. Whether to print progress messages.
+#'
+#' @return A ggplot object containing the requested visualization.
+#'
+create_evaluation_metrics_plot <- function(evaluation_results,
+                                           plot_type = "confusion",
+                                           title = NULL,
+                                           color_palette = NULL,
+                                           verbose = TRUE) {
+  # Input validation
+  if (!is.list(evaluation_results)) {
+    stop("evaluation_results must be a list")
+  }
+
+  valid_plot_types <- c("confusion", "metrics", "roc", "pr")
+  if (!plot_type %in% valid_plot_types) {
+    stop(sprintf("plot_type must be one of: %s", paste(valid_plot_types, collapse = ", ")))
+  }
+
+  # Check required data for each plot type
+  if (plot_type == "confusion" && !"confusion_matrix" %in% names(evaluation_results)) {
+    stop("Confusion matrix not found in evaluation_results")
+  }
+
+  if (plot_type == "metrics" && !all(c("precision", "recall", "f1") %in% names(evaluation_results))) {
+    stop("Precision, recall, and F1 scores not found in evaluation_results")
+  }
+
+  # Create plot
+  if (verbose) message(sprintf("Creating %s plot...", plot_type))
+
+  p <- switch(plot_type,
+    "confusion" = {
+      conf_mat <- evaluation_results$confusion_matrix
+      conf_data <- reshape2::melt(conf_mat)
+      names(conf_data) <- c("Predicted", "True", "Count")
+
+      ggplot2::ggplot(conf_data, ggplot2::aes(x = True, y = Predicted, fill = Count)) +
+        ggplot2::geom_tile() +
+        ggplot2::scale_fill_gradient(low = "white", high = "blue") +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
+        ggplot2::labs(title = title %||% "Confusion Matrix")
+    },
+    "metrics" = {
+      metrics_data <- data.frame(
+        CellType = names(evaluation_results$precision),
+        Precision = evaluation_results$precision,
+        Recall = evaluation_results$recall,
+        F1 = evaluation_results$f1
+      )
+      metrics_data <- reshape2::melt(metrics_data, id.vars = "CellType")
+
+      ggplot2::ggplot(metrics_data, ggplot2::aes(x = CellType, y = value, fill = variable)) +
+        ggplot2::geom_bar(stat = "identity", position = "dodge") +
+        ggplot2::scale_fill_manual(values = color_palette %||%
+          c("Precision" = "blue", "Recall" = "red", "F1" = "green")) +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
+        ggplot2::labs(title = title %||% "Prediction Metrics by Cell Type", y = "Score", fill = "Metric")
+    }
+  )
+
+  if (verbose) message("Plot created successfully")
+
+  return(p)
+}
+
+# ==============================================================================
+# PREDICTION FUNCTIONS (UNUSED)
+# ==============================================================================
+# Original location: R/prediction.R
+# Status: Advanced prediction functions for cell type classification
+# Integration: Add to R/prediction.R and export if needed for cell type analysis
+# ==============================================================================
+
+#' Predict cell types
+#'
+#' @description
+#' Predicts cell types based on pathway activity patterns using a trained classifier.
+#'
+#' @param seurat_object A Seurat object containing the cells to predict.
+#' @param pathway_activity Matrix. Pathway activity matrix.
+#' @param classifier A trained classifier object.
+#' @param probability Logical. Whether to return probability scores.
+#' @param verbose Logical. Whether to print progress messages.
+#'
+#' @return Predicted cell type labels or probability matrix.
+#'
+predict_cell_types <- function(seurat_object,
+                               pathway_activity,
+                               classifier,
+                               probability = FALSE,
+                               verbose = TRUE) {
+  # Input validation
+  if (!inherits(seurat_object, "Seurat")) {
+    stop("seurat_object must be a Seurat object")
+  }
+
+  if (!is.matrix(pathway_activity) && !is.data.frame(pathway_activity)) {
+    stop("pathway_activity must be a matrix or data frame")
+  }
+
+  if (ncol(pathway_activity) != ncol(seurat_object)) {
+    stop("Number of cells in pathway_activity must match number of cells in seurat_object")
+  }
+
+  # Prepare data for prediction
+  if (verbose) message("Preparing data for prediction...")
+  prediction_data <- t(pathway_activity)
+
+  # Make predictions
+  if (verbose) message("Making predictions...")
+  predictions <- if (probability) {
+    predict(classifier, prediction_data, type = "prob")
+  } else {
+    predict(classifier, prediction_data)
+  }
+
+  if (verbose) message("Predictions completed successfully")
+
+  return(predictions)
+}
+
+#' Train cell type classifier
+#'
+#' @description
+#' Trains a classifier to predict cell types based on pathway activity patterns.
+#'
+#' @param seurat_object A Seurat object containing training data.
+#' @param pathway_activity Matrix. Pathway activity matrix.
+#' @param cell_type_col Character. Name of the metadata column containing cell types.
+#' @param method Character. Classification method ("rf", "svm", or "xgb").
+#' @param n_features Integer. Number of top pathways to use.
+#' @param cv_folds Integer. Number of cross-validation folds.
+#' @param verbose Logical. Whether to print progress messages.
+#'
+#' @return A trained classifier object.
+#'
+train_cell_type_classifier <- function(seurat_object,
+                                       pathway_activity,
+                                       cell_type_col = "cell_type",
+                                       method = "rf",
+                                       n_features = 100,
+                                       cv_folds = 5,
+                                       verbose = TRUE) {
+  # Input validation
+  if (!inherits(seurat_object, "Seurat")) {
+    stop("seurat_object must be a Seurat object")
+  }
+
+  if (!is.matrix(pathway_activity) && !is.data.frame(pathway_activity)) {
+    stop("pathway_activity must be a matrix or data frame")
+  }
+
+  if (!cell_type_col %in% colnames(seurat_object@meta.data)) {
+    stop(sprintf("Cell type column '%s' not found in metadata", cell_type_col))
+  }
+
+  if (!method %in% c("rf", "svm", "xgb")) {
+    stop("method must be one of: 'rf', 'svm', 'xgb'")
+  }
+
+  # Get cell type labels
+  if (verbose) message("Getting cell type labels...")
+  cell_types <- seurat_object@meta.data[[cell_type_col]]
+
+  if (any(is.na(cell_types))) {
+    stop("Cell type labels contain missing values")
+  }
+
+  # Prepare training data
+  if (verbose) message("Preparing training data...")
+  training_data <- t(pathway_activity)
+
+  # Train model (simplified version)
+  if (verbose) message("Training classifier...")
+
+  # Note: This is a simplified implementation
+  # The full implementation would include feature selection and cross-validation
+  final_model <- switch(method,
+    "rf" = {
+      if (!requireNamespace("randomForest", quietly = TRUE)) {
+        stop("randomForest package required for RF method")
+      }
+      randomForest::randomForest(training_data, cell_types)
+    },
+    "svm" = {
+      if (!requireNamespace("e1071", quietly = TRUE)) {
+        stop("e1071 package required for SVM method")
+      }
+      e1071::svm(training_data, cell_types)
+    },
+    "xgb" = {
+      stop("XGBoost implementation not included in simplified version")
+    }
+  )
+
+  if (verbose) message("Classifier training completed successfully")
+
+  return(final_model)
+}
+
+# ==============================================================================
