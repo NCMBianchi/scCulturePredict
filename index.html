@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="scculturepredict">scCulturePredict<a class="anchor" aria-label="anchor" href="#scculturepredict"></a>
 </h1></div>
-<p><a href="https://bioconductor.org/" class="external-link"><img src="https://img.shields.io/badge/Bioconductor-devel-brightgreen" alt="Bioconductor"></a> <a href="https://github.com/nccb/scCulturePredict" class="external-link"><img src="https://img.shields.io/badge/Version-0.99.26-orange" alt="Version"></a> <a href="https://github.com/NCMBianchi/scCulturePredict/actions" class="external-link"><img src="https://github.com/NCMBianchi/scCulturePredict/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/gh/nccb/scCulturePredict" class="external-link"><img src="https://codecov.io/gh/nccb/scCulturePredict/branch/main/graph/badge.svg" alt="codecov"></a> <a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D4.1.0-blue" alt="R"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a></p>
+<p><a href="https://bioconductor.org/" class="external-link"><img src="https://img.shields.io/badge/Bioconductor-devel-brightgreen" alt="Bioconductor"></a> <a href="https://github.com/nccb/scCulturePredict" class="external-link"><img src="https://img.shields.io/badge/Version-0.99.28-orange" alt="Version"></a> <a href="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg" alt="R-CMD-check-BiocCheck"></a> <a href="https://codecov.io/gh/NCMBianchi/scCulturePredict" class="external-link"><img src="https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg" alt="codecov"></a> <a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D4.1.0-blue" alt="R"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a></p>
 <div class="section level2">
 <h2 id="build-and-apply-transcriptomic-fingerprints-for-cell-culture-media-prediction">Build and Apply Transcriptomic Fingerprints for Cell Culture Media Prediction<a class="anchor" aria-label="anchor" href="#build-and-apply-transcriptomic-fingerprints-for-cell-culture-media-prediction"></a>
 </h2>
@@ -100,7 +100,7 @@
 <h3 id="core-capabilities">Core Capabilities<a class="anchor" aria-label="anchor" href="#core-capabilities"></a>
 </h3>
 <ul>
-<li>Load and preprocess single-cell data (supports both CSV and 10X Genomics formats)</li>
+<li>Load and preprocess single-cell data (10X Genomics format)</li>
 <li>Perform dimensionality reduction with UMAP and t-SNE</li>
 <li>Integrate with Seurat workflows</li>
 <li>Comprehensive evaluation and visualization tools</li>
@@ -217,6 +217,23 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="data-format-requirements">Data Format Requirements<a class="anchor" aria-label="anchor" href="#data-format-requirements"></a>
+</h2>
+<p>scCulturePredict requires single-cell RNA-seq data in <strong>10X Genomics format</strong>: - <code>matrix.mtx.gz</code> or <code>matrix.mtx</code> - Gene expression matrix - <code>barcodes.tsv.gz</code> or <code>barcodes.tsv</code> - Cell barcodes - <code>features.tsv.gz</code> or <code>features.tsv</code> - Gene information - <code>metadata.tsv.gz</code> or <code>metadata.tsv</code> (optional) - Cell metadata with sample information</p>
+<div class="section level3">
+<h3 id="preprocessing-gse165686-data-optional">Preprocessing GSE165686 Data (Optional)<a class="anchor" aria-label="anchor" href="#preprocessing-gse165686-data-optional"></a>
+</h3>
+<p>If you’re working with GSE165686 format files that have malformed headers (e.g., “x” in the first row), you can use the included shell script to preprocess the data:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Location: inst/scripts/transform_files.sh</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co"># Make script executable</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">chmod</span> +x inst/scripts/transform_files.sh</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># Run preprocessing</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="ex">./inst/scripts/transform_files.sh</span> input_directory output_directory</span></code></pre></div>
+<p>This script will: - Remove malformed “x” headers from barcodes and features files - Rename GSE165686-formatted files to standard 10X names - Handle gzip compression automatically</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
 <p>Comprehensive documentation is available in the package:</p>
@@ -230,6 +247,25 @@
 </ul>
 </div>
 <div class="section level2">
+<h2 id="alternative-implementations">Alternative Implementations<a class="anchor" aria-label="anchor" href="#alternative-implementations"></a>
+</h2>
+<p>The package includes additional functions that provide extended functionality but are not part of the main pipeline. These are preserved in <code>inst/extras/alternative_implementations.R</code> for advanced users or future development:</p>
+<ul>
+<li>
+<strong>Enhanced dimensionality reduction</strong>: PCA with variance explained, UMAP with clustering</li>
+<li>
+<strong>Statistical pathway analysis</strong>: Pathway enrichment with p-values and FDR correction</li>
+<li>
+<strong>Advanced visualizations</strong>: Heatmaps, boxplots, and customizable plots</li>
+</ul>
+<p>These functions can be sourced and used independently:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extras"</span>, <span class="st">"alternative_implementations.R"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Use enhanced PCA with variance explained</span></span>
+<span><span class="va">pca_results</span> <span class="op">&lt;-</span> <span class="fu">perform_pca</span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span></span></code></pre></div>
+<p>See the file for detailed documentation and integration instructions.</p>
+</div>
+<div class="section level2">
 <h2 id="code-quality">Code Quality<a class="anchor" aria-label="anchor" href="#code-quality"></a>
 </h2>
 <p>scCulturePredict implements several code quality measures to ensure robustness and maintainability:</p>
@@ -237,7 +273,7 @@
 <h3 id="linting">Linting<a class="anchor" aria-label="anchor" href="#linting"></a>
 </h3>
 <p>The package uses <code>lintr</code> for static code analysis. To run linting checks:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install lintr if needed</span></span>
 <span><span class="co"># install.packages("lintr")</span></span>
 <span></span>
@@ -249,7 +285,7 @@
 <h3 id="code-formatting">Code Formatting<a class="anchor" aria-label="anchor" href="#code-formatting"></a>
 </h3>
 <p>Code formatting follows the Bioconductor style guidelines and is enforced using <code>styler</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install styler if needed</span></span>
 <span><span class="co"># install.packages("styler")</span></span>
 <span></span>
@@ -260,8 +296,8 @@
 <h3 id="comprehensive-checks">Comprehensive Checks<a class="anchor" aria-label="anchor" href="#comprehensive-checks"></a>
 </h3>
 <p>Run the comprehensive check script to ensure the package is ready for Bioconductor submission:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>Rscript scripts<span class="sc">/</span>check_package.R</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>Rscript scripts<span class="sc">/</span>check_package.R</span></code></pre></div>
 <p>This will run: - R CMD check (with –as-cran flag) - BiocCheck - Linting checks - Test coverage analysis - Vignette building - Example code execution</p>
 </div>
 </div>
@@ -272,9 +308,9 @@
 <h3 id="pre-commit-hook">Pre-commit Hook<a class="anchor" aria-label="anchor" href="#pre-commit-hook"></a>
 </h3>
 <p>To enforce code quality during development, you can install the pre-commit hook:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">cp</span> scripts/pre-commit-hook.R .git/hooks/pre-commit</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">chmod</span> +x .git/hooks/pre-commit</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">cp</span> scripts/pre-commit-hook.R .git/hooks/pre-commit</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">chmod</span> +x .git/hooks/pre-commit</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -294,13 +330,13 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use scCulturePredict in your research, please cite (bibtex format):</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">scCulturePredict2025</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="dt">title</span> = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="dt">author</span> = {Niccolò Bianchi},</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="dt">year</span> = {2025},</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.99.26},</span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/ncmbianchi/scCulturePredict},</span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">scCulturePredict2025</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="dt">title</span> = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="dt">author</span> = {Niccolò Bianchi},</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="dt">year</span> = {2025},</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.99.28},</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/ncmbianchi/scCulturePredict},</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

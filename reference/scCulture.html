@@ -11,7 +11,7 @@ to new unlabeled data for cell culture media prediction.'><link rel="stylesheet"
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@ to new unlabeled data for cell culture media prediction.</p>
 <span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>  fingerprint_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  experiment_id <span class="op">=</span> <span class="st">"experiment"</span>,</span>
-<span>  use_shell_script <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  perform_tsne <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -102,11 +101,6 @@ Required for "predict" mode, ignored in "build" mode.</p></dd>
 <dt id="arg-experiment-id">experiment_id<a class="anchor" aria-label="anchor" href="#arg-experiment-id"></a></dt>
 <dd><p>Character string specifying the experiment ID prefix in filenames.
 Default is "experiment".</p></dd>
-
-
-<dt id="arg-use-shell-script">use_shell_script<a class="anchor" aria-label="anchor" href="#arg-use-shell-script"></a></dt>
-<dd><p>Logical indicating whether to use the shell script for file preparation.
-Default is TRUE.</p></dd>
 
 
 <dt id="arg-perform-tsne">perform_tsne<a class="anchor" aria-label="anchor" href="#arg-perform-tsne"></a></dt>
@@ -189,14 +183,14 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Build mode - generate fingerprints from labeled training data</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Build mode - generate fingerprints from labeled training data</span></span></span>
 <span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_labeled", output_dir = "./training_results",     mode = "build"):</span> Data directory not found: ./DATA_labeled</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or specify custom KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">training_results_custom</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
@@ -205,14 +199,13 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_labeled", kegg_file = "custom_pathways.keg",     output_dir = "./training_results", mode = "build"):</span> Data directory not found: ./DATA_labeled</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access training results</span></span></span>
 <span class="r-in"><span><span class="va">fingerprint_file</span> <span class="op">&lt;-</span> <span class="va">training_results</span><span class="op">$</span><span class="va">fingerprint_file</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'training_results' not found</span>
 <span class="r-in"><span><span class="va">training_accuracy</span> <span class="op">&lt;-</span> <span class="va">training_results</span><span class="op">$</span><span class="va">evaluation_results</span><span class="op">$</span><span class="va">overall_accuracy</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'training_results' not found</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Predict mode - apply fingerprints to new unlabeled data</span></span></span>
 <span class="r-in"><span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span></span>
@@ -220,14 +213,13 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"predict"</span>,</span></span>
 <span class="r-in"><span>  fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_unlabeled", output_dir = "./prediction_results",     mode = "predict", fingerprint_file = fingerprint_file):</span> Data directory not found: ./DATA_unlabeled</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access predictions</span></span></span>
 <span class="r-in"><span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="va">prediction_results</span><span class="op">$</span><span class="va">seurat_object</span><span class="op">$</span><span class="va">classification_pred</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'prediction_results' not found</span>
 <span class="r-in"><span><span class="va">confidence_scores</span> <span class="op">&lt;-</span> <span class="va">prediction_results</span><span class="op">$</span><span class="va">seurat_object</span><span class="op">$</span><span class="va">prediction_confidence</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'prediction_results' not found</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Advanced usage with progress tracking and parallel processing</span></span></span>
 <span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
@@ -239,8 +231,7 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in scCulture(data_dir = "./DATA_edit", output_dir = "./results",     mode = "build", experiment_id = "my_experiment", progress = TRUE,     parallel = TRUE, verbose = TRUE):</span> Data directory not found: ./DATA_edit</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
