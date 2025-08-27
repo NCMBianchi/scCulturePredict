@@ -5,6 +5,51 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.29] - 2025-08-27
+
+### Added
+- Full SingleCellExperiment (SCE) support for Bioconductor compliance
+- `load_sce_data()` function for direct SCE object loading and validation
+- `handle_duplicates` parameter for robust handling of duplicate gene names in SCE data:
+  * "make_unique" (default): Appends .1, .2, etc. to duplicate gene names
+  * "aggregate": Sums expression values for duplicate genes
+  * "first": Keeps only the first occurrence
+  * "error": Stops with informative error if duplicates are found
+- Flexible pathway matching for cross-dataset predictions
+- Support for any discrete classifier metadata variable (not limited to culture media)
+- Cross-dataset prediction capability with different gene sets
+- Automatic pathway dimension alignment for incompatible datasets
+- Comprehensive SCE workflow examples in documentation
+
+### Changed
+- Renamed `load_data()` to `load_10x_data()` for clarity and consistency with `load_sce_data()`
+- Renamed function parameters for better clarity:
+  * `data_dir` → `tenx_data_dir` to clearly indicate 10X data input
+  * `sce_object` → `sce_data_path` to indicate it accepts both paths and objects
+- Enhanced `predict_by_similarity()` to handle dimension mismatches gracefully
+- Improved `calculate_prediction_confidence()` for flexible pathway matching
+- Updated `predict_by_svm()` to align feature spaces between training and prediction
+- Modified all scaling operations to use `safe_scale()` for zero-variance handling
+- Expanded package scope to general cell classification using metabolic pathways
+
+### Fixed
+- Dimension mismatch errors in cross-dataset predictions ("incompatible dimensions" error)
+- Zero-variance scaling crashes with homogeneous datasets
+- NA handling in pathway activity calculations
+- Duplicate gene name issues in test data generation
+- Duplicate gene names causing Seurat object creation failures (now handled via `handle_duplicates` parameter)
+- Confidence calculation for cross-dataset scenarios
+- SVM prediction with mismatched feature sets
+
+### Documentation
+- Added SCE usage examples throughout README and vignettes
+- Clarified general classification capabilities beyond culture media
+- Updated all function documentation for dual input support (10x and SCE)
+- Added examples for cell type, treatment, and disease state classification
+- Updated package description to reflect broader classification capabilities
+- Updated all vignettes to use new parameter names (`tenx_data_dir`, `sce_data_path`)
+- Added comprehensive SingleCellExperiment sections to all three vignettes
+
 ## [0.99.28] - 2025-08-07
 
 ### Changed

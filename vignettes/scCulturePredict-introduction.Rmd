@@ -104,10 +104,12 @@ For most users, the easiest way to run the complete scCulturePredict analysis is
 ```{r complete_analysis, eval=FALSE}
 # Complete analysis with one function call
 results <- scCulture(
-    data_dir = csv_data_dir,
+    tenx_data_dir = csv_data_dir,
+    input_type = "10x",
     kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
     output_dir = "./scCulture_results",
     experiment_id = "example_analysis",
+    mode = "build",
     progress = TRUE, # Show progress bar
     verbose = TRUE # Print detailed messages
 )
@@ -148,9 +150,9 @@ The `scCulturePredict` package can load data in both CSV and 10X Genomics format
 ### Loading CSV Format Data
 
 ```{r load_csv_data, eval=FALSE}
-# Load the CSV format example data
-seurat_object_csv <- load_data(
-    data_dir = csv_data_dir,
+# Load the CSV format example data (legacy format)
+seurat_object_csv <- load_10x_data(
+    tenx_data_dir = csv_data_dir,
     experiment_id = "example",
     min_cells = 3,
     min_features = 10,
@@ -162,8 +164,8 @@ seurat_object_csv <- load_data(
 
 ```{r load_10x_data, eval=FALSE}
 # Load the 10X format example data
-seurat_object_10x <- load_data(
-    data_dir = tenx_data_dir,
+seurat_object_10x <- load_10x_data(
+    tenx_data_dir = tenx_data_dir,
     experiment_id = "example_10x",
     min_cells = 3,
     min_features = 10,
@@ -176,6 +178,92 @@ seurat_object_10x_direct <- CreateSeuratObject(
     counts = tenx_data,
     min.cells = 3,
     min.features = 10
+)
+```
+
+### Working with SingleCellExperiment Objects
+
+The package also supports SingleCellExperiment objects, which are the standard data structure for Bioconductor single-cell packages:
+
+```{r load_sce_data, eval=FALSE}
+# Load SingleCellExperiment from an RDS file
+seurat_object_sce <- load_sce_data(
+    sce_data_path = "path/to/sce_data.rds",
+    experiment_id = "example_sce",
+    min_cells = 3,
+    min_features = 10,
+    verbose = TRUE
+)
+
+# Or use an existing SingleCellExperiment object directly
+library(SingleCellExperiment)
+sce <- SingleCellExperiment(
+    assays = list(counts = matrix(rpois(1000, lambda = 5), nrow = 100, ncol = 10)),
+    colData = DataFrame(sample = rep(c("A", "B"), 5))
+)
+
+seurat_object_from_sce <- load_sce_data(
+    sce_data_path = sce,  # Can pass the object directly
+    experiment_id = "example_sce",
+    min_cells = 3,
+    min_features = 10,
+    verbose = TRUE
+)
+```
+
+### Using scCulture with Different Input Types
+
+The `scCulture()` function supports both 10X and SingleCellExperiment formats through the `input_type` parameter:
+
+```{r scculture_input_types, eval=FALSE}
+# Using 10X data
+results_10x <- scCulture(
+    tenx_data_dir = tenx_data_dir,
+    input_type = "10x",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./results_10x",
+    mode = "build",
+    experiment_id = "10x_analysis",
+    verbose = TRUE
+)
+
+# Using SingleCellExperiment data
+results_sce <- scCulture(
+    sce_data_path = "path/to/sce_data.rds",  # or pass an SCE object directly
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./results_sce",
+    mode = "build",
+    experiment_id = "sce_analysis",
+    verbose = TRUE
+)
+```
+
+### Cross-Dataset Predictions
+
+One powerful feature is the ability to train on one data format and predict on another:
+
+```{r cross_dataset, eval=FALSE}
+# Train model on 10X data
+model_10x <- scCulture(
+    tenx_data_dir = tenx_data_dir,
+    input_type = "10x",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./model_10x",
+    mode = "build",
+    experiment_id = "training_10x",
+    verbose = TRUE
+)
+
+# Apply the trained model to SCE data
+predictions_on_sce <- scCulture(
+    sce_data_path = "path/to/unlabeled_sce.rds",
+    input_type = "sce",
+    output_dir = "./predictions_sce",
+    mode = "predict",
+    fingerprint_file = model_10x$fingerprint_file,
+    experiment_id = "predict_sce",
+    verbose = TRUE
 )
 ```
 

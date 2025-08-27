@@ -44,17 +44,17 @@ We'll use the same example data as in the introduction vignette, but we'll proce
 
 ```{r example_data}
 # Get the path to example data
-data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
+tenx_data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
 
 # For demonstration purposes, create a mock Seurat object
-counts <- read.csv(file.path(data_dir, "counts.csv"), row.names = 1)
-metadata <- read.csv(file.path(data_dir, "metadata.csv"), row.names = 1)
+counts <- read.csv(file.path(tenx_data_dir, "counts.csv"), row.names = 1)
+metadata <- read.csv(file.path(tenx_data_dir, "metadata.csv"), row.names = 1)
 seurat_object <- CreateSeuratObject(counts = as.matrix(counts), meta.data = metadata)
 ```
 
-# Advanced scumap() Usage
+# Advanced scCulture() Usage
 
-The `scumap()` function provides several advanced options for power users who need more control over the analysis pipeline or want to optimize performance for large datasets.
+The `scCulture()` function provides several advanced options for power users who need more control over the analysis pipeline or want to optimize performance for large datasets.
 
 ## Progress Tracking and Parallel Processing
 
@@ -62,10 +62,12 @@ For large datasets, you can enable progress tracking and parallel processing to 
 
 ```{r advanced_scumap, eval=FALSE}
 # Advanced usage with all options
-results <- scumap(
-    data_dir = data_dir,
+results <- scCulture(
+    tenx_data_dir = tenx_data_dir,
+    input_type = "10x",
     kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
     output_dir = "./advanced_results",
+    mode = "build",
     experiment_id = "advanced_analysis",
     progress = TRUE, # Show detailed progress bar
     parallel = TRUE, # Enable parallel processing
@@ -84,10 +86,12 @@ You can customize various aspects of the analysis by modifying the underlying fu
 
 ```{r custom_parameters, eval=FALSE}
 # Example: Custom analysis with modified parameters
-results_custom <- scumap(
-    data_dir = data_dir,
+results_custom <- scCulture(
+    tenx_data_dir = tenx_data_dir,
+    input_type = "10x",
     kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
     output_dir = "./custom_results",
+    mode = "build",
     experiment_id = "custom_analysis",
     progress = TRUE,
     verbose = TRUE
@@ -118,11 +122,13 @@ process_multiple_datasets <- function(datasets, kegg_file, base_output_dir) {
         # Create unique output directory for each dataset
         output_dir <- file.path(base_output_dir, dataset_name)
 
-        # Run scumap analysis
-        results_list[[dataset_name]] <- scumap(
-            data_dir = data_path,
+        # Run scCulture analysis
+        results_list[[dataset_name]] <- scCulture(
+            tenx_data_dir = data_path,
+            input_type = "10x",
             kegg_file = kegg_file,
             output_dir = output_dir,
+            mode = "build",
             experiment_id = dataset_name,
             progress = FALSE, # Disable progress bar for batch processing
             parallel = TRUE,
@@ -530,7 +536,7 @@ Build a customized analysis pipeline that combines multiple steps:
 ```{r custom_pipeline, eval=FALSE}
 # Define custom pipeline function
 custom_analysis_pipeline <- function(
-    data_dir,
+    tenx_data_dir,
     experiment_id,
     kegg_file,
     output_dir = "results",
@@ -539,8 +545,8 @@ custom_analysis_pipeline <- function(
     verbose = TRUE) {
     # 1. Load data
     if (verbose) message("1. Loading data...")
-    seurat_object <- load_data(
-        data_dir = data_dir,
+    seurat_object <- load_10x_data(
+        tenx_data_dir = tenx_data_dir,
         experiment_id = experiment_id,
         verbose = verbose
     )
@@ -632,7 +638,7 @@ custom_analysis_pipeline <- function(
 
 # Example usage (not run)
 # results <- custom_analysis_pipeline(
-#   data_dir = data_dir,
+#   tenx_data_dir = tenx_data_dir,
 #   experiment_id = "example",
 #   kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
 #   output_dir = "custom_results",
@@ -642,9 +648,186 @@ custom_analysis_pipeline <- function(
 # )
 ```
 
+# Advanced SingleCellExperiment Support
+
+The `scCulturePredict` package provides comprehensive support for SingleCellExperiment (SCE) objects, enabling seamless integration with Bioconductor workflows.
+
+## Working with SCE Objects
+
+```{r advanced_sce, eval=FALSE}
+library(SingleCellExperiment)
+
+# Create or load an SCE object
+sce <- SingleCellExperiment(
+    assays = list(counts = matrix(rpois(10000, lambda = 5), nrow = 1000, ncol = 10)),
+    colData = DataFrame(
+        sample = rep(c("Control", "Treatment"), 5),
+        batch = rep(c("Batch1", "Batch2"), each = 5)
+    )
+)
+
+# Run analysis with SCE object directly
+results_sce <- scCulture(
+    sce_data_path = sce,  # Pass object directly
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./sce_results",
+    mode = "build",
+    experiment_id = "sce_advanced",
+    verbose = TRUE
+)
+
+# Or load from RDS file
+results_sce_file <- scCulture(
+    sce_data_path = "path/to/sce_data.rds",
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./sce_file_results",
+    mode = "build",
+    experiment_id = "sce_from_file",
+    verbose = TRUE
+)
+```
+
+## Cross-Dataset Predictions
+
+One of the most powerful features is the ability to train models on one data format and apply them to another:
+
+```{r cross_dataset_advanced, eval=FALSE}
+# Scenario 1: Train on 10X, predict on SCE
+# This is useful when you have labeled 10X reference data
+# and unlabeled SCE query data
+
+# Step 1: Build model with 10X data
+model_10x <- scCulture(
+    tenx_data_dir = "reference_10x_data/",
+    input_type = "10x",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./model_10x",
+    mode = "build",
+    experiment_id = "10x_reference",
+    verbose = TRUE
+)
+
+# Step 2: Apply to SCE data
+predictions_sce <- scCulture(
+    sce_data_path = sce,  # or path to RDS file
+    input_type = "sce",
+    output_dir = "./predictions_on_sce",
+    mode = "predict",
+    fingerprint_file = model_10x$fingerprint_file,
+    experiment_id = "sce_query",
+    verbose = TRUE
+)
+
+# Scenario 2: Train on SCE, predict on 10X
+# Useful when your reference data is in SCE format
+
+# Step 1: Build model with SCE data
+model_sce <- scCulture(
+    sce_data_path = "reference_sce.rds",
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./model_sce",
+    mode = "build",
+    experiment_id = "sce_reference",
+    verbose = TRUE
+)
+
+# Step 2: Apply to 10X data
+predictions_10x <- scCulture(
+    tenx_data_dir = "query_10x_data/",
+    input_type = "10x",
+    output_dir = "./predictions_on_10x",
+    mode = "predict",
+    fingerprint_file = model_sce$fingerprint_file,
+    experiment_id = "10x_query",
+    verbose = TRUE
+)
+```
+
+## Batch Processing with Mixed Data Types
+
+Process multiple datasets of different formats in a single pipeline:
+
+```{r batch_mixed, eval=FALSE}
+# Define datasets with their types
+datasets <- list(
+    list(name = "dataset1", path = "data/10x_1/", type = "10x"),
+    list(name = "dataset2", path = "data/sce_1.rds", type = "sce"),
+    list(name = "dataset3", path = "data/10x_2/", type = "10x"),
+    list(name = "dataset4", path = "data/sce_2.rds", type = "sce")
+)
+
+# Process all datasets
+results_mixed <- list()
+
+for (dataset in datasets) {
+    if (dataset$type == "10x") {
+        results_mixed[[dataset$name]] <- scCulture(
+            tenx_data_dir = dataset$path,
+            input_type = "10x",
+            kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+            output_dir = paste0("./results_", dataset$name),
+            mode = "build",
+            experiment_id = dataset$name,
+            verbose = TRUE
+        )
+    } else if (dataset$type == "sce") {
+        results_mixed[[dataset$name]] <- scCulture(
+            sce_data_path = dataset$path,
+            input_type = "sce",
+            kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+            output_dir = paste0("./results_", dataset$name),
+            mode = "build",
+            experiment_id = dataset$name,
+            verbose = TRUE
+        )
+    }
+}
+
+# Compare results across datasets
+accuracy_comparison <- sapply(results_mixed, function(x) {
+    x$evaluation_results$overall_accuracy
+})
+print(accuracy_comparison)
+```
+
+## Advanced SCE Integration
+
+Leverage SCE-specific features while using scCulturePredict:
+
+```{r sce_integration, eval=FALSE}
+# Use existing dimensionality reductions from SCE
+library(scater)
+library(scran)
+
+# Prepare SCE with existing analyses
+sce <- logNormCounts(sce)
+sce <- runPCA(sce)
+sce <- runUMAP(sce)
+
+# The package will automatically detect and use these reductions
+results_with_reductions <- scCulture(
+    sce_data_path = sce,
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./sce_with_reductions",
+    mode = "build",
+    experiment_id = "sce_integrated",
+    verbose = TRUE
+)
+
+# Access the results as Seurat object for further analysis
+seurat_from_sce <- results_with_reductions$seurat_object
+
+# Or convert back to SCE if needed for downstream Bioconductor workflows
+# (requires additional conversion code)
+```
+
 # Conclusion
 
-This vignette demonstrated advanced usage scenarios for the `scCulturePredict` package, including batch effect correction, custom pathway analysis, performance optimization, advanced prediction models, and integration with other single-cell analysis tools. These techniques can help you extract more insights from your single-cell data and customize the analysis to your specific research questions.
+This vignette demonstrated advanced usage scenarios for the `scCulturePredict` package, including batch effect correction, custom pathway analysis, performance optimization, advanced prediction models, integration with other single-cell analysis tools, and comprehensive SingleCellExperiment support. These techniques can help you extract more insights from your single-cell data and customize the analysis to your specific research questions.
 
 # Session Info
 

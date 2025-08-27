@@ -206,7 +206,8 @@ test_that("scCulture handles missing files gracefully", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_missing",
       kegg_file = kegg_file,
       output_dir = tempfile("test_missing_output"),
@@ -230,7 +231,8 @@ test_that("scCulture handles non-existent directory", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = "/path/that/does/not/exist",
+      tenx_data_dir = "/path/that/does/not/exist",
+      input_type = "10x",
       experiment_id = "test_nodir",
       kegg_file = kegg_file,
       output_dir = tempfile("test_nodir_output"),
@@ -253,7 +255,8 @@ test_that("scCulture handles invalid mode parameter", {
   expect_error(
     scCulture(
       mode = "invalid_mode",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_invalid_mode",
       kegg_file = kegg_file,
       output_dir = tempfile("test_invalid_mode_output"),
@@ -273,7 +276,8 @@ test_that("scCulture handles missing KEGG file", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_no_kegg",
       kegg_file = "/path/to/nonexistent/kegg.keg",
       output_dir = tempfile("test_no_kegg_output"),
@@ -293,7 +297,8 @@ test_that("scCulture handles missing fingerprint file in PREDICT mode", {
   expect_error(
     scCulture(
       mode = "predict",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_no_fingerprint",
       fingerprint_file = "/path/to/nonexistent/fingerprint.rds",
       output_dir = tempfile("test_no_fingerprint_output"),
@@ -319,7 +324,8 @@ test_that("scCulture handles malformed data files", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_malformed",
       kegg_file = kegg_file,
       output_dir = tempfile("test_malformed_output"),
@@ -345,7 +351,8 @@ test_that("scCulture handles empty data matrix", {
     {
       scCulture(
         mode = "build",
-        data_dir = data_dir,
+        tenx_data_dir = data_dir,
+        input_type = "10x",
         experiment_id = "test_empty",
         kegg_file = kegg_file,
         output_dir = tempfile("test_empty_output"),
@@ -378,7 +385,8 @@ test_that("scCulture handles single cell data", {
     {
       scCulture(
         mode = "build",
-        data_dir = data_dir,
+        tenx_data_dir = data_dir,
+        input_type = "10x",
         experiment_id = "test_single",
         kegg_file = kegg_file,
         output_dir = tempfile("test_single_output"),
@@ -410,7 +418,8 @@ test_that("scCulture handles invalid parameter combinations", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_negative_cores",
       kegg_file = kegg_file,
       output_dir = tempfile("test_negative_cores_output"),
@@ -425,7 +434,8 @@ test_that("scCulture handles invalid parameter combinations", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_high_pcs",
       kegg_file = kegg_file,
       output_dir = tempfile("test_high_pcs_output"),
@@ -439,7 +449,8 @@ test_that("scCulture handles invalid parameter combinations", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_negative_perplexity",
       kegg_file = kegg_file,
       output_dir = tempfile("test_negative_perplexity_output"),
@@ -479,7 +490,8 @@ test_that("scCulture handles NULL required parameters", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = NULL,
       kegg_file = kegg_file,
       output_dir = tempfile("test_null_id_output"),
@@ -491,7 +503,8 @@ test_that("scCulture handles NULL required parameters", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_null_kegg",
       kegg_file = NULL,
       output_dir = tempfile("test_null_kegg_output"),
@@ -503,7 +516,8 @@ test_that("scCulture handles NULL required parameters", {
   expect_error(
     scCulture(
       mode = "predict",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_null_fp",
       fingerprint_file = NULL,
       output_dir = tempfile("test_null_fp_output"),
@@ -534,7 +548,8 @@ test_that("scCulture handles permission errors gracefully", {
     {
       scCulture(
         mode = "build",
-        data_dir = data_dir,
+        tenx_data_dir = data_dir,
+        input_type = "10x",
         experiment_id = "test_readonly",
         kegg_file = kegg_file,
         output_dir = file.path(output_dir, "subdir"),
@@ -587,7 +602,8 @@ test_that("scCulture handles extreme parameter values", {
     {
       scCulture(
         mode = "build",
-        data_dir = data_dir,
+        tenx_data_dir = data_dir,
+        input_type = "10x",
         experiment_id = "test_min_genes_zero",
         kegg_file = kegg_file,
         output_dir = tempfile("test_min_genes_zero_output"),
@@ -608,7 +624,8 @@ test_that("scCulture handles extreme parameter values", {
     {
       scCulture(
         mode = "build",
-        data_dir = data_dir,
+        tenx_data_dir = data_dir,
+        input_type = "10x",
         experiment_id = "test_high_min_cells",
         kegg_file = kegg_file,
         output_dir = tempfile("test_high_min_cells_output"),

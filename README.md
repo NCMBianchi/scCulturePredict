@@ -1,15 +1,17 @@
 # scCulturePredict
 
-[![Bioconductor](https://img.shields.io/badge/Bioconductor-devel-brightgreen)](https://bioconductor.org/)
-[![Version](https://img.shields.io/badge/Version-0.99.28-orange)](https://github.com/nccb/scCulturePredict)
+[![Bioconductor](https://img.shields.io/badge/Bioconductor-under%20review-yellow)](https://github.com/Bioconductor/Contributions/issues)
+[![Version](https://img.shields.io/badge/Version-0.99.29-orange)](https://github.com/nccb/scCulturePredict)
 [![R-CMD-check-BiocCheck](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml)
 [![codecov](https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg)](https://codecov.io/gh/NCMBianchi/scCulturePredict)
 [![R](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)](https://www.r-project.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Build and Apply Transcriptomic Fingerprints for Cell Culture Media Prediction
+## Build and Apply Transcriptomic Fingerprints for Cell Classification
 
-scCulturePredict is an R package that provides dual functionality for cell culture media prediction from single-cell transcriptomic data. **BUILD mode** generates transferable transcriptomic fingerprints from labeled training data, while **PREDICT mode** applies these pre-built fingerprints to unlabeled datasets for culture condition prediction.
+scCulturePredict is an R package that provides dual functionality for classifying cells based on metabolic pathway signatures from single-cell transcriptomic data. While originally designed for culture media prediction, **scCulturePredict can classify cells based on any discrete metadata variable** (e.g., cell type, treatment condition, disease state, donor, timepoint, etc.) using metabolic pathway signatures.
+
+**BUILD mode** generates transferable transcriptomic fingerprints from labeled training data, while **PREDICT mode** applies these pre-built fingerprints to unlabeled datasets for classification.
 
 ![](man/figures/scCulturePredict-banner.png)
 
@@ -29,9 +31,10 @@ scCulturePredict is an R package that provides dual functionality for cell cultu
 - Generate prediction-specific visualizations
 
 ### Core Capabilities
-- Load and preprocess single-cell data (10X Genomics format)
+- Load and preprocess single-cell data (10X Genomics format or [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) objects)
 - Perform dimensionality reduction with UMAP and t-SNE
-- Integrate with Seurat workflows
+- Integrate with both [Seurat](https://satijalab.org/seurat/) and [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) workflows
+- Cross-dataset prediction with flexible pathway matching
 - Comprehensive evaluation and visualization tools
 
 ![](man/figures/scCulturePredict-screenshot.png)
@@ -61,15 +64,31 @@ devtools::install_github("nccb/scCulturePredict")
 library(scCulturePredict)
 
 # Build fingerprints from labeled training data
-training_results <- scumap(
-  data_dir = "./DATA_labeled",
-  kegg_file = "kegg_file",
+# The function accepts both 10X Genomics data (via data_dir) and
+# SingleCellExperiment objects (via sce_object)
+
+# Option 1: Using 10X Genomics data
+training_results <- scCulture(
+  tenx_data_dir = "./DATA_labeled",      # Path to 10X data directory
+  input_type = "10x",
+  kegg_file = "kegg_pathways.keg",
   output_dir = "./training_results",
   mode = "build",
   experiment_id = "training",
   progress = TRUE,
   verbose = TRUE
 )
+
+# Option 2: Using SingleCellExperiment data
+# Note: sce_object can be either a path to an RDS file OR an actual SCE object
+# training_results <- scCulture(
+#   sce_data_path = "labeled_cells.rds",  # Path to RDS file containing SCE object
+#   input_type = "sce",
+#   kegg_file = "kegg_pathways.keg",
+#   output_dir = "./training_results",
+#   mode = "build",
+#   experiment_id = "training"
+# )
 
 # Access training results
 fingerprint_file <- training_results$fingerprint_file
@@ -81,15 +100,28 @@ print(paste("Training accuracy:", training_accuracy))
 
 ```r
 # Apply fingerprints to unlabeled data
-prediction_results <- scumap(
-  data_dir = "./DATA_unlabeled",
+# Works with both 10X Genomics data and SingleCellExperiment objects
+
+# Option 1: Using 10X Genomics data
+prediction_results <- scCulture(
+  tenx_data_dir = "./DATA_unlabeled",      # Path to 10X data directory
+  input_type = "10x",
   output_dir = "./prediction_results",
   mode = "predict",
-  fingerprint_file = fingerprint_file,
-  experiment_id = "predictions",
-  progress = TRUE,
-  verbose = TRUE
+  fingerprint_file = fingerprint_file,  # From BUILD mode
+  experiment_id = "predictions"
 )
+
+# Option 2: Using SingleCellExperiment data
+# Note: sce_object can be either a path to an RDS file OR an actual SCE object
+# prediction_results <- scCulture(
+#   sce_data_path = "unlabeled_cells.rds",  # Path to RDS file containing SCE object
+#   input_type = "sce",
+#   output_dir = "./prediction_results",
+#   mode = "predict",
+#   fingerprint_file = fingerprint_file,
+#   experiment_id = "predictions"
+# )
 
 # Access predictions
 predictions <- prediction_results$seurat_object$classification_pred
@@ -98,25 +130,69 @@ confidence_scores <- prediction_results$seurat_object$prediction_confidence
 # View results
 head(data.frame(
   cell_barcode = colnames(prediction_results$seurat_object),
-  predicted_medium = predictions,
+  predicted_class = predictions,
   confidence = confidence_scores
 ))
+```
+
+### Flexible Classification: Beyond Culture Media
+
+scCulturePredict can classify cells based on **any discrete metadata variable**. Here are examples for different classification tasks:
+
+```r
+# Example 1: Cell Type Classification
+# Your SCE object has a "cell_type" column with T cells, B cells, NK cells, etc.
+cell_type_fingerprints <- scCulture(
+  sce_data_path = "pbmc_data.rds",  # Can be path to RDS file or actual SCE object
+  input_type = "sce",
+  kegg_file = "human_kegg.keg",
+  output_dir = "./cell_type_analysis",
+  mode = "build",
+  sample_column = "cell_type",  # Specify which metadata column to use
+  experiment_id = "cell_type_classification"
+)
+
+# Example 2: Treatment Response Classification
+# Your data has "treatment" column with Control, DrugA, DrugB
+treatment_fingerprints <- scCulture(
+  tenx_data_dir = "./treatment_data",
+  input_type = "10x",
+  kegg_file = "kegg_pathways.keg",
+  output_dir = "./treatment_analysis",
+  mode = "build",
+  sample_column = "treatment",
+  experiment_id = "drug_response"
+)
+
+# Example 3: Disease State Classification
+# Your data has "condition" column with Healthy, Mild, Severe
+disease_fingerprints <- scCulture(
+  sce_data_path = "patient_data.rds",  # Can be path to RDS file or actual SCE object
+  input_type = "sce",
+  kegg_file = "kegg_pathways.keg",
+  output_dir = "./disease_analysis",
+  mode = "build",
+  sample_column = "condition",
+  experiment_id = "disease_state"
+)
 ```
 
 ### Complete Workflow Example
 
 ```r
 # Step 1: Build fingerprints (training phase)
-training_results <- scumap(
-  data_dir = "./DATA_labeled",
+training_results <- scCulture(
+  tenx_data_dir = "./DATA_labeled",
+  input_type = "10x",
   kegg_file = "sce00001.keg",
   output_dir = "./results/training",
   mode = "build"
 )
 
 # Step 2: Apply to new data (prediction phase)
-prediction_results <- scumap(
-  data_dir = "./DATA_unlabeled",
+prediction_results <- scCulture(
+  tenx_data_dir = "./DATA_unlabeled",
+  input_type = "10x",
   output_dir = "./results/predictions",
   mode = "predict",
   fingerprint_file = training_results$fingerprint_file
@@ -133,8 +209,8 @@ For users who need more control over individual steps:
 
 ```r
 # Step-by-step approach
-data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
-seurat_object <- load_data(data_dir, experiment_id = "example")
+tenx_data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
+seurat_object <- load_10x_data(tenx_data_dir, experiment_id = "example")
 seurat_object <- preprocess_data(seurat_object)
 seurat_object <- reduce_dimensions(seurat_object)
 
@@ -166,6 +242,36 @@ This script will:
 - Remove malformed "x" headers from barcodes and features files
 - Rename GSE165686-formatted files to standard 10X names
 - Handle gzip compression automatically
+
+### Handling Duplicate Gene Names in SingleCellExperiment Data
+
+When working with SingleCellExperiment objects, duplicate gene names may occur due to various reasons (e.g., multiple transcripts, isoforms, or data processing artifacts). The `scCulture()` function provides flexible options for handling duplicates through the `handle_duplicates` parameter:
+
+```r
+# Example: Handle duplicate genes when using SingleCellExperiment data
+results <- scCulture(
+  sce_data_path = "data_with_duplicates.rds",
+  input_type = "sce",
+  kegg_file = "kegg_pathways.keg",
+  output_dir = "./results",
+  mode = "build",
+  handle_duplicates = "make_unique"  # Default behavior
+)
+```
+
+Available options for `handle_duplicates`:
+- **"make_unique"** (default): Appends .1, .2, etc. to duplicate gene names
+- **"aggregate"**: Sums expression values for duplicate genes
+- **"first"**: Keeps only the first occurrence of duplicate genes
+- **"error"**: Stops with an informative error if duplicates are found
+
+The function will issue a warning when duplicates are detected and handled:
+```
+Warning: Found 5 duplicate gene names. Handling with method: make_unique
+Example duplicates: GENE1, GENE2, GENE3...
+```
+
+This parameter ensures robust processing of real-world datasets while maintaining flexibility for different use cases.
 
 ## Documentation
 
@@ -268,10 +374,10 @@ If you use scCulturePredict in your research, please cite (bibtex format):
 
 ```bibtex
 @Manual{scCulturePredict2025,
-  title = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},
+  title = {scCulturePredict: Single-Cell Feature Prediction Using Transcriptomic Fingerprints},
   author = {Niccolò Bianchi},
   year = {2025},
-  note = {R package version 0.99.28},
+  note = {R package version 0.99.29},
   url = {https://github.com/ncmbianchi/scCulturePredict},
 }
 ```

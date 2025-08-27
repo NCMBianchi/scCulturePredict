@@ -5,13 +5,22 @@
 #' fingerprints from labeled training data, or "predict" to apply existing fingerprints
 #' to new unlabeled data for cell culture media prediction.
 #'
-#' @param data_dir Character string specifying the directory containing the data files.
+#' @param tenx_data_dir Character string specifying the directory containing the 10X data files.
+#' @param input_type Character string specifying the input data type. Must be either "10x" for
+#'   10X Genomics data or "sce" for SingleCellExperiment data.
 #' @param kegg_file Character string specifying the path to the KEGG pathway file.
 #'   Required for "build" mode, optional for "predict" mode if fingerprint_file contains KEGG data.
 #' @param output_dir Character string specifying the directory for output files.
 #' @param mode Character string specifying the analysis mode. Either "build" (generate
 #'   fingerprints from labeled data) or "predict" (apply existing fingerprints to unlabeled data).
 #'   Default is "build".
+#' @param sce_data_path Character string specifying the path to SingleCellExperiment RDS file or
+#'   an actual SingleCellExperiment object. Used when input_type is "sce".
+#' @param handle_duplicates Character string specifying how to handle duplicate gene names in SCE data.
+#'   Options are "make_unique" (default), "aggregate", "first", or "error".
+#'   "make_unique" appends .1, .2 etc to duplicates, "aggregate" sums duplicate genes,
+#'   "first" keeps only the first occurrence, "error" stops with an informative message.
+#'   Only used when input_type is "sce".
 #' @param fingerprint_file Character string specifying the path to saved fingerprint/model file.
 #'   Required for "predict" mode, ignored in "build" mode.
 #' @param experiment_id Character string specifying the experiment ID prefix in filenames.
@@ -93,14 +102,16 @@
 #' # Build mode - generate fingerprints from labeled training data
 #' # Using default KEGG file
 #' training_results <- scCulture(
-#'   data_dir = "./DATA_labeled",
+#'   tenx_data_dir = "./DATA_labeled",
+#'   input_type = "10x",
 #'   output_dir = "./training_results",
 #'   mode = "build"
 #' )
 #'
 #' # Or specify custom KEGG file
 #' training_results_custom <- scCulture(
-#'   data_dir = "./DATA_labeled",
+#'   tenx_data_dir = "./DATA_labeled",
+#'   input_type = "10x",
 #'   kegg_file = "custom_pathways.keg",
 #'   output_dir = "./training_results",
 #'   mode = "build"
@@ -114,7 +125,8 @@
 #' \dontrun{
 #' # Predict mode - apply fingerprints to new unlabeled data
 #' prediction_results <- scCulture(
-#'   data_dir = "./DATA_unlabeled",
+#'   tenx_data_dir = "./DATA_unlabeled",
+#'   input_type = "10x",
 #'   output_dir = "./prediction_results",
 #'   mode = "predict",
 #'   fingerprint_file = fingerprint_file
@@ -129,7 +141,8 @@
 #' # Advanced usage with progress tracking and parallel processing
 #' # Using default KEGG file
 #' results <- scCulture(
-#'   data_dir = "./DATA_edit",
+#'   tenx_data_dir = "./DATA_edit",
+#'   input_type = "10x",
 #'   output_dir = "./results",
 #'   mode = "build",
 #'   experiment_id = "my_experiment",
@@ -139,7 +152,7 @@
 #' )
 #' }
 #' @seealso
-#' \code{\link{load_data}} for data loading
+#' \code{\link{load_10x_data}} for data loading
 #' \code{\link{preprocess_data}} for data preprocessing
 #' \code{\link{reduce_dimensions}} for dimensionality reduction
 #' \code{\link{parse_kegg_keg}} for KEGG pathway analysis
@@ -149,18 +162,44 @@
 #' \code{\link{create_evaluation_plots}} for visualization
 #'
 #' @export
-scCulture <- function(data_dir, kegg_file = NULL, output_dir,
+scCulture <- function(tenx_data_dir = NULL, sce_data_path = NULL, input_type,
+                      kegg_file = NULL, output_dir,
                       mode = "build", fingerprint_file = NULL,
                       experiment_id = "experiment",
+                      handle_duplicates = "make_unique",
                       perform_tsne = TRUE,
                       progress = FALSE, parallel = FALSE, n_cores = NULL,
                       verbose = TRUE) {
-  # Input validation
-  if (!is.character(data_dir) || length(data_dir) != 1) {
-    stop("data_dir must be a single character string")
+  # Input validation - check input type
+  if (missing(input_type) || !is.character(input_type) || length(input_type) != 1) {
+    stop("input_type must be specified as either '10x' or 'sce'")
   }
-  if (!dir.exists(data_dir)) {
-    stop(sprintf("Data directory not found: %s", data_dir))
+  if (!input_type %in% c("10x", "sce")) {
+    stop("input_type must be either '10x' or 'sce'")
+  }
+
+  # Validate based on input type
+  if (input_type == "10x") {
+    if (is.null(tenx_data_dir)) {
+      stop("tenx_data_dir must be provided for 10x input type")
+    }
+    if (!is.character(tenx_data_dir) || length(tenx_data_dir) != 1) {
+      stop("tenx_data_dir must be a single character string")
+    }
+    if (!dir.exists(tenx_data_dir)) {
+      stop(sprintf("Data directory not found: %s", tenx_data_dir))
+    }
+    if (!is.null(sce_data_path)) {
+      warning("sce_data_path provided but will be ignored for 10x input type")
+    }
+  } else if (input_type == "sce") {
+    if (is.null(sce_data_path)) {
+      stop("sce_data_path must be provided for sce input type")
+    }
+    if (!is.null(tenx_data_dir)) {
+      warning("tenx_data_dir provided but will be ignored for sce input type")
+    }
+    # sce_data_path validation will happen in load_sce_data
   }
 
   # Validate mode parameter
@@ -262,7 +301,11 @@ scCulture <- function(data_dir, kegg_file = NULL, output_dir,
 
       # Load data (10%)
       if (verbose) message("Loading single-cell data...")
-      seurat_object <- load_data(data_dir, experiment_id, verbose = verbose)
+      if (input_type == "10x") {
+        seurat_object <- load_10x_data(tenx_data_dir, experiment_id, verbose = verbose)
+      } else if (input_type == "sce") {
+        seurat_object <- load_sce_data(sce_data_path, experiment_id, verbose = verbose, handle_duplicates = handle_duplicates)
+      }
       if (progress) {
         setTxtProgressBar(pb, 15)
         message("")
@@ -484,9 +527,21 @@ run_predict_mode <- function(seurat_object, fingerprint_file, output_dir, progre
     verbose = verbose
   )
 
+  # Filter out pathways with all NA values
+  valid_pathways <- colSums(!is.na(pathway_activities)) > 0
+  pathway_activities_filtered <- pathway_activities[, valid_pathways, drop = FALSE]
+
+  if (verbose && sum(valid_pathways) < ncol(pathway_activities)) {
+    message(sprintf(
+      "Filtered %d all-NA pathways, keeping %d valid pathways",
+      ncol(pathway_activities) - sum(valid_pathways),
+      sum(valid_pathways)
+    ))
+  }
+
   # Use pre-built signature matrix from fingerprints
   pathway_results <- list(
-    pathway_matrix = pathway_activities,
+    pathway_matrix = pathway_activities_filtered,
     signature_matrix = fingerprint_data$similarity_model$signature_matrix
   )
   if (progress) {
@@ -507,31 +562,71 @@ run_predict_mode <- function(seurat_object, fingerprint_file, output_dir, progre
   # SVM predictions using pre-trained model
   # Prepare data frame with sanitized column names for SVM prediction
   prediction_data <- as.data.frame(t(pathway_results$pathway_matrix))
+
+  # Store original pathway names before sanitizing
+  original_pathway_names <- colnames(prediction_data)
   colnames(prediction_data) <- make.names(colnames(prediction_data))
 
-  # Feature matching safeguard: ensure prediction data has all features expected by the model
+  # Feature matching with flexible dimensions
   svm_model <- fingerprint_data$svm_model
   svm_predictions <- tryCatch(
     {
-      # Check if we can extract model terms (features)
-      if (inherits(svm_model, "svm") && !is.null(svm_model$terms)) {
-        # Get feature names from SVM model
+      # Get training features from model
+      model_features <- NULL
+      if (!is.null(svm_model$training_features)) {
+        # Use stored training features if available
+        model_features <- svm_model$training_features
+      } else if (inherits(svm_model, "svm") && !is.null(svm_model$terms)) {
+        # Fallback to extracting from terms
         model_features <- attr(svm_model$terms, "term.labels")
-
-        # Check for missing features
-        missing_features <- setdiff(model_features, colnames(prediction_data))
-        if (length(missing_features) > 0) {
-          if (verbose) {
-            message(sprintf("Note: Adding %d missing features with default values for SVM compatibility", length(missing_features)))
-          }
-          # Add missing columns with NA values
-          for (feature in missing_features) {
-            prediction_data[[feature]] <- NA
-          }
-        }
       }
 
-      # Make predictions with complete feature set
+      if (!is.null(model_features)) {
+        # Find common and missing features
+        common_features <- intersect(model_features, colnames(prediction_data))
+        missing_features <- setdiff(model_features, colnames(prediction_data))
+        extra_features <- setdiff(colnames(prediction_data), model_features)
+
+        if (verbose) {
+          if (length(common_features) > 0) {
+            message(sprintf(
+              "SVM: Using %d common pathways between training (%d) and new data (%d)",
+              length(common_features), length(model_features), ncol(prediction_data)
+            ))
+          }
+          if (length(missing_features) > 0) {
+            message(sprintf(
+              "SVM: %d pathways from training not found in new data (will use NA)",
+              length(missing_features)
+            ))
+          }
+          if (length(extra_features) > 0) {
+            message(sprintf(
+              "SVM: %d pathways in new data not used in training (will ignore)",
+              length(extra_features)
+            ))
+          }
+        }
+
+        # Create prediction data with exact feature set as training
+        aligned_data <- data.frame(row.names = rownames(prediction_data))
+
+        # Add common features with their values
+        for (feature in common_features) {
+          aligned_data[[feature]] <- prediction_data[[feature]]
+        }
+
+        # Add missing features with NA values
+        for (feature in missing_features) {
+          aligned_data[[feature]] <- NA
+        }
+
+        # Ensure column order matches training
+        aligned_data <- aligned_data[, model_features, drop = FALSE]
+        prediction_data <- aligned_data
+      }
+
+      # Make predictions with aligned feature set
       predict(svm_model, newdata = prediction_data)
     },
     error = function(e) {
@@ -567,7 +662,7 @@ run_predict_mode <- function(seurat_object, fingerprint_file, output_dir, progre
   if (verbose) message("Calculating prediction confidence...")
   confidence_scores <- calculate_prediction_confidence(
     pathway_results$pathway_matrix,
-    fingerprint_data$similarity_model$pathway_matrix
+    fingerprint_data$similarity_model$signature_matrix
   )
   seurat_object$prediction_confidence <- confidence_scores
 
@@ -617,18 +712,53 @@ run_predict_mode <- function(seurat_object, fingerprint_file, output_dir, progre
 #' @keywords internal
 #'
 #' @return A numeric vector of confidence scores between 0 and 1 for each prediction. Higher values indicate more confident predictions.
-calculate_prediction_confidence <- function(new_pathway_matrix, reference_pathway_matrix) {
-  # Calculate correlation-based confidence scores
-  correlations <- cor(new_pathway_matrix, reference_pathway_matrix, method = "pearson")
+calculate_prediction_confidence <- function(new_pathway_matrix, reference_signature_matrix) {
+  # Find common pathways between the two matrices
+  pathways_new <- colnames(new_pathway_matrix)
+  pathways_ref <- rownames(reference_signature_matrix)
+  common_pathways <- intersect(pathways_new, pathways_ref)
 
-  # Safe max calculation that avoids warnings for empty/NA rows
-  confidence_scores <- apply(correlations, 1, function(x) {
-    non_na_values <- x[!is.na(x)]
-    if (length(non_na_values) == 0) {
-      return(0) # Default confidence if no valid correlations
-    } else {
-      return(max(non_na_values))
+  # Handle case with no common pathways
+  if (length(common_pathways) == 0) {
+    warning("No common pathways found for confidence calculation")
+    return(rep(0, nrow(new_pathway_matrix)))
+  }
+
+  # Subset both matrices to use only common pathways
+  new_subset <- new_pathway_matrix[, common_pathways, drop = FALSE]
+  ref_subset <- reference_signature_matrix[common_pathways, , drop = FALSE]
+
+  # Vectorized calculation of confidence scores
+  # Calculate correlation between each cell and each condition signature
+  n_cells <- nrow(new_subset)
+  n_conditions <- ncol(ref_subset)
+
+  # Initialize correlation matrix
+  correlation_matrix <- matrix(NA, nrow = n_cells, ncol = n_conditions)
+
+  # Calculate correlations in a vectorized manner
+  for (j in seq_len(n_conditions)) {
+    condition_signature <- ref_subset[, j]
+
+    # Calculate correlation for all cells with this condition at once
+    # This is much faster than cell-by-cell calculation
+    for (i in seq_len(n_cells)) {
+      cell_profile <- new_subset[i, ]
+      valid_idx <- !is.na(cell_profile) & !is.na(condition_signature)
+
+      if (sum(valid_idx) > 2) {
+        correlation_matrix[i, j] <- cor(cell_profile[valid_idx],
+          condition_signature[valid_idx],
+          method = "pearson"
+        )
+      }
     }
+  }
+
+  # Calculate confidence as maximum correlation for each cell
+  confidence_scores <- apply(correlation_matrix, 1, function(x) {
+    non_na <- x[!is.na(x)]
+    if (length(non_na) > 0) max(non_na) else 0
   })
 
   # Convert to 0-1 scale and handle any remaining edge cases

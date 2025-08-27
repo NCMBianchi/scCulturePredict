@@ -1,3 +1,40 @@
+# scCulturePredict 0.99.29 (2025-08-27)
+
+## Major Changes
+* Added full SingleCellExperiment (SCE) support for Bioconductor compliance
+* Renamed function parameters for clarity and consistency:
+  - `data_dir` → `tenx_data_dir` to clearly indicate 10X data input
+  - `sce_object` → `sce_data_path` to indicate it accepts both paths and objects
+  - `load_data()` → `load_10x_data()` for consistency with `load_sce_data()`
+* Implemented flexible pathway matching for cross-dataset predictions
+* Enhanced classifier to work with any discrete metadata variable, not limited to culture media
+
+## New Features
+* `load_sce_data()`: Direct SCE object loading and validation
+* Added `handle_duplicates` parameter for robust handling of duplicate gene names in SCE data:
+  - "make_unique" (default): Appends .1, .2, etc. to duplicate gene names
+  - "aggregate": Sums expression values for duplicate genes
+  - "first": Keeps only the first occurrence
+  - "error": Stops with informative error if duplicates are found
+* Cross-dataset prediction capability with different gene sets
+* Automatic pathway dimension alignment for incompatible datasets
+* Flexible metadata column selection via `sample_column` parameter (planned)
+
+## Bug Fixes
+* Fixed zero-variance scaling issues in homogeneous datasets
+* Resolved dimension mismatch errors in cross-dataset predictions
+* Corrected NA handling in pathway activity calculations
+* Fixed duplicate gene name issues in test data generation
+* Implemented robust duplicate gene handling in `load_sce_data()` to prevent Seurat object creation failures
+
+## Documentation
+* Added SCE workflow examples throughout documentation
+* Expanded vignettes with SingleCellExperiment usage
+* Clarified general classification capabilities beyond culture media
+* Updated README with diverse classification examples (cell type, treatment, disease state)
+* Updated all vignettes to use new parameter names (`tenx_data_dir`, `sce_data_path`)
+* Added comprehensive SCE sections to all three vignettes
+
 # scCulturePredict 0.99.28 (2025-08-07)
 
 ## Major Changes

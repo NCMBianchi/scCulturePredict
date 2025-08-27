@@ -1,14 +1,4 @@
-#' Default value operator
-#'
-#' @description
-#' Returns the left-hand side if it's not NULL, otherwise returns the right-hand side.
-#' This is a common utility operator used throughout the package.
-#'
-#' @param lhs Left-hand side value
-#' @param rhs Right-hand side value (default)
-#'
-#' @return lhs if not NULL, otherwise rhs
-#' @keywords internal
+# Internal utility: Default value operator
 `%||%` <- function(lhs, rhs) {
   if (!is.null(lhs)) lhs else rhs
 }
@@ -17,7 +7,7 @@
 #'
 #' @description
 #' Checks if required packages are installed and installs them if they are not.
-#' This is a more robust version of load_packages() that handles errors gracefully.
+#' This function handles package checking and installation gracefully.
 #'
 #' @param packages Character vector of package names to check and install.
 #' @param repos Character vector of repository URLs. Default is getOption("repos").
@@ -32,7 +22,7 @@
 #'   \item Handles installation errors gracefully with warnings
 #' }
 #'
-#' This function is more robust than load_packages() because it:
+#' This function is robust because it:
 #' \itemize{
 #'   \item Uses requireNamespace() instead of library()
 #'   \item Handles installation errors without stopping
@@ -42,8 +32,7 @@
 #' @examples
 #' check_and_install_packages(c("Seurat", "dplyr", "ggplot2"))
 #'
-#' @seealso
-#' \code{\link{load_packages}} for a simpler package loading function
+
 #'
 #' @export
 check_and_install_packages <- function(packages, repos = getOption("repos")) {

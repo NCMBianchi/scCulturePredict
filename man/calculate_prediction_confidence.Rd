@@ -4,7 +4,7 @@
 \alias{calculate_prediction_confidence}
 \title{Calculate prediction confidence scores}
 \usage{
-calculate_prediction_confidence(new_pathway_matrix, reference_pathway_matrix)
+calculate_prediction_confidence(new_pathway_matrix, reference_signature_matrix)
 }
 \value{
 A numeric vector of confidence scores between 0 and 1 for each prediction. Higher values indicate more confident predictions.

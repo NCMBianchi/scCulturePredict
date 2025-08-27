@@ -385,6 +385,133 @@ customized_plot <- ggplot(seurat_object@meta.data,
 print(customized_plot)
 ```
 
+# Visualizing SingleCellExperiment Results
+
+The `scCulturePredict` package seamlessly handles visualization of results from SingleCellExperiment objects. The same visualization functions work regardless of the input data format.
+
+## Visualizing SCE-based Analysis
+
+```{r sce_visualization, eval=FALSE}
+# Run analysis with SCE data
+results_sce <- scCulture(
+    sce_data_path = "path/to/sce_data.rds",
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./sce_results",
+    mode = "build",
+    experiment_id = "sce_viz_example",
+    verbose = TRUE
+)
+
+# Visualize SCE results - same function as for 10X data
+plot_sce <- plot_scCulture(results_sce)
+print(plot_sce)
+
+# Access the underlying ggplot objects for customization
+if (is.list(plot_sce)) {
+    # For PREDICT mode, multiple plots are returned
+    plot_sce$predictions +
+        scale_color_viridis_d(option = "magma") +
+        theme_dark()
+} else {
+    # For BUILD mode, single plot is returned
+    plot_sce +
+        ggtitle("SCE Data Analysis Results")
+}
+```
+
+## Comparing 10X and SCE Visualizations
+
+When working with both data formats, you can create side-by-side comparisons:
+
+```{r compare_formats, eval=FALSE}
+library(patchwork)
+
+# Results from 10X data
+results_10x <- scCulture(
+    tenx_data_dir = "path/to/10x_data",
+    input_type = "10x",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./10x_results",
+    mode = "build",
+    experiment_id = "10x_example",
+    verbose = TRUE
+)
+
+# Results from SCE data
+results_sce <- scCulture(
+    sce_data_path = "path/to/sce_data.rds",
+    input_type = "sce",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./sce_results",
+    mode = "build",
+    experiment_id = "sce_example",
+    verbose = TRUE
+)
+
+# Create plots
+plot_10x <- plot_scCulture(results_10x) + ggtitle("10X Data")
+plot_sce <- plot_scCulture(results_sce) + ggtitle("SCE Data")
+
+# Combine using patchwork
+combined_plot <- plot_10x + plot_sce +
+    plot_layout(ncol = 2) +
+    plot_annotation(title = "Comparison of Data Formats")
+
+print(combined_plot)
+```
+
+## Cross-Dataset Prediction Visualization
+
+Visualizing predictions when training on one format and predicting on another:
+
+```{r cross_viz, eval=FALSE}
+# Train on 10X
+model_10x <- scCulture(
+    tenx_data_dir = "path/to/labeled_10x",
+    input_type = "10x",
+    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
+    output_dir = "./model_10x",
+    mode = "build",
+    experiment_id = "training",
+    verbose = TRUE
+)
+
+# Predict on SCE
+predictions_sce <- scCulture(
+    sce_data_path = "path/to/unlabeled_sce.rds",
+    input_type = "sce",
+    output_dir = "./predictions_sce",
+    mode = "predict",
+    fingerprint_file = model_10x$fingerprint_file,
+    experiment_id = "prediction",
+    verbose = TRUE
+)
+
+# Visualize cross-dataset predictions
+pred_plot <- plot_scCulture(predictions_sce)
+
+# The prediction plot shows both predictions and confidence
+if (is.list(pred_plot)) {
+    # Customize prediction plot
+    pred_plot$predictions <- pred_plot$predictions +
+        theme_minimal() +
+        labs(title = "Cross-Dataset Predictions",
+             subtitle = "Model: 10X → Query: SCE")
+
+    # Customize confidence plot
+    pred_plot$confidence <- pred_plot$confidence +
+        scale_color_gradient(low = "gray80", high = "darkred") +
+        labs(title = "Prediction Confidence",
+             subtitle = "Higher values indicate more reliable predictions")
+
+    # Display both
+    library(patchwork)
+    combined <- pred_plot$predictions / pred_plot$confidence
+    print(combined)
+}
+```
+
 # Conclusion
 
 The `scCulturePredict` package provides a comprehensive set of visualization functions for exploring single-cell data and evaluating prediction results. These functions generate publication-ready figures that can be further customized using the powerful `ggplot2` framework.

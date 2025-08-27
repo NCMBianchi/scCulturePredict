@@ -54,14 +54,14 @@ validate_and_fix_file <- function(file_path, sep = "\t", header = TRUE, verbose 
 
 
 
-#' Load single-cell data
+#' Load 10X Genomics single-cell data
 #'
 #' @description
 #' Loads single-cell data from a directory containing count matrix, metadata, and barcodes.
 #' First attempts to use the shell script for file preparation, falling back to R-based
 #' preparation if the script fails. Automatically validates malformed input files.
 #'
-#' @param data_dir Character string specifying the directory containing the data files.
+#' @param tenx_data_dir Character string specifying the directory containing the data files.
 #'   The directory should contain files with the following naming pattern:
 #'   \itemize{
 #'     \item \code{<experiment_id>_metadata.csv} - Cell metadata file
@@ -95,41 +95,44 @@ validate_and_fix_file <- function(file_path, sep = "\t", header = TRUE, verbose 
 #' }
 #'
 #' @examples
-#' \dontrun{
-#' # Example for loading 10X Genomics data
-#' # Assumes you have a directory with 10X format files:
-#' # - matrix.mtx.gz (or matrix.mtx)
-#' # - barcodes.tsv.gz (or barcodes.tsv)
-#' # - features.tsv.gz (or genes.tsv.gz, or features.tsv, or genes.tsv)
-#' # - metadata.csv (optional)
-#'
-#' # Load 10X data
-#' seurat_obj <- load_data(
-#'   data_dir = "path/to/10x/data",
-#'   experiment_id = exp_id
+#' # Load 10X data using package's built-in example data
+#' data_dir <- system.file("extdata", "example_data_10x",
+#'   package = "scCulturePredict"
 #' )
 #'
-#' # Clean up
-#' unlink(counts_file)
-#' unlink(metadata_file)
+#' # Check that example data exists
+#' if (dir.exists(data_dir) && length(list.files(data_dir)) > 0) {
+#'   # Load the 10X format data
+#'   seurat_obj <- load_10x_data(
+#'     tenx_data_dir = data_dir,
+#'     experiment_id = "example_10x",
+#'     min_cells = 3,
+#'     min_features = 10,
+#'     verbose = FALSE
+#'   )
+#'
+#'   # Display basic information about the loaded object
+#'   print(seurat_obj)
+#'   cat("Number of cells:", ncol(seurat_obj), "\n")
+#'   cat("Number of genes:", nrow(seurat_obj), "\n")
 #' }
 #' @seealso
 #' \code{\link{preprocess_data}} for preprocessing the loaded data
 #' \code{\link{reduce_dimensions}} for dimensionality reduction
 #'
 #' @export
-load_data <- function(data_dir,
-                      experiment_id,
-                      metadata_file = NULL,
-                      min_cells = 3,
-                      min_features = 200,
-                      verbose = TRUE) {
+load_10x_data <- function(tenx_data_dir,
+                          experiment_id,
+                          metadata_file = NULL,
+                          min_cells = 3,
+                          min_features = 200,
+                          verbose = TRUE) {
   # Input validation
-  if (!is.character(data_dir) || length(data_dir) != 1) {
-    stop("data_dir must be a single character string")
+  if (!is.character(tenx_data_dir) || length(tenx_data_dir) != 1) {
+    stop("tenx_data_dir must be a single character string")
   }
-  if (!dir.exists(data_dir)) {
-    stop(sprintf("Directory not found: %s", data_dir))
+  if (!dir.exists(tenx_data_dir)) {
+    stop(sprintf("Directory not found: %s", tenx_data_dir))
   }
 
   if (!is.character(experiment_id) || length(experiment_id) != 1) {
@@ -165,7 +168,7 @@ load_data <- function(data_dir,
     )
 
     for (pattern in metadata_patterns) {
-      potential_file <- file.path(data_dir, pattern)
+      potential_file <- file.path(tenx_data_dir, pattern)
       if (file.exists(potential_file)) {
         metadata_file <- potential_file
         break
@@ -177,7 +180,7 @@ load_data <- function(data_dir,
       metadata_file <- NULL
     }
   } else {
-    metadata_file <- file.path(data_dir, metadata_file)
+    metadata_file <- file.path(tenx_data_dir, metadata_file)
     if (!file.exists(metadata_file)) {
       stop(sprintf("Metadata file not found: %s", metadata_file))
     }
@@ -186,7 +189,7 @@ load_data <- function(data_dir,
   # Load count matrix using Seurat's Read10X
   counts <- tryCatch(
     {
-      Seurat::Read10X(data.dir = data_dir)
+      Seurat::Read10X(data.dir = tenx_data_dir)
     },
     error = function(e) {
       stop(sprintf("Error loading 10X data: %s", e$message))
@@ -229,9 +232,9 @@ load_data <- function(data_dir,
     colnames(metadata)[1] <- "barcode"
 
     # Load barcodes file
-    barcodes_file <- file.path(data_dir, "barcodes.tsv.gz")
+    barcodes_file <- file.path(tenx_data_dir, "barcodes.tsv.gz")
     if (!file.exists(barcodes_file)) {
-      barcodes_file <- file.path(data_dir, "barcodes.tsv")
+      barcodes_file <- file.path(tenx_data_dir, "barcodes.tsv")
     }
 
     if (file.exists(barcodes_file)) {
@@ -285,6 +288,371 @@ load_data <- function(data_dir,
   if (verbose) {
     message(sprintf(
       "Created Seurat object with %d cells and %d genes",
+      ncol(seurat_obj), nrow(seurat_obj)
+    ))
+  }
+
+  return(seurat_obj)
+}
+
+#' Load SingleCellExperiment data
+#'
+#' @description
+#' Loads single-cell data from a SingleCellExperiment object or RDS file containing one.
+#' Converts the SingleCellExperiment to a Seurat object for pipeline compatibility.
+#'
+#' @param sce_data_path A SingleCellExperiment object or character string path to an RDS file
+#'   containing a SingleCellExperiment object.
+#' @param experiment_id Character string specifying the experiment ID for tracking.
+#' @param min_cells Integer specifying the minimum number of cells expressing a gene
+#'   for the gene to be included. Default is 3.
+#' @param min_features Integer specifying the minimum number of genes expressed in a cell
+#'   for the cell to be included. Default is 200.
+#' @param verbose Logical indicating whether to print progress messages. Default is TRUE.
+#' @param handle_duplicates Character string specifying how to handle duplicate gene names.
+#'   Options are "make_unique" (default), "aggregate", "first", or "error".
+#'   "make_unique" appends .1, .2 etc to duplicates, "aggregate" sums duplicate genes,
+#'   "first" keeps only the first occurrence, "error" stops with an informative message.
+#'
+#' @return A Seurat object containing:
+#' \itemize{
+#'   \item Count matrix from the SingleCellExperiment
+#'   \item Cell metadata from colData
+#'   \item Filtered genes and cells based on \code{min_cells} and \code{min_features}
+#' }
+#'
+#' @details
+#' The function performs the following steps:
+#' \enumerate{
+#'   \item Loads SCE object from file if path is provided
+#'   \item Validates the SingleCellExperiment object structure
+#'   \item Extracts counts and metadata
+#'   \item Converts to Seurat object with appropriate filtering
+#'   \item Preserves sample information from colData
+#' }
+#'
+#' @examples
+#' # Create a small example SingleCellExperiment
+#' if (requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+#'   library(SingleCellExperiment)
+#'
+#'   # Generate example count data
+#'   set.seed(123)
+#'   counts <- matrix(rpois(2000, lambda = 5), ncol = 40, nrow = 50)
+#'   colnames(counts) <- paste0("Cell", seq_len(40))
+#'   rownames(counts) <- paste0("Gene", seq_len(50))
+#'
+#'   # Create SingleCellExperiment object
+#'   sce <- SingleCellExperiment(assays = list(counts = counts))
+#'
+#'   # Add sample metadata
+#'   colData(sce)$sample <- rep(c("SampleA", "SampleB"), each = 20)
+#'
+#'   # Load the SCE object into Seurat format
+#'   seurat_obj <- load_sce_data(
+#'     sce_data_path = sce,
+#'     experiment_id = "example_sce",
+#'     min_cells = 3,
+#'     min_features = 10,
+#'     verbose = FALSE
+#'   )
+#'
+#'   # Display basic information
+#'   print(seurat_obj)
+#'   cat("Number of cells:", ncol(seurat_obj), "\n")
+#'   cat("Number of genes:", nrow(seurat_obj), "\n")
+#' }
+#'
+#' @seealso
+#' \code{\link{load_10x_data}} for loading 10X Genomics format data
+#' \code{\link{preprocess_data}} for preprocessing the loaded data
+#'
+#' @importFrom SingleCellExperiment SingleCellExperiment
+#' @importFrom SummarizedExperiment assay colData
+#' @export
+load_sce_data <- function(sce_data_path,
+                          experiment_id,
+                          min_cells = 3,
+                          min_features = 200,
+                          verbose = TRUE,
+                          handle_duplicates = "make_unique") {
+  # Input validation
+  if (!is.character(experiment_id) || length(experiment_id) != 1) {
+    stop("experiment_id must be a single character string")
+  }
+
+  if (!is.numeric(min_cells) || length(min_cells) != 1 || min_cells < 0) {
+    stop("min_cells must be a single positive number")
+  }
+
+  if (!is.numeric(min_features) || length(min_features) != 1 || min_features < 0) {
+    stop("min_features must be a single positive number")
+  }
+
+  if (!is.logical(verbose) || length(verbose) != 1) {
+    stop("verbose must be a single logical value")
+  }
+
+  if (!is.character(handle_duplicates) || length(handle_duplicates) != 1) {
+    stop("handle_duplicates must be a single character string")
+  }
+
+  valid_duplicate_methods <- c("make_unique", "aggregate", "first", "error")
+  if (!handle_duplicates %in% valid_duplicate_methods) {
+    stop(sprintf("handle_duplicates must be one of: %s", paste(valid_duplicate_methods, collapse = ", ")))
+  }
+
+  # Load SCE from file if path is provided
+  if (is.character(sce_data_path)) {
+    if (length(sce_data_path) != 1) {
+      stop("sce_data_path must be a single character string")
+    }
+    if (!file.exists(sce_data_path)) {
+      stop(sprintf("File not found: %s", sce_data_path))
+    }
+
+    if (verbose) message(sprintf("Loading SingleCellExperiment from %s...", sce_data_path))
+
+    sce_data_path <- tryCatch(
+      {
+        readRDS(sce_data_path)
+      },
+      error = function(e) {
+        stop(sprintf("Failed to load RDS file: %s", e$message))
+      }
+    )
+  }
+
+  # Validate it's a SingleCellExperiment
+  if (!inherits(sce_data_path, "SingleCellExperiment")) {
+    stop("sce_data_path must be a SingleCellExperiment object or path to RDS file containing one")
+  }
+
+  if (verbose) message("Converting SingleCellExperiment to Seurat object...")
+
+  # Extract counts matrix
+  # Try different assay names commonly used
+  counts <- NULL
+  for (assay_name in c("counts", "raw", "rawcounts")) {
+    if (assay_name %in% names(SummarizedExperiment::assays(sce_data_path))) {
+      counts <- SummarizedExperiment::assay(sce_data_path, assay_name)
+      if (verbose) message(sprintf("Using '%s' assay for count data", assay_name))
+      break
+    }
+  }
+
+  if (is.null(counts)) {
+    # If no counts found, use the first assay
+    if (length(SummarizedExperiment::assays(sce_data_path)) > 0) {
+      counts <- SummarizedExperiment::assay(sce_data_path, 1)
+      if (verbose) message("Using first assay as count data")
+    } else {
+      stop("No assays found in SingleCellExperiment object")
+    }
+  }
+
+  # Ensure counts matrix has proper rownames and colnames
+  if (is.null(rownames(counts))) {
+    # Get row names from SCE object
+    rownames(counts) <- rownames(sce_data_path)
+    if (verbose) message("Added row names from SingleCellExperiment object")
+  }
+
+  if (is.null(colnames(counts))) {
+    # Get column names from SCE object
+    colnames(counts) <- colnames(sce_data_path)
+    if (verbose) message("Added column names from SingleCellExperiment object")
+  }
+
+  # Check for empty matrix before setting names
+  if (nrow(counts) == 0 || ncol(counts) == 0) {
+    stop("Cannot load SingleCellExperiment with empty count matrix (0 genes or 0 cells)")
+  }
+
+  # Final validation
+  if (is.null(rownames(counts)) || length(rownames(counts)) == 0) {
+    # If still no rownames, create generic ones
+    rownames(counts) <- paste0("Feature", seq_len(nrow(counts)))
+    if (verbose) message("Created generic feature names")
+  }
+
+  if (is.null(colnames(counts)) || length(colnames(counts)) == 0) {
+    # If still no colnames, create generic ones
+    colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+    if (verbose) message("Created generic cell names")
+  }
+
+  # Handle duplicate gene names before creating Seurat object
+  if (any(duplicated(rownames(counts)))) {
+    n_dups <- sum(duplicated(rownames(counts)))
+    dup_genes <- unique(rownames(counts)[duplicated(rownames(counts))])
+
+    if (handle_duplicates == "error") {
+      stop(sprintf(
+        "Found %d duplicate gene names: %s. Please resolve before loading or use a different handle_duplicates option.",
+        n_dups, paste(head(dup_genes, 10), collapse = ", ")
+      ))
+    }
+
+    if (verbose) {
+      message(sprintf("Found %d duplicate gene names, handling with method: %s", n_dups, handle_duplicates))
+    }
+
+    if (handle_duplicates == "make_unique") {
+      rownames(counts) <- make.unique(rownames(counts))
+      if (verbose) message("Made gene names unique by appending .1, .2, etc. to duplicates")
+    } else if (handle_duplicates == "first") {
+      counts <- counts[!duplicated(rownames(counts)), ]
+      if (verbose) message(sprintf("Kept only first occurrence of duplicate genes, removed %d rows", n_dups))
+    } else if (handle_duplicates == "aggregate") {
+      # Sum duplicate genes
+      if (verbose) message("Aggregating duplicate genes by summing counts...")
+      unique_genes <- unique(rownames(counts))
+      aggregated_counts <- matrix(0, nrow = length(unique_genes), ncol = ncol(counts))
+      rownames(aggregated_counts) <- unique_genes
+      colnames(aggregated_counts) <- colnames(counts)
+
+      for (i in seq_along(unique_genes)) {
+        gene <- unique_genes[i]
+        gene_rows <- which(rownames(counts) == gene)
+        if (length(gene_rows) == 1) {
+          aggregated_counts[i, ] <- counts[gene_rows, ]
+        } else {
+          aggregated_counts[i, ] <- colSums(counts[gene_rows, , drop = FALSE])
+        }
+      }
+      counts <- aggregated_counts
+      if (verbose) message(sprintf("Aggregated %d duplicate genes", n_dups))
+    }
+  }
+
+  # Create Seurat object
+  seurat_obj <- tryCatch(
+    {
+      Seurat::CreateSeuratObject(
+        counts = counts,
+        min.cells = min_cells,
+        min.features = min_features,
+        project = experiment_id
+      )
+    },
+    error = function(e) {
+      stop(sprintf("Error creating Seurat object: %s", e$message))
+    }
+  )
+
+  # Extract and add metadata from colData
+  col_data <- as.data.frame(SummarizedExperiment::colData(sce_data_path))
+
+  if (ncol(col_data) > 0) {
+    if (verbose) message("Adding metadata from colData...")
+
+    # Get cells that passed filtering
+    filtered_cells <- colnames(seurat_obj)
+
+    # Subset col_data to only include cells that are in the Seurat object
+    # This handles the case where cells were filtered out during CreateSeuratObject
+    if (all(filtered_cells %in% rownames(col_data))) {
+      # Cell names match, subset by name
+      col_data <- col_data[filtered_cells, , drop = FALSE]
+      if (verbose) message(sprintf("Subset metadata to %d cells that passed filtering", length(filtered_cells)))
+    } else if (all(filtered_cells %in% colnames(counts))) {
+      # Try to match using original column names from counts matrix
+      original_cells <- colnames(counts)
+      kept_indices <- which(original_cells %in% filtered_cells)
+      col_data <- col_data[kept_indices, , drop = FALSE]
+      rownames(col_data) <- filtered_cells
+      if (verbose) message(sprintf("Matched metadata by position for %d filtered cells", length(filtered_cells)))
+    } else {
+      # Last resort: if the number of cells matches exactly, assume they're in order
+      if (ncol(seurat_obj) == nrow(col_data)) {
+        rownames(col_data) <- filtered_cells
+        if (verbose) message("Aligned metadata rows with Seurat cell names by position")
+      } else {
+        # Only some cells were kept, but we can't match them
+        if (verbose) {
+          message(sprintf(
+            "Warning: Cannot match metadata. Seurat has %d cells, metadata has %d rows",
+            ncol(seurat_obj), nrow(col_data)
+          ))
+          message("Skipping metadata addition")
+        }
+        col_data <- data.frame(row.names = filtered_cells)
+      }
+    }
+
+    # Add each metadata column
+    for (col_name in colnames(col_data)) {
+      # Skip if column already exists in Seurat metadata
+      if (col_name %in% colnames(seurat_obj@meta.data)) {
+        if (verbose) message(sprintf("Skipping existing metadata column: %s", col_name))
+        next
+      }
+
+      seurat_obj <- Seurat::AddMetaData(
+        seurat_obj,
+        metadata = col_data[[col_name]],
+        col.name = col_name
+      )
+    }
+
+    # Ensure 'sample' column exists
+    if (!"sample" %in% colnames(seurat_obj@meta.data)) {
+      if ("Sample" %in% colnames(seurat_obj@meta.data)) {
+        # Rename 'Sample' to 'sample' if it exists
+        seurat_obj@meta.data$sample <- seurat_obj@meta.data$Sample
+        if (verbose) message("Renamed 'Sample' column to 'sample'")
+      } else {
+        # Create default sample column
+        if (verbose) message("No 'sample' column found, creating default...")
+        seurat_obj@meta.data$sample <- "sample1"
+      }
+    }
+  } else {
+    # No metadata in colData, create basic metadata
+    if (verbose) message("No metadata in colData, creating basic metadata...")
+    seurat_obj@meta.data$sample <- "sample1"
+  }
+
+  # Add reduced dimensions if they exist
+  if (length(SingleCellExperiment::reducedDims(sce_data_path)) > 0) {
+    if (verbose) message("Transferring dimensionality reductions...")
+
+    red_dims <- SingleCellExperiment::reducedDims(sce_data_path)
+
+    # Transfer PCA if exists
+    if ("PCA" %in% names(red_dims)) {
+      pca_data <- red_dims[["PCA"]]
+      # Note: Would need additional code to properly transfer as Seurat DimReduc object
+      # For now, add to metadata as coordinates
+      if (ncol(pca_data) >= 2) {
+        seurat_obj@meta.data$PC_1_sce <- pca_data[, 1]
+        seurat_obj@meta.data$PC_2_sce <- pca_data[, 2]
+      }
+    }
+
+    # Transfer UMAP if exists
+    if ("UMAP" %in% names(red_dims)) {
+      umap_data <- red_dims[["UMAP"]]
+      if (ncol(umap_data) >= 2) {
+        seurat_obj@meta.data$UMAP_1_sce <- umap_data[, 1]
+        seurat_obj@meta.data$UMAP_2_sce <- umap_data[, 2]
+      }
+    }
+
+    # Transfer TSNE if exists
+    if ("TSNE" %in% names(red_dims)) {
+      tsne_data <- red_dims[["TSNE"]]
+      if (ncol(tsne_data) >= 2) {
+        seurat_obj@meta.data$tSNE_1_sce <- tsne_data[, 1]
+        seurat_obj@meta.data$tSNE_2_sce <- tsne_data[, 2]
+      }
+    }
+  }
+
+  if (verbose) {
+    message(sprintf(
+      "Created Seurat object with %d cells and %d genes from SingleCellExperiment",
       ncol(seurat_obj), nrow(seurat_obj)
     ))
   }

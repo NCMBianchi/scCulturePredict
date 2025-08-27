@@ -5,12 +5,15 @@
 \title{Single-Cell Culture Media Prediction Pipeline}
 \usage{
 scCulture(
-  data_dir,
+  tenx_data_dir = NULL,
+  sce_data_path = NULL,
+  input_type,
   kegg_file = NULL,
   output_dir,
   mode = "build",
   fingerprint_file = NULL,
   experiment_id = "experiment",
+  handle_duplicates = "make_unique",
   perform_tsne = TRUE,
   progress = FALSE,
   parallel = FALSE,
@@ -19,7 +22,13 @@ scCulture(
 )
 }
 \arguments{
-\item{data_dir}{Character string specifying the directory containing the data files.}
+\item{tenx_data_dir}{Character string specifying the directory containing the 10X data files.}
+
+\item{sce_data_path}{Character string specifying the path to SingleCellExperiment RDS file or
+an actual SingleCellExperiment object. Used when input_type is "sce".}
+
+\item{input_type}{Character string specifying the input data type. Must be either "10x" for
+10X Genomics data or "sce" for SingleCellExperiment data.}
 
 \item{kegg_file}{Character string specifying the path to the KEGG pathway file.
 Required for "build" mode, optional for "predict" mode if fingerprint_file contains KEGG data.}
@@ -35,6 +44,12 @@ Required for "predict" mode, ignored in "build" mode.}
 
 \item{experiment_id}{Character string specifying the experiment ID prefix in filenames.
 Default is "experiment".}
+
+\item{handle_duplicates}{Character string specifying how to handle duplicate gene names in SCE data.
+Options are "make_unique" (default), "aggregate", "first", or "error".
+"make_unique" appends .1, .2 etc to duplicates, "aggregate" sums duplicate genes,
+"first" keeps only the first occurrence, "error" stops with an informative message.
+Only used when input_type is "sce".}
 
 \item{perform_tsne}{Logical indicating whether to perform t-SNE. Default is TRUE.}
 
@@ -123,14 +138,16 @@ Output files automatically saved to \code{output_dir}:
 # Build mode - generate fingerprints from labeled training data
 # Using default KEGG file
 training_results <- scCulture(
-  data_dir = "./DATA_labeled",
+  tenx_data_dir = "./DATA_labeled",
+  input_type = "10x",
   output_dir = "./training_results",
   mode = "build"
 )
 
 # Or specify custom KEGG file
 training_results_custom <- scCulture(
-  data_dir = "./DATA_labeled",
+  tenx_data_dir = "./DATA_labeled",
+  input_type = "10x",
   kegg_file = "custom_pathways.keg",
   output_dir = "./training_results",
   mode = "build"
@@ -144,7 +161,8 @@ training_accuracy <- training_results$evaluation_results$overall_accuracy
 \dontrun{
 # Predict mode - apply fingerprints to new unlabeled data
 prediction_results <- scCulture(
-  data_dir = "./DATA_unlabeled",
+  tenx_data_dir = "./DATA_unlabeled",
+  input_type = "10x",
   output_dir = "./prediction_results",
   mode = "predict",
   fingerprint_file = fingerprint_file
@@ -159,7 +177,8 @@ confidence_scores <- prediction_results$seurat_object$prediction_confidence
 # Advanced usage with progress tracking and parallel processing
 # Using default KEGG file
 results <- scCulture(
-  data_dir = "./DATA_edit",
+  tenx_data_dir = "./DATA_edit",
+  input_type = "10x",
   output_dir = "./results",
   mode = "build",
   experiment_id = "my_experiment",
@@ -170,7 +189,7 @@ results <- scCulture(
 }
 }
 \seealso{
-\code{\link{load_data}} for data loading
+\code{\link{load_10x_data}} for data loading
 \code{\link{preprocess_data}} for data preprocessing
 \code{\link{reduce_dimensions}} for dimensionality reduction
 \code{\link{parse_kegg_keg}} for KEGG pathway analysis

@@ -1,8 +1,8 @@
 Package: scCulturePredict
 Type: Package
 Title: Predict Cell Culture Conditions from Single-Cell RNA-seq Data
-Version: 0.99.28
-Date: 2025-08-07
+Version: 0.99.29
+Date: 2025-08-27
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-4202-7154"))
@@ -25,6 +25,9 @@ Depends:
     R (>= 4.3.0)
 Imports:
     Seurat (>= 4.0.0),
+    SingleCellExperiment,
+    SummarizedExperiment,
+    S4Vectors,
     dplyr,
     ggplot2,
     e1071,

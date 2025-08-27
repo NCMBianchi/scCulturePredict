@@ -133,7 +133,8 @@ test_that("plot_scCulture works with BUILD mode results", {
   # Run scCulture in BUILD mode to get real results
   build_results <- scCulture(
     mode = "build",
-    data_dir = data_dir,
+    tenx_data_dir = data_dir,
+    input_type = "10x",
     experiment_id = "test_viz",
     kegg_file = kegg_file,
     output_dir = tempfile("test_viz_output"),
@@ -184,7 +185,8 @@ test_that("plot_scCulture works with PREDICT mode results", {
   # First run BUILD to get fingerprints
   build_results <- scCulture(
     mode = "build",
-    data_dir = build_dir,
+    tenx_data_dir = build_dir,
+    input_type = "10x",
     experiment_id = "build_viz",
     kegg_file = kegg_file,
     output_dir = tempfile("build_viz_output"),
@@ -196,7 +198,8 @@ test_that("plot_scCulture works with PREDICT mode results", {
   # Run PREDICT mode
   predict_results <- scCulture(
     mode = "predict",
-    data_dir = predict_dir,
+    tenx_data_dir = predict_dir,
+    input_type = "10x",
     experiment_id = "predict_viz",
     fingerprint_file = build_results$fingerprint_file,
     output_dir = tempfile("predict_viz_output"),
@@ -261,7 +264,8 @@ test_that("plot_scCulture returns data when return_data = TRUE", {
   # Run scCulture
   results <- scCulture(
     mode = "build",
-    data_dir = data_dir,
+    tenx_data_dir = data_dir,
+    input_type = "10x",
     experiment_id = "test_data_return",
     kegg_file = kegg_file,
     output_dir = tempfile("test_data_output"),
@@ -318,7 +322,8 @@ test_that("plot_scCulture handles invalid inputs gracefully", {
 
   results <- scCulture(
     mode = "build",
-    data_dir = data_dir,
+    tenx_data_dir = data_dir,
+    input_type = "10x",
     experiment_id = "test_invalid",
     kegg_file = kegg_file,
     output_dir = tempfile("test_invalid_output"),
@@ -363,7 +368,8 @@ test_that("plot_scCulture saves plots to file when requested", {
   # Run scCulture
   results <- scCulture(
     mode = "build",
-    data_dir = data_dir,
+    tenx_data_dir = data_dir,
+    input_type = "10x",
     experiment_id = "test_save",
     kegg_file = kegg_file,
     output_dir = output_dir,

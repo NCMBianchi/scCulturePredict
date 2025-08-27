@@ -16,7 +16,7 @@ Invisible NULL. This function is called for its side effects of checking and ins
 }
 \description{
 Checks if required packages are installed and installs them if they are not.
-This is a more robust version of load_packages() that handles errors gracefully.
+This function handles package checking and installation gracefully.
 }
 \details{
 The function performs the following steps:
@@ -26,7 +26,7 @@ The function performs the following steps:
   \item Handles installation errors gracefully with warnings
 }
 
-This function is more robust than load_packages() because it:
+This function is robust because it:
 \itemize{
   \item Uses requireNamespace() instead of library()
   \item Handles installation errors without stopping
@@ -36,7 +36,5 @@ This function is more robust than load_packages() because it:
 \examples{
 check_and_install_packages(c("Seurat", "dplyr", "ggplot2"))
 
-}
-\seealso{
-\code{\link{load_packages}} for a simpler package loading function
+
 }

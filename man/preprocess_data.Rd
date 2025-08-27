@@ -81,6 +81,6 @@ seurat_obj <- CreateSeuratObject(counts = counts, meta.data = metadata)
 processed_obj <- preprocess_data(seurat_obj)
 }
 \seealso{
-\code{\link{load_data}} for loading the data
+\code{\link{load_10x_data}} for loading the data
 \code{\link{reduce_dimensions}} for dimensionality reduction
 }

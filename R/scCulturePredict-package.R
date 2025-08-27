@@ -69,7 +69,7 @@
 #' }
 #'
 #' @section Data Loading:
-#' The \code{\link{load_data}} function provides robust data loading capabilities:
+#' The \code{\link{load_10x_data}} function provides robust data loading capabilities:
 #' \itemize{
 #'   \item Supports both shell script and R-based file preparation
 #'   \item Automatic handling of malformed input files
@@ -99,7 +99,7 @@
 #' @seealso
 #' \code{\link{scCulture}} for complete analysis pipeline (recommended)
 #' \code{\link{plot_scCulture}} for visualization of results
-#' \code{\link{load_data}} for data loading
+#' \code{\link{load_10x_data}} for data loading
 #' \code{\link{preprocess_data}} for data preprocessing
 #' \code{\link{reduce_dimensions}} for dimensionality reduction
 #' \code{\link{parse_kegg_keg}} for KEGG pathway analysis

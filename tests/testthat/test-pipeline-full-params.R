@@ -136,7 +136,8 @@ test_that("scCulture BUILD mode works with 10X format data", {
   expect_no_error({
     results <- scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_experiment",
       kegg_file = kegg_file, # Use real KEGG file
       output_dir = tempfile("test_output"),
@@ -186,7 +187,8 @@ test_that("scCulture PREDICT mode works with fingerprint file", {
   # First run BUILD mode to generate fingerprints
   build_results <- scCulture(
     mode = "build",
-    data_dir = build_dir,
+    tenx_data_dir = build_dir,
+    input_type = "10x",
     experiment_id = "build_experiment",
     kegg_file = kegg_file,
     output_dir = tempfile("build_output"),
@@ -199,7 +201,8 @@ test_that("scCulture PREDICT mode works with fingerprint file", {
   expect_no_error({
     predict_results <- scCulture(
       mode = "predict",
-      data_dir = predict_dir,
+      tenx_data_dir = predict_dir,
+      input_type = "10x",
       experiment_id = "predict_experiment",
       fingerprint_file = build_results$fingerprint_file,
       output_dir = tempfile("predict_output"),
@@ -229,7 +232,8 @@ test_that("scCulture handles invalid inputs gracefully", {
   expect_error(
     scCulture(
       mode = "build",
-      data_dir = "nonexistent_dir",
+      tenx_data_dir = "nonexistent_dir",
+      input_type = "10x",
       experiment_id = "test",
       output_dir = tempfile("test_output")
     ),
@@ -241,7 +245,8 @@ test_that("scCulture handles invalid inputs gracefully", {
   expect_error(
     scCulture(
       mode = "invalid_mode",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test",
       output_dir = tempfile("test_output")
     ),
@@ -252,7 +257,8 @@ test_that("scCulture handles invalid inputs gracefully", {
   expect_error(
     scCulture(
       mode = "predict",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test",
       output_dir = tempfile("test_output")
     ),
@@ -271,7 +277,8 @@ test_that("scCulture works with default KEGG file", {
   expect_no_error({
     results <- scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_experiment",
       output_dir = tempfile("test_output"),
       perform_tsne = FALSE,
@@ -308,7 +315,8 @@ test_that("scCulture parallel processing works", {
   expect_no_error({
     results <- scCulture(
       mode = "build",
-      data_dir = data_dir,
+      tenx_data_dir = data_dir,
+      input_type = "10x",
       experiment_id = "test_parallel",
       kegg_file = kegg_file,
       output_dir = tempfile("test_parallel_output"),
