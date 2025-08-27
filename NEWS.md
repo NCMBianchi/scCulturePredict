@@ -1,3 +1,10 @@
+# scCulturePredict 0.99.30 (2025-08-27)
+
+## Documentation
+* Fixed pkgdown build failure by updating `_pkgdown.yml` to reference renamed functions:
+  - Changed `load_data` to `load_10x_data` in function reference
+  - Added `load_sce_data` to data loading section
+
 # scCulturePredict 0.99.29 (2025-08-27)
 
 ## Major Changes

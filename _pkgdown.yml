@@ -54,7 +54,8 @@ reference:
   - title: Data Loading
     desc: Functions for loading and preparing single-cell data
     contents:
-      - load_data
+      - load_10x_data
+      - load_sce_data
       - load_object
       - save_object
   - title: Preprocessing
