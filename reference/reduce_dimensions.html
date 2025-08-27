@@ -9,7 +9,7 @@ Optionally performs t-SNE analysis."><link rel="stylesheet" href="https://cdn.js
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ Optionally performs t-SNE analysis."><link rel="stylesheet" href="https://cdn.js
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Reduce dimensions of single-cell data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/R/preprocessing.R" class="external-link"><code>R/preprocessing.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/R/preprocessing.R" class="external-link"><code>R/preprocessing.R</code></a></small>
       <div class="d-none name"><code>reduce_dimensions.Rd</code></div>
     </div>
 
@@ -97,10 +97,10 @@ If perform_tsne is TRUE, t-SNE coordinates are also added.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 UMAP embedding parameters a = 1.75 b = 0.8421</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Read 500 rows and found 40 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Using Annoy for neighbor search, n_neighbors = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 UMAP embedding parameters a = 1.75 b = 0.8421</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Read 500 rows and found 40 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Using Annoy for neighbor search, n_neighbors = 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Building Annoy index with metric = cosine, n_trees = 50</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
@@ -154,15 +154,15 @@ If perform_tsne is TRUE, t-SNE coordinates are also added.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Writing NN index file to temp file /tmp/RtmpO5CoW8/file1f3e706086a9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Searching Annoy index using 1 thread, search_k = 400</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:58 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:59 Commencing smooth kNN distance calibration using 1 thread</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Writing NN index file to temp file /tmp/RtmpIrTgqq/file27114d6f518</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Searching Annoy index using 1 thread, search_k = 400</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:32 Commencing smooth kNN distance calibration using 1 thread</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:59 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:59 Commencing optimization for 500 epochs, with 1928 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:11:59 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 14:12:00 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Commencing optimization for 500 epochs, with 1928 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Optimization finished</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check that UMAP coordinates were added</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">seurat_obj_reduced</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UMAP_1"</span>, <span class="st">"UMAP_2"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>

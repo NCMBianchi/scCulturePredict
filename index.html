@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,11 +65,12 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="scculturepredict">scCulturePredict<a class="anchor" aria-label="anchor" href="#scculturepredict"></a>
 </h1></div>
-<p><a href="https://bioconductor.org/" class="external-link"><img src="https://img.shields.io/badge/Bioconductor-devel-brightgreen" alt="Bioconductor"></a> <a href="https://github.com/nccb/scCulturePredict" class="external-link"><img src="https://img.shields.io/badge/Version-0.99.28-orange" alt="Version"></a> <a href="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg" alt="R-CMD-check-BiocCheck"></a> <a href="https://codecov.io/gh/NCMBianchi/scCulturePredict" class="external-link"><img src="https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg" alt="codecov"></a> <a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D4.1.0-blue" alt="R"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a></p>
+<p><a href="https://github.com/Bioconductor/Contributions/issues" class="external-link"><img src="https://img.shields.io/badge/Bioconductor-under%20review-yellow" alt="Bioconductor"></a> <a href="https://github.com/nccb/scCulturePredict" class="external-link"><img src="https://img.shields.io/badge/Version-0.99.30-orange" alt="Version"></a> <a href="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg" alt="R-CMD-check-BiocCheck"></a> <a href="https://codecov.io/gh/NCMBianchi/scCulturePredict" class="external-link"><img src="https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg" alt="codecov"></a> <a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D4.1.0-blue" alt="R"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a></p>
 <div class="section level2">
-<h2 id="build-and-apply-transcriptomic-fingerprints-for-cell-culture-media-prediction">Build and Apply Transcriptomic Fingerprints for Cell Culture Media Prediction<a class="anchor" aria-label="anchor" href="#build-and-apply-transcriptomic-fingerprints-for-cell-culture-media-prediction"></a>
+<h2 id="build-and-apply-transcriptomic-fingerprints-for-cell-classification">Build and Apply Transcriptomic Fingerprints for Cell Classification<a class="anchor" aria-label="anchor" href="#build-and-apply-transcriptomic-fingerprints-for-cell-classification"></a>
 </h2>
-<p>scCulturePredict is an R package that provides dual functionality for cell culture media prediction from single-cell transcriptomic data. <strong>BUILD mode</strong> generates transferable transcriptomic fingerprints from labeled training data, while <strong>PREDICT mode</strong> applies these pre-built fingerprints to unlabeled datasets for culture condition prediction.</p>
+<p>scCulturePredict is an R package that provides dual functionality for classifying cells based on metabolic pathway signatures from single-cell transcriptomic data. While originally designed for culture media prediction, <strong>scCulturePredict can classify cells based on any discrete metadata variable</strong> (e.g., cell type, treatment condition, disease state, donor, timepoint, etc.) using metabolic pathway signatures.</p>
+<p><strong>BUILD mode</strong> generates transferable transcriptomic fingerprints from labeled training data, while <strong>PREDICT mode</strong> applies these pre-built fingerprints to unlabeled datasets for classification.</p>
 <p><img src="reference/figures/scCulturePredict-banner.png"></p>
 </div>
 <div class="section level2">
@@ -100,9 +101,10 @@
 <h3 id="core-capabilities">Core Capabilities<a class="anchor" aria-label="anchor" href="#core-capabilities"></a>
 </h3>
 <ul>
-<li>Load and preprocess single-cell data (10X Genomics format)</li>
+<li>Load and preprocess single-cell data (10X Genomics format or <a href="https://bioconductor.org/packages/SingleCellExperiment" class="external-link">SingleCellExperiment</a> objects)</li>
 <li>Perform dimensionality reduction with UMAP and t-SNE</li>
-<li>Integrate with Seurat workflows</li>
+<li>Integrate with both <a href="https://satijalab.org/seurat/" class="external-link">Seurat</a> and <a href="https://bioconductor.org/packages/SingleCellExperiment" class="external-link">SingleCellExperiment</a> workflows</li>
+<li>Cross-dataset prediction with flexible pathway matching</li>
 <li>Comprehensive evaluation and visualization tools</li>
 </ul>
 <p><img src="reference/figures/scCulturePredict-screenshot.png"></p>
@@ -137,15 +139,31 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://NCMBianchi.github.io/scCulturePredict">scCulturePredict</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Build fingerprints from labeled training data</span></span>
-<span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span>
-<span>  kegg_file <span class="op">=</span> <span class="st">"kegg_file"</span>,</span>
+<span><span class="co"># The function accepts both 10X Genomics data (via data_dir) and</span></span>
+<span><span class="co"># SingleCellExperiment objects (via sce_object)</span></span>
+<span></span>
+<span><span class="co"># Option 1: Using 10X Genomics data</span></span>
+<span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,      <span class="co"># Path to 10X data directory</span></span>
+<span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>  kegg_file <span class="op">=</span> <span class="st">"kegg_pathways.keg"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>  experiment_id <span class="op">=</span> <span class="st">"training"</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Option 2: Using SingleCellExperiment data</span></span>
+<span><span class="co"># Note: sce_object can be either a path to an RDS file OR an actual SCE object</span></span>
+<span><span class="co"># training_results &lt;- scCulture(</span></span>
+<span><span class="co">#   sce_data_path = "labeled_cells.rds",  # Path to RDS file containing SCE object</span></span>
+<span><span class="co">#   input_type = "sce",</span></span>
+<span><span class="co">#   kegg_file = "kegg_pathways.keg",</span></span>
+<span><span class="co">#   output_dir = "./training_results",</span></span>
+<span><span class="co">#   mode = "build",</span></span>
+<span><span class="co">#   experiment_id = "training"</span></span>
+<span><span class="co"># )</span></span>
 <span></span>
 <span><span class="co"># Access training results</span></span>
 <span><span class="va">fingerprint_file</span> <span class="op">&lt;-</span> <span class="va">training_results</span><span class="op">$</span><span class="va">fingerprint_file</span></span>
@@ -157,15 +175,28 @@
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Apply fingerprints to unlabeled data</span></span>
-<span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>  data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span>
+<span><span class="co"># Works with both 10X Genomics data and SingleCellExperiment objects</span></span>
+<span></span>
+<span><span class="co"># Option 1: Using 10X Genomics data</span></span>
+<span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,      <span class="co"># Path to 10X data directory</span></span>
+<span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"./prediction_results"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
-<span>  fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span>,</span>
-<span>  experiment_id <span class="op">=</span> <span class="st">"predictions"</span>,</span>
-<span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span>,  <span class="co"># From BUILD mode</span></span>
+<span>  experiment_id <span class="op">=</span> <span class="st">"predictions"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Option 2: Using SingleCellExperiment data</span></span>
+<span><span class="co"># Note: sce_object can be either a path to an RDS file OR an actual SCE object</span></span>
+<span><span class="co"># prediction_results &lt;- scCulture(</span></span>
+<span><span class="co">#   sce_data_path = "unlabeled_cells.rds",  # Path to RDS file containing SCE object</span></span>
+<span><span class="co">#   input_type = "sce",</span></span>
+<span><span class="co">#   output_dir = "./prediction_results",</span></span>
+<span><span class="co">#   mode = "predict",</span></span>
+<span><span class="co">#   fingerprint_file = fingerprint_file,</span></span>
+<span><span class="co">#   experiment_id = "predictions"</span></span>
+<span><span class="co"># )</span></span>
 <span></span>
 <span><span class="co"># Access predictions</span></span>
 <span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="va">prediction_results</span><span class="op">$</span><span class="va">seurat_object</span><span class="op">$</span><span class="va">classification_pred</span></span>
@@ -174,25 +205,68 @@
 <span><span class="co"># View results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  cell_barcode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prediction_results</span><span class="op">$</span><span class="va">seurat_object</span><span class="op">)</span>,</span>
-<span>  predicted_medium <span class="op">=</span> <span class="va">predictions</span>,</span>
+<span>  predicted_class <span class="op">=</span> <span class="va">predictions</span>,</span>
 <span>  confidence <span class="op">=</span> <span class="va">confidence_scores</span></span>
 <span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="flexible-classification-beyond-culture-media">Flexible Classification: Beyond Culture Media<a class="anchor" aria-label="anchor" href="#flexible-classification-beyond-culture-media"></a>
+</h3>
+<p>scCulturePredict can classify cells based on <strong>any discrete metadata variable</strong>. Here are examples for different classification tasks:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example 1: Cell Type Classification</span></span>
+<span><span class="co"># Your SCE object has a "cell_type" column with T cells, B cells, NK cells, etc.</span></span>
+<span><span class="va">cell_type_fingerprints</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  sce_data_path <span class="op">=</span> <span class="st">"pbmc_data.rds"</span>,  <span class="co"># Can be path to RDS file or actual SCE object</span></span>
+<span>  input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>  kegg_file <span class="op">=</span> <span class="st">"human_kegg.keg"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"./cell_type_analysis"</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>  sample_column <span class="op">=</span> <span class="st">"cell_type"</span>,  <span class="co"># Specify which metadata column to use</span></span>
+<span>  experiment_id <span class="op">=</span> <span class="st">"cell_type_classification"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example 2: Treatment Response Classification</span></span>
+<span><span class="co"># Your data has "treatment" column with Control, DrugA, DrugB</span></span>
+<span><span class="va">treatment_fingerprints</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="st">"./treatment_data"</span>,</span>
+<span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>  kegg_file <span class="op">=</span> <span class="st">"kegg_pathways.keg"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"./treatment_analysis"</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>  sample_column <span class="op">=</span> <span class="st">"treatment"</span>,</span>
+<span>  experiment_id <span class="op">=</span> <span class="st">"drug_response"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example 3: Disease State Classification</span></span>
+<span><span class="co"># Your data has "condition" column with Healthy, Mild, Severe</span></span>
+<span><span class="va">disease_fingerprints</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  sce_data_path <span class="op">=</span> <span class="st">"patient_data.rds"</span>,  <span class="co"># Can be path to RDS file or actual SCE object</span></span>
+<span>  input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>  kegg_file <span class="op">=</span> <span class="st">"kegg_pathways.keg"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"./disease_analysis"</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>  sample_column <span class="op">=</span> <span class="st">"condition"</span>,</span>
+<span>  experiment_id <span class="op">=</span> <span class="st">"disease_state"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="complete-workflow-example">Complete Workflow Example<a class="anchor" aria-label="anchor" href="#complete-workflow-example"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 1: Build fingerprints (training phase)</span></span>
-<span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span>
+<span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span>
+<span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>  kegg_file <span class="op">=</span> <span class="st">"sce00001.keg"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"./results/training"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"build"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Step 2: Apply to new data (prediction phase)</span></span>
-<span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>  data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span>
+<span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span>
+<span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"./results/predictions"</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
 <span>  fingerprint_file <span class="op">=</span> <span class="va">training_results</span><span class="op">$</span><span class="va">fingerprint_file</span></span>
@@ -206,10 +280,10 @@
 <h3 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
 </h3>
 <p>For users who need more control over individual steps:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step-by-step approach</span></span>
-<span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span></span>
-<span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span><span class="va">data_dir</span>, experiment_id <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span></span>
+<span><span class="va">tenx_data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span></span>
+<span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_10x_data.html">load_10x_data</a></span><span class="op">(</span><span class="va">tenx_data_dir</span>, experiment_id <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span></span>
 <span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/preprocess_data.html">preprocess_data</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span></span>
 <span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span></span>
 <span></span>
@@ -224,13 +298,33 @@
 <h3 id="preprocessing-gse165686-data-optional">Preprocessing GSE165686 Data (Optional)<a class="anchor" aria-label="anchor" href="#preprocessing-gse165686-data-optional"></a>
 </h3>
 <p>If you’re working with GSE165686 format files that have malformed headers (e.g., “x” in the first row), you can use the included shell script to preprocess the data:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Location: inst/scripts/transform_files.sh</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co"># Make script executable</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">chmod</span> +x inst/scripts/transform_files.sh</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># Run preprocessing</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="ex">./inst/scripts/transform_files.sh</span> input_directory output_directory</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Location: inst/scripts/transform_files.sh</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># Make script executable</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">chmod</span> +x inst/scripts/transform_files.sh</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Run preprocessing</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="ex">./inst/scripts/transform_files.sh</span> input_directory output_directory</span></code></pre></div>
 <p>This script will: - Remove malformed “x” headers from barcodes and features files - Rename GSE165686-formatted files to standard 10X names - Handle gzip compression automatically</p>
+</div>
+<div class="section level3">
+<h3 id="handling-duplicate-gene-names-in-singlecellexperiment-data">Handling Duplicate Gene Names in SingleCellExperiment Data<a class="anchor" aria-label="anchor" href="#handling-duplicate-gene-names-in-singlecellexperiment-data"></a>
+</h3>
+<p>When working with SingleCellExperiment objects, duplicate gene names may occur due to various reasons (e.g., multiple transcripts, isoforms, or data processing artifacts). The <code><a href="reference/scCulture.html">scCulture()</a></code> function provides flexible options for handling duplicates through the <code>handle_duplicates</code> parameter:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example: Handle duplicate genes when using SingleCellExperiment data</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>  sce_data_path <span class="op">=</span> <span class="st">"data_with_duplicates.rds"</span>,</span>
+<span>  input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>  kegg_file <span class="op">=</span> <span class="st">"kegg_pathways.keg"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"./results"</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>  handle_duplicates <span class="op">=</span> <span class="st">"make_unique"</span>  <span class="co"># Default behavior</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Available options for <code>handle_duplicates</code>: - <strong>“make_unique”</strong> (default): Appends .1, .2, etc. to duplicate gene names - <strong>“aggregate”</strong>: Sums expression values for duplicate genes - <strong>“first”</strong>: Keeps only the first occurrence of duplicate genes - <strong>“error”</strong>: Stops with an informative error if duplicates are found</p>
+<p>The function will issue a warning when duplicates are detected and handled:</p>
+<pre><code>Warning: Found 5 duplicate gene names. Handling with method: make_unique
+Example duplicates: GENE1, GENE2, GENE3...</code></pre>
+<p>This parameter ensures robust processing of real-world datasets while maintaining flexibility for different use cases.</p>
 </div>
 </div>
 <div class="section level2">
@@ -259,7 +353,7 @@
 <strong>Advanced visualizations</strong>: Heatmaps, boxplots, and customizable plots</li>
 </ul>
 <p>These functions can be sourced and used independently:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extras"</span>, <span class="st">"alternative_implementations.R"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Use enhanced PCA with variance explained</span></span>
 <span><span class="va">pca_results</span> <span class="op">&lt;-</span> <span class="fu">perform_pca</span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span></span></code></pre></div>
@@ -273,7 +367,7 @@
 <h3 id="linting">Linting<a class="anchor" aria-label="anchor" href="#linting"></a>
 </h3>
 <p>The package uses <code>lintr</code> for static code analysis. To run linting checks:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install lintr if needed</span></span>
 <span><span class="co"># install.packages("lintr")</span></span>
 <span></span>
@@ -285,7 +379,7 @@
 <h3 id="code-formatting">Code Formatting<a class="anchor" aria-label="anchor" href="#code-formatting"></a>
 </h3>
 <p>Code formatting follows the Bioconductor style guidelines and is enforced using <code>styler</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install styler if needed</span></span>
 <span><span class="co"># install.packages("styler")</span></span>
 <span></span>
@@ -296,8 +390,8 @@
 <h3 id="comprehensive-checks">Comprehensive Checks<a class="anchor" aria-label="anchor" href="#comprehensive-checks"></a>
 </h3>
 <p>Run the comprehensive check script to ensure the package is ready for Bioconductor submission:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>Rscript scripts<span class="sc">/</span>check_package.R</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>Rscript scripts<span class="sc">/</span>check_package.R</span></code></pre></div>
 <p>This will run: - R CMD check (with –as-cran flag) - BiocCheck - Linting checks - Test coverage analysis - Vignette building - Example code execution</p>
 </div>
 </div>
@@ -308,9 +402,9 @@
 <h3 id="pre-commit-hook">Pre-commit Hook<a class="anchor" aria-label="anchor" href="#pre-commit-hook"></a>
 </h3>
 <p>To enforce code quality during development, you can install the pre-commit hook:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">cp</span> scripts/pre-commit-hook.R .git/hooks/pre-commit</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">chmod</span> +x .git/hooks/pre-commit</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># From the package root directory</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">cp</span> scripts/pre-commit-hook.R .git/hooks/pre-commit</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">chmod</span> +x .git/hooks/pre-commit</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -330,13 +424,13 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use scCulturePredict in your research, please cite (bibtex format):</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">scCulturePredict2025</span>,</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="dt">title</span> = {scCulturePredict: Single-Cell Culture Media Prediction Using Transcriptomic Fingerprints},</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="dt">author</span> = {Niccolò Bianchi},</span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="dt">year</span> = {2025},</span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.99.28},</span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/ncmbianchi/scCulturePredict},</span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">scCulturePredict2025</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="dt">title</span> = {scCulturePredict: Single-Cell Feature Prediction Using Transcriptomic Fingerprints},</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="dt">author</span> = {Niccolò Bianchi},</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="dt">year</span> = {2025},</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.99.30},</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/ncmbianchi/scCulturePredict},</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

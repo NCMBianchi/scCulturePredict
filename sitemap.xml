@@ -18,10 +18,10 @@
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/detect_scCulture_mode.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/evaluate_predictions.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/get_best_data_layer.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/grapes-or-or-grapes.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/index.html</loc></url>
-<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/load_data.html</loc></url>
+<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/load_10x_data.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/load_object.html</loc></url>
+<url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/load_sce_data.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/parse_kegg_keg.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/plot_scCulture.html</loc></url>
 <url><loc>https://NCMBianchi.github.io/scCulturePredict/reference/predict_by_similarity.html</loc></url>

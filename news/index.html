@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,9 +39,68 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.30" id="scculturepredict-09930-2025-08-27">scCulturePredict 0.99.30 (2025-08-27)<a class="anchor" aria-label="anchor" href="#scculturepredict-09930-2025-08-27"></a></h2>
+<div class="section level3">
+<h3 id="documentation-0-99-30">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-99-30"></a></h3>
+<ul><li>Fixed pkgdown build failure by updating <code>_pkgdown.yml</code> to reference renamed functions:
+<ul><li>Changed <code>load_data</code> to <code>load_10x_data</code> in function reference</li>
+<li>Added <code>load_sce_data</code> to data loading section</li>
+</ul></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.29" id="scculturepredict-09929-2025-08-27">scCulturePredict 0.99.29 (2025-08-27)<a class="anchor" aria-label="anchor" href="#scculturepredict-09929-2025-08-27"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-0-99-29">Major Changes<a class="anchor" aria-label="anchor" href="#major-changes-0-99-29"></a></h3>
+<ul><li>Added full SingleCellExperiment (SCE) support for Bioconductor compliance</li>
+<li>Renamed function parameters for clarity and consistency:
+<ul><li>
+<code>data_dir</code> → <code>tenx_data_dir</code> to clearly indicate 10X data input</li>
+<li>
+<code>sce_object</code> → <code>sce_data_path</code> to indicate it accepts both paths and objects</li>
+<li>
+<code>load_data()</code> → <code><a href="../reference/load_10x_data.html">load_10x_data()</a></code> for consistency with <code><a href="../reference/load_sce_data.html">load_sce_data()</a></code>
+</li>
+</ul></li>
+<li>Implemented flexible pathway matching for cross-dataset predictions</li>
+<li>Enhanced classifier to work with any discrete metadata variable, not limited to culture media</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-99-29">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-99-29"></a></h3>
+<ul><li>
+<code><a href="../reference/load_sce_data.html">load_sce_data()</a></code>: Direct SCE object loading and validation</li>
+<li>Added <code>handle_duplicates</code> parameter for robust handling of duplicate gene names in SCE data:
+<ul><li>“make_unique” (default): Appends .1, .2, etc. to duplicate gene names</li>
+<li>“aggregate”: Sums expression values for duplicate genes</li>
+<li>“first”: Keeps only the first occurrence</li>
+<li>“error”: Stops with informative error if duplicates are found</li>
+</ul></li>
+<li>Cross-dataset prediction capability with different gene sets</li>
+<li>Automatic pathway dimension alignment for incompatible datasets</li>
+<li>Flexible metadata column selection via <code>sample_column</code> parameter (planned)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-99-29">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-29"></a></h3>
+<ul><li>Fixed zero-variance scaling issues in homogeneous datasets</li>
+<li>Resolved dimension mismatch errors in cross-dataset predictions</li>
+<li>Corrected NA handling in pathway activity calculations</li>
+<li>Fixed duplicate gene name issues in test data generation</li>
+<li>Implemented robust duplicate gene handling in <code><a href="../reference/load_sce_data.html">load_sce_data()</a></code> to prevent Seurat object creation failures</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-99-29">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-99-29"></a></h3>
+<ul><li>Added SCE workflow examples throughout documentation</li>
+<li>Expanded vignettes with SingleCellExperiment usage</li>
+<li>Clarified general classification capabilities beyond culture media</li>
+<li>Updated README with diverse classification examples (cell type, treatment, disease state)</li>
+<li>Updated all vignettes to use new parameter names (<code>tenx_data_dir</code>, <code>sce_data_path</code>)</li>
+<li>Added comprehensive SCE sections to all three vignettes</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.28" id="scculturepredict-09928-2025-08-07">scCulturePredict 0.99.28 (2025-08-07)<a class="anchor" aria-label="anchor" href="#scculturepredict-09928-2025-08-07"></a></h2>
 <div class="section level3">
@@ -93,8 +152,8 @@
 <ul><li>Major code cleanup and refactoring:
 <ul><li>Removed unused functions: <code>prepare_files_for_seurat()</code>, <code>load_packages()</code>
 </li>
-<li>Removed CSV format support from <code><a href="../reference/load_data.html">load_data()</a></code> - package now focuses on 10X format only</li>
-<li>Removed <code>use_shell_script</code> parameter from <code><a href="../reference/scCulture.html">scCulture()</a></code> and <code><a href="../reference/load_data.html">load_data()</a></code>
+<li>Removed CSV format support from <code>load_data()</code> - package now focuses on 10X format only</li>
+<li>Removed <code>use_shell_script</code> parameter from <code><a href="../reference/scCulture.html">scCulture()</a></code> and <code>load_data()</code>
 </li>
 <li>Moved alternative implementations to <code>inst/extras/alternative_implementations.R</code>
 </li>

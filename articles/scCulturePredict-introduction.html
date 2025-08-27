@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,9 +68,9 @@
                         <h4 data-toc-skip class="author">Niccolò
 Bianchi</h4>
             
-            <h4 data-toc-skip class="date">2025-08-08</h4>
+            <h4 data-toc-skip class="date">2025-08-27</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/vignettes/scCulturePredict-introduction.Rmd" class="external-link"><code>vignettes/scCulturePredict-introduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/vignettes/scCulturePredict-introduction.Rmd" class="external-link"><code>vignettes/scCulturePredict-introduction.Rmd</code></a></small>
       <div class="d-none name"><code>scCulturePredict-introduction.Rmd</code></div>
     </div>
 
@@ -177,10 +177,12 @@ performs all steps automatically:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Complete analysis with one function call</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    data_dir <span class="op">=</span> <span class="va">csv_data_dir</span>,</span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">csv_data_dir</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
 <span>    output_dir <span class="op">=</span> <span class="st">"./scCulture_results"</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"example_analysis"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>    progress <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># Show progress bar</span></span>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># Print detailed messages</span></span>
 <span><span class="op">)</span></span>
@@ -221,9 +223,9 @@ and 10X Genomics formats. Here are examples of both approaches:</p>
 <h4 id="loading-csv-format-data">Loading CSV Format Data<a class="anchor" aria-label="anchor" href="#loading-csv-format-data"></a>
 </h4>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load the CSV format example data</span></span>
-<span><span class="va">seurat_object_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span></span>
-<span>    data_dir <span class="op">=</span> <span class="va">csv_data_dir</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Load the CSV format example data (legacy format)</span></span>
+<span><span class="va">seurat_object_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_data.html">load_10x_data</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">csv_data_dir</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"example"</span>,</span>
 <span>    min_cells <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>    min_features <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -235,8 +237,8 @@ and 10X Genomics formats. Here are examples of both approaches:</p>
 </h4>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the 10X format example data</span></span>
-<span><span class="va">seurat_object_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span></span>
-<span>    data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
+<span><span class="va">seurat_object_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_data.html">load_10x_data</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"example_10x"</span>,</span>
 <span>    min_cells <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>    min_features <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -251,13 +253,100 @@ and 10X Genomics formats. Here are examples of both approaches:</p>
 <span>    min.features <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level4">
+<h4 id="working-with-singlecellexperiment-objects">Working with SingleCellExperiment Objects<a class="anchor" aria-label="anchor" href="#working-with-singlecellexperiment-objects"></a>
+</h4>
+<p>The package also supports SingleCellExperiment objects, which are the
+standard data structure for Bioconductor single-cell packages:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load SingleCellExperiment from an RDS file</span></span>
+<span><span class="va">seurat_object_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_sce_data.html">load_sce_data</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/sce_data.rds"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"example_sce"</span>,</span>
+<span>    min_cells <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    min_features <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or use an existing SingleCellExperiment object directly</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span></span>
+<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a></span><span class="op">(</span></span>
+<span>    assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">1000</span>, lambda <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">100</span>, ncol <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    colData <span class="op">=</span> <span class="fu">DataFrame</span><span class="op">(</span>sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">seurat_object_from_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_sce_data.html">load_sce_data</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="va">sce</span>,  <span class="co"># Can pass the object directly</span></span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"example_sce"</span>,</span>
+<span>    min_cells <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    min_features <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="using-scculture-with-different-input-types">Using scCulture with Different Input Types<a class="anchor" aria-label="anchor" href="#using-scculture-with-different-input-types"></a>
+</h4>
+<p>The <code><a href="../reference/scCulture.html">scCulture()</a></code> function supports both 10X and
+SingleCellExperiment formats through the <code>input_type</code>
+parameter:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Using 10X data</span></span>
+<span><span class="va">results_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./results_10x"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"10x_analysis"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Using SingleCellExperiment data</span></span>
+<span><span class="va">results_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/sce_data.rds"</span>,  <span class="co"># or pass an SCE object directly</span></span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./results_sce"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_analysis"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="cross-dataset-predictions">Cross-Dataset Predictions<a class="anchor" aria-label="anchor" href="#cross-dataset-predictions"></a>
+</h4>
+<p>One powerful feature is the ability to train on one data format and
+predict on another:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Train model on 10X data</span></span>
+<span><span class="va">model_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./model_10x"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"training_10x"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Apply the trained model to SCE data</span></span>
+<span><span class="va">predictions_on_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/unlabeled_sce.rds"</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./predictions_sce"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
+<span>    fingerprint_file <span class="op">=</span> <span class="va">model_10x</span><span class="op">$</span><span class="va">fingerprint_file</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"predict_sce"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level3">
 <h3 id="preprocess-data">2. Preprocess Data<a class="anchor" aria-label="anchor" href="#preprocess-data"></a>
 </h3>
 <p>Next, we preprocess the data, which includes normalization, scaling,
 and identifying variable features:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Preprocess the data</span></span>
 <span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preprocess_data.html">preprocess_data</a></span><span class="op">(</span></span>
 <span>    seurat_object <span class="op">=</span> <span class="va">seurat_object</span>,</span>
@@ -271,7 +360,7 @@ and identifying variable features:</p>
 <h3 id="perform-dimensionality-reduction">3. Perform Dimensionality Reduction<a class="anchor" aria-label="anchor" href="#perform-dimensionality-reduction"></a>
 </h3>
 <p>We then reduce the dimensionality of the data using UMAP:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform dimensionality reduction</span></span>
 <span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce_dimensions.html">reduce_dimensions</a></span><span class="op">(</span></span>
 <span>    seurat_object <span class="op">=</span> <span class="va">seurat_object</span>,</span>
@@ -280,7 +369,7 @@ and identifying variable features:</p>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Let’s visualize the UMAP embedding:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create visualization using plot_scCulture</span></span>
 <span><span class="co"># Note: plot_scCulture expects the results from scCulture() function</span></span>
 <span><span class="co"># If you have results from scCulture, you can visualize them:</span></span>
@@ -303,7 +392,7 @@ and identifying variable features:</p>
 </h3>
 <p>Now we perform KEGG pathway analysis to identify biological pathways
 that are active in our data:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Path to KEGG data</span></span>
 <span><span class="va">kegg_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span></span>
 <span></span>
@@ -322,7 +411,7 @@ that are active in our data:</p>
 </h3>
 <p>We can now predict the culture media using both similarity-based and
 SVM approaches:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Similarity-based prediction</span></span>
 <span><span class="va">similarity_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predict_by_similarity.html">predict_by_similarity</a></span><span class="op">(</span></span>
 <span>    pathway_matrix <span class="op">=</span> <span class="va">pathway_matrix</span>,</span>
@@ -343,7 +432,7 @@ SVM approaches:</p>
 evaluation functionality:</p>
 <p>Finally, we evaluate the prediction results and create
 visualizations:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Evaluate predictions</span></span>
 <span><span class="va">evaluation_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evaluate_predictions.html">evaluate_predictions</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -471,7 +560,7 @@ documentation.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -495,49 +584,77 @@ documentation.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt; [1] ggplot2_3.5.2            Seurat_5.3.0             SeuratObject_5.1.0      </span></span>
-<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.28 BiocStyle_2.36.0        </span></span>
+<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.30 BiocStyle_2.36.0        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] deldir_2.0-4           pbapply_1.7-4          gridExtra_2.3         </span></span>
-<span><span class="co">#&gt;   [4] rlang_1.1.6            magrittr_2.0.3         RcppAnnoy_0.0.22      </span></span>
-<span><span class="co">#&gt;   [7] spatstat.geom_3.5-0    matrixStats_1.5.0      ggridges_0.5.6        </span></span>
-<span><span class="co">#&gt;  [10] compiler_4.5.1         png_0.1-8              systemfonts_1.2.3     </span></span>
-<span><span class="co">#&gt;  [13] vctrs_0.6.5            reshape2_1.4.4         stringr_1.5.1         </span></span>
-<span><span class="co">#&gt;  [16] pkgconfig_2.0.3        fastmap_1.2.0          labeling_0.4.3        </span></span>
-<span><span class="co">#&gt;  [19] promises_1.3.3         rmarkdown_2.29         ragg_1.4.0            </span></span>
-<span><span class="co">#&gt;  [22] purrr_1.1.0            xfun_0.52              cachem_1.1.0          </span></span>
-<span><span class="co">#&gt;  [25] jsonlite_2.0.0         goftest_1.2-3          later_1.4.2           </span></span>
-<span><span class="co">#&gt;  [28] spatstat.utils_3.1-5   irlba_2.3.5.1          parallel_4.5.1        </span></span>
-<span><span class="co">#&gt;  [31] cluster_2.1.8.1        R6_2.6.1               ica_1.0-3             </span></span>
-<span><span class="co">#&gt;  [34] spatstat.data_3.1-6    stringi_1.8.7          bslib_0.9.0           </span></span>
-<span><span class="co">#&gt;  [37] RColorBrewer_1.1-3     reticulate_1.43.0      spatstat.univar_3.1-4 </span></span>
-<span><span class="co">#&gt;  [40] parallelly_1.45.1      lmtest_0.9-40          jquerylib_0.1.4       </span></span>
-<span><span class="co">#&gt;  [43] scattermore_1.2        Rcpp_1.1.0             bookdown_0.43         </span></span>
-<span><span class="co">#&gt;  [46] knitr_1.50             tensor_1.5.1           future.apply_1.20.0   </span></span>
-<span><span class="co">#&gt;  [49] zoo_1.8-14             sctransform_0.4.2      httpuv_1.6.16         </span></span>
-<span><span class="co">#&gt;  [52] Matrix_1.7-3           splines_4.5.1          igraph_2.1.4          </span></span>
-<span><span class="co">#&gt;  [55] tidyselect_1.2.1       abind_1.4-8            yaml_2.3.10           </span></span>
-<span><span class="co">#&gt;  [58] spatstat.random_3.4-1  spatstat.explore_3.5-2 codetools_0.2-20      </span></span>
-<span><span class="co">#&gt;  [61] miniUI_0.1.2           listenv_0.9.1          plyr_1.8.9            </span></span>
-<span><span class="co">#&gt;  [64] lattice_0.22-7         tibble_3.3.0           withr_3.0.2           </span></span>
-<span><span class="co">#&gt;  [67] shiny_1.11.1           ROCR_1.0-11            evaluate_1.0.4        </span></span>
-<span><span class="co">#&gt;  [70] Rtsne_0.17             future_1.67.0          fastDummies_1.7.5     </span></span>
-<span><span class="co">#&gt;  [73] desc_1.4.3             survival_3.8-3         polyclip_1.10-7       </span></span>
-<span><span class="co">#&gt;  [76] fitdistrplus_1.2-4     pillar_1.11.0          BiocManager_1.30.26   </span></span>
-<span><span class="co">#&gt;  [79] KernSmooth_2.23-26     plotly_4.11.0          generics_0.1.4        </span></span>
-<span><span class="co">#&gt;  [82] RcppHNSW_0.6.0         scales_1.4.0           globals_0.18.0        </span></span>
-<span><span class="co">#&gt;  [85] xtable_1.8-4           glue_1.8.0             lazyeval_0.2.2        </span></span>
-<span><span class="co">#&gt;  [88] tools_4.5.1            data.table_1.17.8      RSpectra_0.16-2       </span></span>
-<span><span class="co">#&gt;  [91] RANN_2.6.2             fs_1.6.6               dotCall64_1.2         </span></span>
-<span><span class="co">#&gt;  [94] cowplot_1.2.0          grid_4.5.1             tidyr_1.3.1           </span></span>
-<span><span class="co">#&gt;  [97] nlme_3.1-168           patchwork_1.3.1        cli_3.6.5             </span></span>
-<span><span class="co">#&gt; [100] spatstat.sparse_3.1-0  textshaping_1.0.1      spam_2.11-1           </span></span>
-<span><span class="co">#&gt; [103] viridisLite_0.4.2      dplyr_1.1.4            uwot_0.2.3            </span></span>
-<span><span class="co">#&gt; [106] gtable_0.3.6           sass_0.4.10            digest_0.6.37         </span></span>
-<span><span class="co">#&gt; [109] progressr_0.15.1       ggrepel_0.9.6          htmlwidgets_1.6.4     </span></span>
-<span><span class="co">#&gt; [112] farver_2.1.2           htmltools_0.5.8.1      pkgdown_2.1.3         </span></span>
-<span><span class="co">#&gt; [115] lifecycle_1.0.4        httr_1.4.7             mime_0.13             </span></span>
-<span><span class="co">#&gt; [118] MASS_7.3-65</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3          jsonlite_2.0.0             </span></span>
+<span><span class="co">#&gt;   [3] magrittr_2.0.3              spatstat.utils_3.1-5       </span></span>
+<span><span class="co">#&gt;   [5] farver_2.1.2                rmarkdown_2.29             </span></span>
+<span><span class="co">#&gt;   [7] fs_1.6.6                    ragg_1.4.0                 </span></span>
+<span><span class="co">#&gt;   [9] vctrs_0.6.5                 ROCR_1.0-11                </span></span>
+<span><span class="co">#&gt;  [11] spatstat.explore_3.5-2      htmltools_0.5.8.1          </span></span>
+<span><span class="co">#&gt;  [13] S4Arrays_1.8.1              SparseArray_1.8.1          </span></span>
+<span><span class="co">#&gt;  [15] sass_0.4.10                 sctransform_0.4.2          </span></span>
+<span><span class="co">#&gt;  [17] parallelly_1.45.1           KernSmooth_2.23-26         </span></span>
+<span><span class="co">#&gt;  [19] bslib_0.9.0                 htmlwidgets_1.6.4          </span></span>
+<span><span class="co">#&gt;  [21] desc_1.4.3                  ica_1.0-3                  </span></span>
+<span><span class="co">#&gt;  [23] plyr_1.8.9                  plotly_4.11.0              </span></span>
+<span><span class="co">#&gt;  [25] zoo_1.8-14                  cachem_1.1.0               </span></span>
+<span><span class="co">#&gt;  [27] igraph_2.1.4                mime_0.13                  </span></span>
+<span><span class="co">#&gt;  [29] lifecycle_1.0.4             pkgconfig_2.0.3            </span></span>
+<span><span class="co">#&gt;  [31] Matrix_1.7-3                R6_2.6.1                   </span></span>
+<span><span class="co">#&gt;  [33] fastmap_1.2.0               GenomeInfoDbData_1.2.14    </span></span>
+<span><span class="co">#&gt;  [35] MatrixGenerics_1.20.0       fitdistrplus_1.2-4         </span></span>
+<span><span class="co">#&gt;  [37] future_1.67.0               shiny_1.11.1               </span></span>
+<span><span class="co">#&gt;  [39] digest_0.6.37               patchwork_1.3.2            </span></span>
+<span><span class="co">#&gt;  [41] S4Vectors_0.46.0            tensor_1.5.1               </span></span>
+<span><span class="co">#&gt;  [43] RSpectra_0.16-2             irlba_2.3.5.1              </span></span>
+<span><span class="co">#&gt;  [45] textshaping_1.0.1           GenomicRanges_1.60.0       </span></span>
+<span><span class="co">#&gt;  [47] labeling_0.4.3              progressr_0.15.1           </span></span>
+<span><span class="co">#&gt;  [49] spatstat.sparse_3.1-0       polyclip_1.10-7            </span></span>
+<span><span class="co">#&gt;  [51] httr_1.4.7                  abind_1.4-8                </span></span>
+<span><span class="co">#&gt;  [53] compiler_4.5.1              withr_3.0.2                </span></span>
+<span><span class="co">#&gt;  [55] fastDummies_1.7.5           MASS_7.3-65                </span></span>
+<span><span class="co">#&gt;  [57] DelayedArray_0.34.1         tools_4.5.1                </span></span>
+<span><span class="co">#&gt;  [59] lmtest_0.9-40               httpuv_1.6.16              </span></span>
+<span><span class="co">#&gt;  [61] future.apply_1.20.0         goftest_1.2-3              </span></span>
+<span><span class="co">#&gt;  [63] glue_1.8.0                  nlme_3.1-168               </span></span>
+<span><span class="co">#&gt;  [65] promises_1.3.3              grid_4.5.1                 </span></span>
+<span><span class="co">#&gt;  [67] Rtsne_0.17                  cluster_2.1.8.1            </span></span>
+<span><span class="co">#&gt;  [69] reshape2_1.4.4              generics_0.1.4             </span></span>
+<span><span class="co">#&gt;  [71] gtable_0.3.6                spatstat.data_3.1-8        </span></span>
+<span><span class="co">#&gt;  [73] tidyr_1.3.1                 data.table_1.17.8          </span></span>
+<span><span class="co">#&gt;  [75] XVector_0.48.0              spatstat.geom_3.5-0        </span></span>
+<span><span class="co">#&gt;  [77] BiocGenerics_0.54.0         RcppAnnoy_0.0.22           </span></span>
+<span><span class="co">#&gt;  [79] ggrepel_0.9.6               RANN_2.6.2                 </span></span>
+<span><span class="co">#&gt;  [81] pillar_1.11.0               stringr_1.5.1              </span></span>
+<span><span class="co">#&gt;  [83] spam_2.11-1                 RcppHNSW_0.6.0             </span></span>
+<span><span class="co">#&gt;  [85] later_1.4.3                 splines_4.5.1              </span></span>
+<span><span class="co">#&gt;  [87] dplyr_1.1.4                 lattice_0.22-7             </span></span>
+<span><span class="co">#&gt;  [89] deldir_2.0-4                survival_3.8-3             </span></span>
+<span><span class="co">#&gt;  [91] tidyselect_1.2.1            SingleCellExperiment_1.30.1</span></span>
+<span><span class="co">#&gt;  [93] miniUI_0.1.2                pbapply_1.7-4              </span></span>
+<span><span class="co">#&gt;  [95] knitr_1.50                  gridExtra_2.3              </span></span>
+<span><span class="co">#&gt;  [97] bookdown_0.44               IRanges_2.42.0             </span></span>
+<span><span class="co">#&gt;  [99] SummarizedExperiment_1.38.1 scattermore_1.2            </span></span>
+<span><span class="co">#&gt; [101] stats4_4.5.1                xfun_0.53                  </span></span>
+<span><span class="co">#&gt; [103] Biobase_2.68.0              matrixStats_1.5.0          </span></span>
+<span><span class="co">#&gt; [105] stringi_1.8.7               UCSC.utils_1.4.0           </span></span>
+<span><span class="co">#&gt; [107] lazyeval_0.2.2              yaml_2.3.10                </span></span>
+<span><span class="co">#&gt; [109] evaluate_1.0.4              codetools_0.2-20           </span></span>
+<span><span class="co">#&gt; [111] tibble_3.3.0                BiocManager_1.30.26        </span></span>
+<span><span class="co">#&gt; [113] cli_3.6.5                   uwot_0.2.3                 </span></span>
+<span><span class="co">#&gt; [115] xtable_1.8-4                reticulate_1.43.0          </span></span>
+<span><span class="co">#&gt; [117] systemfonts_1.2.3           jquerylib_0.1.4            </span></span>
+<span><span class="co">#&gt; [119] Rcpp_1.1.0                  GenomeInfoDb_1.44.2        </span></span>
+<span><span class="co">#&gt; [121] spatstat.random_3.4-1       globals_0.18.0             </span></span>
+<span><span class="co">#&gt; [123] png_0.1-8                   spatstat.univar_3.1-4      </span></span>
+<span><span class="co">#&gt; [125] parallel_4.5.1              pkgdown_2.1.3              </span></span>
+<span><span class="co">#&gt; [127] dotCall64_1.2               listenv_0.9.1              </span></span>
+<span><span class="co">#&gt; [129] viridisLite_0.4.2           scales_1.4.0               </span></span>
+<span><span class="co">#&gt; [131] ggridges_0.5.6              purrr_1.1.0                </span></span>
+<span><span class="co">#&gt; [133] crayon_1.5.3                rlang_1.1.6                </span></span>
+<span><span class="co">#&gt; [135] cowplot_1.2.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

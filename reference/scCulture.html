@@ -11,7 +11,7 @@ to new unlabeled data for cell culture media prediction.'><link rel="stylesheet"
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@ to new unlabeled data for cell culture media prediction.'><link rel="stylesheet"
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Single-Cell Culture Media Prediction Pipeline</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/R/pipeline.R" class="external-link"><code>R/pipeline.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/R/pipeline.R" class="external-link"><code>R/pipeline.R</code></a></small>
       <div class="d-none name"><code>scCulture.Rd</code></div>
     </div>
 
@@ -56,12 +56,15 @@ to new unlabeled data for cell culture media prediction.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">scCulture</span><span class="op">(</span></span>
-<span>  <span class="va">data_dir</span>,</span>
+<span>  tenx_data_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sce_data_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">input_type</span>,</span>
 <span>  kegg_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">output_dir</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>  fingerprint_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  experiment_id <span class="op">=</span> <span class="st">"experiment"</span>,</span>
+<span>  handle_duplicates <span class="op">=</span> <span class="st">"make_unique"</span>,</span>
 <span>  perform_tsne <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -74,8 +77,18 @@ to new unlabeled data for cell culture media prediction.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-data-dir">data_dir<a class="anchor" aria-label="anchor" href="#arg-data-dir"></a></dt>
-<dd><p>Character string specifying the directory containing the data files.</p></dd>
+<dl><dt id="arg-tenx-data-dir">tenx_data_dir<a class="anchor" aria-label="anchor" href="#arg-tenx-data-dir"></a></dt>
+<dd><p>Character string specifying the directory containing the 10X data files.</p></dd>
+
+
+<dt id="arg-sce-data-path">sce_data_path<a class="anchor" aria-label="anchor" href="#arg-sce-data-path"></a></dt>
+<dd><p>Character string specifying the path to SingleCellExperiment RDS file or
+an actual SingleCellExperiment object. Used when input_type is "sce".</p></dd>
+
+
+<dt id="arg-input-type">input_type<a class="anchor" aria-label="anchor" href="#arg-input-type"></a></dt>
+<dd><p>Character string specifying the input data type. Must be either "10x" for
+10X Genomics data or "sce" for SingleCellExperiment data.</p></dd>
 
 
 <dt id="arg-kegg-file">kegg_file<a class="anchor" aria-label="anchor" href="#arg-kegg-file"></a></dt>
@@ -101,6 +114,14 @@ Required for "predict" mode, ignored in "build" mode.</p></dd>
 <dt id="arg-experiment-id">experiment_id<a class="anchor" aria-label="anchor" href="#arg-experiment-id"></a></dt>
 <dd><p>Character string specifying the experiment ID prefix in filenames.
 Default is "experiment".</p></dd>
+
+
+<dt id="arg-handle-duplicates">handle_duplicates<a class="anchor" aria-label="anchor" href="#arg-handle-duplicates"></a></dt>
+<dd><p>Character string specifying how to handle duplicate gene names in SCE data.
+Options are "make_unique" (default), "aggregate", "first", or "error".
+"make_unique" appends .1, .2 etc to duplicates, "aggregate" sums duplicate genes,
+"first" keeps only the first occurrence, "error" stops with an informative message.
+Only used when input_type is "sce".</p></dd>
 
 
 <dt id="arg-perform-tsne">perform_tsne<a class="anchor" aria-label="anchor" href="#arg-perform-tsne"></a></dt>
@@ -171,7 +192,7 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="load_data.html">load_data</a></code> for data loading
+    <div class="dont-index"><p><code><a href="load_10x_data.html">load_10x_data</a></code> for data loading
 <code><a href="preprocess_data.html">preprocess_data</a></code> for data preprocessing
 <code><a href="reduce_dimensions.html">reduce_dimensions</a></code> for dimensionality reduction
 <code><a href="parse_kegg_keg.html">parse_kegg_keg</a></code> for KEGG pathway analysis
@@ -187,14 +208,16 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span><span class="co"># Build mode - generate fingerprints from labeled training data</span></span></span>
 <span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">training_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or specify custom KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">training_results_custom</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_labeled"</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span></span>
 <span class="r-in"><span>  kegg_file <span class="op">=</span> <span class="st">"custom_pathways.keg"</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./training_results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span></span></span>
@@ -208,7 +231,8 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Predict mode - apply fingerprints to new unlabeled data</span></span></span>
 <span class="r-in"><span><span class="va">prediction_results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span></span>
+<span class="r-in"><span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_unlabeled"</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./prediction_results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"predict"</span>,</span></span>
 <span class="r-in"><span>  fingerprint_file <span class="op">=</span> <span class="va">fingerprint_file</span></span></span>
@@ -223,7 +247,8 @@ Applies existing fingerprints to predict unlabeled data:</p><ol><li><p>Validates
 <span class="r-in"><span><span class="co"># Advanced usage with progress tracking and parallel processing</span></span></span>
 <span class="r-in"><span><span class="co"># Using default KEGG file</span></span></span>
 <span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">scCulture</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data_dir <span class="op">=</span> <span class="st">"./DATA_edit"</span>,</span></span>
+<span class="r-in"><span>  tenx_data_dir <span class="op">=</span> <span class="st">"./DATA_edit"</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"10x"</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"./results"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"build"</span>,</span></span>
 <span class="r-in"><span>  experiment_id <span class="op">=</span> <span class="st">"my_experiment"</span>,</span></span>

@@ -9,7 +9,7 @@ and condition-specific signatures."><link rel="stylesheet" href="https://cdn.jsd
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ and condition-specific signatures."><link rel="stylesheet" href="https://cdn.jsd
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Predict growth media by similarity</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/R/prediction.R" class="external-link"><code>R/prediction.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/R/prediction.R" class="external-link"><code>R/prediction.R</code></a></small>
       <div class="d-none name"><code>predict_by_similarity.Rd</code></div>
     </div>
 
@@ -130,36 +130,37 @@ control over prediction stringency - higher values require stronger similarity f
 <span class="r-in"><span>  <span class="va">pathway_activity</span>,</span></span>
 <span class="r-in"><span>  <span class="va">fingerprint_profiles</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 10 common pathways out of 10 in reference and 10 in new data</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">predictions</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $similarity_matrix</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          CultureA     CultureB    CultureC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -0.53438330 -0.109577970 -0.39901505</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -0.19969166 -0.281270863  0.36414335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] -0.35195932 -0.132217748 -0.14178036</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] -0.38105609 -0.048174529 -0.44515494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  0.11688131  0.002234374 -0.10501675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] -0.50162907 -0.146655210  0.01459067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  0.49133984  0.442711677  0.55777833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  0.50576281  0.138775260 -0.43344923</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  0.13789094 -0.233938290  0.22399730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]  0.02409349 -0.195686783  0.44282521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]  0.14130707 -0.099773881  0.56261975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]  0.14487015  0.502298646 -0.10416495</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] -0.13722973 -0.261822583 -0.28707234</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]  0.44507892  0.049507499  0.22455955</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]  0.04287216  0.046395677 -0.27560921</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -0.27670896  0.130760159 -0.31771371</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  0.52421837 -0.437420751  0.37277033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] -0.55253217  0.335241121 -0.69510996</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] -0.29969571 -0.124919837 -0.04816800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  0.23424503  0.008300994 -0.08230168</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]  0.36073679  0.125383897  0.45686039</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] -0.20276439 -0.300161021  0.14068415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  0.03882237  0.731693912 -0.08830706</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  0.36055334 -0.026464394  0.26983794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]  0.09896428 -0.547648105 -0.14649872</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]  0.44608188 -0.266004093  0.36852080</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]  0.26324739 -0.166893883  0.48994032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] -0.68532602 -0.028169172 -0.52624419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]  0.42867216  0.264317060  0.50930402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] -0.51601973  0.255181422 -0.44252307</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $predicted_direct</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "CultureB" "CultureC" "CultureB" "CultureB" "CultureA" "CultureC"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "CultureC" "CultureA" "CultureC" "CultureC" "CultureC" "CultureB"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "CultureA" "CultureA" "CultureB"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "CultureB" "CultureA" "CultureB" "CultureC" "CultureA" "CultureC"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "CultureC" "CultureB" "CultureA" "CultureA" "CultureA" "CultureC"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "CultureB" "CultureC" "CultureB"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $predicted_threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] NA         "CultureC" NA         NA         "CultureA" NA        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "CultureC" "CultureA" "CultureC" "CultureC" "CultureC" "CultureB"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] NA         "CultureA" NA        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "CultureB" "CultureA" "CultureB" NA         "CultureA" "CultureC"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "CultureC" "CultureB" "CultureA" NA         "CultureA" "CultureC"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] NA         "CultureC" "CultureB"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

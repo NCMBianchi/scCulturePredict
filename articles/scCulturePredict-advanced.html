@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.28</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,9 +68,9 @@
                         <h4 data-toc-skip class="author">Niccolò
 Bianchi</h4>
             
-            <h4 data-toc-skip class="date">2025-08-08</h4>
+            <h4 data-toc-skip class="date">2025-08-27</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/v0.99.28/vignettes/scCulturePredict-advanced.Rmd" class="external-link"><code>vignettes/scCulturePredict-advanced.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/vignettes/scCulturePredict-advanced.Rmd" class="external-link"><code>vignettes/scCulturePredict-advanced.Rmd</code></a></small>
       <div class="d-none name"><code>scCulturePredict-advanced.Rmd</code></div>
     </div>
 
@@ -98,19 +98,19 @@ We'll use the same example data as in the introduction vignette, but we'll proce
 
 ``` r
 # Get the path to example data
-data_dir &lt;- system.file("extdata", "example_data", package = "scCulturePredict")
+tenx_data_dir &lt;- system.file("extdata", "example_data", package = "scCulturePredict")
 
 # For demonstration purposes, create a mock Seurat object
-counts &lt;- read.csv(file.path(data_dir, "counts.csv"), row.names = 1)
-metadata &lt;- read.csv(file.path(data_dir, "metadata.csv"), row.names = 1)
+counts &lt;- read.csv(file.path(tenx_data_dir, "counts.csv"), row.names = 1)
+metadata &lt;- read.csv(file.path(tenx_data_dir, "metadata.csv"), row.names = 1)
 seurat_object &lt;- CreateSeuratObject(counts = as.matrix(counts), meta.data = metadata)</code></pre>
 </div>
 <div class="section level2">
-<h2 id="advanced-scumap-usage">Advanced scumap() Usage<a class="anchor" aria-label="anchor" href="#advanced-scumap-usage"></a>
+<h2 id="advanced-scculture-usage">Advanced scCulture() Usage<a class="anchor" aria-label="anchor" href="#advanced-scculture-usage"></a>
 </h2>
-<p>The <code>scumap()</code> function provides several advanced options
-for power users who need more control over the analysis pipeline or want
-to optimize performance for large datasets.</p>
+<p>The <code><a href="../reference/scCulture.html">scCulture()</a></code> function provides several advanced
+options for power users who need more control over the analysis pipeline
+or want to optimize performance for large datasets.</p>
 <div class="section level3">
 <h3 id="progress-tracking-and-parallel-processing">Progress Tracking and Parallel Processing<a class="anchor" aria-label="anchor" href="#progress-tracking-and-parallel-processing"></a>
 </h3>
@@ -118,10 +118,12 @@ to optimize performance for large datasets.</p>
 processing to monitor and speed up the analysis:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Advanced usage with all options</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>    data_dir <span class="op">=</span> <span class="va">data_dir</span>,</span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
 <span>    output_dir <span class="op">=</span> <span class="st">"./advanced_results"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"advanced_analysis"</span>,</span>
 <span>    progress <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># Show detailed progress bar</span></span>
 <span>    parallel <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># Enable parallel processing</span></span>
@@ -140,10 +142,12 @@ processing to monitor and speed up the analysis:</p>
 underlying functions:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: Custom analysis with modified parameters</span></span>
-<span><span class="va">results_custom</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>    data_dir <span class="op">=</span> <span class="va">data_dir</span>,</span>
+<span><span class="va">results_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
 <span>    output_dir <span class="op">=</span> <span class="st">"./custom_results"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>    experiment_id <span class="op">=</span> <span class="st">"custom_analysis"</span>,</span>
 <span>    progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -174,11 +178,13 @@ function:</p>
 <span>        <span class="co"># Create unique output directory for each dataset</span></span>
 <span>        <span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">base_output_dir</span>, <span class="va">dataset_name</span><span class="op">)</span></span>
 <span></span>
-<span>        <span class="co"># Run scumap analysis</span></span>
-<span>        <span class="va">results_list</span><span class="op">[[</span><span class="va">dataset_name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">scumap</span><span class="op">(</span></span>
-<span>            data_dir <span class="op">=</span> <span class="va">data_path</span>,</span>
+<span>        <span class="co"># Run scCulture analysis</span></span>
+<span>        <span class="va">results_list</span><span class="op">[[</span><span class="va">dataset_name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>            tenx_data_dir <span class="op">=</span> <span class="va">data_path</span>,</span>
+<span>            input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
 <span>            kegg_file <span class="op">=</span> <span class="va">kegg_file</span>,</span>
 <span>            output_dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>            mode <span class="op">=</span> <span class="st">"build"</span>,</span>
 <span>            experiment_id <span class="op">=</span> <span class="va">dataset_name</span>,</span>
 <span>            progress <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># Disable progress bar for batch processing</span></span>
 <span>            parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -590,7 +596,7 @@ steps:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define custom pipeline function</span></span>
 <span><span class="va">custom_analysis_pipeline</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
-<span>    <span class="va">data_dir</span>,</span>
+<span>    <span class="va">tenx_data_dir</span>,</span>
 <span>    <span class="va">experiment_id</span>,</span>
 <span>    <span class="va">kegg_file</span>,</span>
 <span>    <span class="va">output_dir</span> <span class="op">=</span> <span class="st">"results"</span>,</span>
@@ -599,8 +605,8 @@ steps:</p>
 <span>    <span class="va">verbose</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="co"># 1. Load data</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">verbose</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"1. Loading data..."</span><span class="op">)</span></span>
-<span>    <span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span></span>
-<span>        data_dir <span class="op">=</span> <span class="va">data_dir</span>,</span>
+<span>    <span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_data.html">load_10x_data</a></span><span class="op">(</span></span>
+<span>        tenx_data_dir <span class="op">=</span> <span class="va">tenx_data_dir</span>,</span>
 <span>        experiment_id <span class="op">=</span> <span class="va">experiment_id</span>,</span>
 <span>        verbose <span class="op">=</span> <span class="va">verbose</span></span>
 <span>    <span class="op">)</span></span>
@@ -692,7 +698,7 @@ steps:</p>
 <span></span>
 <span><span class="co"># Example usage (not run)</span></span>
 <span><span class="co"># results &lt;- custom_analysis_pipeline(</span></span>
-<span><span class="co">#   data_dir = data_dir,</span></span>
+<span><span class="co">#   tenx_data_dir = tenx_data_dir,</span></span>
 <span><span class="co">#   experiment_id = "example",</span></span>
 <span><span class="co">#   kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),</span></span>
 <span><span class="co">#   output_dir = "custom_results",</span></span>
@@ -703,20 +709,199 @@ steps:</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="advanced-singlecellexperiment-support">Advanced SingleCellExperiment Support<a class="anchor" aria-label="anchor" href="#advanced-singlecellexperiment-support"></a>
+</h2>
+<p>The <code>scCulturePredict</code> package provides comprehensive
+support for SingleCellExperiment (SCE) objects, enabling seamless
+integration with Bioconductor workflows.</p>
+<div class="section level3">
+<h3 id="working-with-sce-objects">Working with SCE Objects<a class="anchor" aria-label="anchor" href="#working-with-sce-objects"></a>
+</h3>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create or load an SCE object</span></span>
+<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a></span><span class="op">(</span></span>
+<span>    assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">10000</span>, lambda <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1000</span>, ncol <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    colData <span class="op">=</span> <span class="fu">DataFrame</span><span class="op">(</span></span>
+<span>        sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Treatment"</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>        batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch1"</span>, <span class="st">"Batch2"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run analysis with SCE object directly</span></span>
+<span><span class="va">results_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="va">sce</span>,  <span class="co"># Pass object directly</span></span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./sce_results"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_advanced"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or load from RDS file</span></span>
+<span><span class="va">results_sce_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/sce_data.rds"</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./sce_file_results"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_from_file"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="cross-dataset-predictions">Cross-Dataset Predictions<a class="anchor" aria-label="anchor" href="#cross-dataset-predictions"></a>
+</h3>
+<p>One of the most powerful features is the ability to train models on
+one data format and apply them to another:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Scenario 1: Train on 10X, predict on SCE</span></span>
+<span><span class="co"># This is useful when you have labeled 10X reference data</span></span>
+<span><span class="co"># and unlabeled SCE query data</span></span>
+<span></span>
+<span><span class="co"># Step 1: Build model with 10X data</span></span>
+<span><span class="va">model_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="st">"reference_10x_data/"</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./model_10x"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"10x_reference"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Step 2: Apply to SCE data</span></span>
+<span><span class="va">predictions_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="va">sce</span>,  <span class="co"># or path to RDS file</span></span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./predictions_on_sce"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
+<span>    fingerprint_file <span class="op">=</span> <span class="va">model_10x</span><span class="op">$</span><span class="va">fingerprint_file</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_query"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Scenario 2: Train on SCE, predict on 10X</span></span>
+<span><span class="co"># Useful when your reference data is in SCE format</span></span>
+<span></span>
+<span><span class="co"># Step 1: Build model with SCE data</span></span>
+<span><span class="va">model_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="st">"reference_sce.rds"</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./model_sce"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_reference"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Step 2: Apply to 10X data</span></span>
+<span><span class="va">predictions_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    tenx_data_dir <span class="op">=</span> <span class="st">"query_10x_data/"</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./predictions_on_10x"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
+<span>    fingerprint_file <span class="op">=</span> <span class="va">model_sce</span><span class="op">$</span><span class="va">fingerprint_file</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"10x_query"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="batch-processing-with-mixed-data-types">Batch Processing with Mixed Data Types<a class="anchor" aria-label="anchor" href="#batch-processing-with-mixed-data-types"></a>
+</h3>
+<p>Process multiple datasets of different formats in a single
+pipeline:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define datasets with their types</span></span>
+<span><span class="va">datasets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dataset1"</span>, path <span class="op">=</span> <span class="st">"data/10x_1/"</span>, type <span class="op">=</span> <span class="st">"10x"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dataset2"</span>, path <span class="op">=</span> <span class="st">"data/sce_1.rds"</span>, type <span class="op">=</span> <span class="st">"sce"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dataset3"</span>, path <span class="op">=</span> <span class="st">"data/10x_2/"</span>, type <span class="op">=</span> <span class="st">"10x"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dataset4"</span>, path <span class="op">=</span> <span class="st">"data/sce_2.rds"</span>, type <span class="op">=</span> <span class="st">"sce"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Process all datasets</span></span>
+<span><span class="va">results_mixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">dataset</span> <span class="kw">in</span> <span class="va">datasets</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">dataset</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">"10x"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">results_mixed</span><span class="op">[[</span><span class="va">dataset</span><span class="op">$</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>            tenx_data_dir <span class="op">=</span> <span class="va">dataset</span><span class="op">$</span><span class="va">path</span>,</span>
+<span>            input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
+<span>            kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>            output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"./results_"</span>, <span class="va">dataset</span><span class="op">$</span><span class="va">name</span><span class="op">)</span>,</span>
+<span>            mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>            experiment_id <span class="op">=</span> <span class="va">dataset</span><span class="op">$</span><span class="va">name</span>,</span>
+<span>            verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">dataset</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">"sce"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">results_mixed</span><span class="op">[[</span><span class="va">dataset</span><span class="op">$</span><span class="va">name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>            sce_data_path <span class="op">=</span> <span class="va">dataset</span><span class="op">$</span><span class="va">path</span>,</span>
+<span>            input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>            kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>            output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"./results_"</span>, <span class="va">dataset</span><span class="op">$</span><span class="va">name</span><span class="op">)</span>,</span>
+<span>            mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>            experiment_id <span class="op">=</span> <span class="va">dataset</span><span class="op">$</span><span class="va">name</span>,</span>
+<span>            verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Compare results across datasets</span></span>
+<span><span class="va">accuracy_comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">results_mixed</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">evaluation_results</span><span class="op">$</span><span class="va">overall_accuracy</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">accuracy_comparison</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="advanced-sce-integration">Advanced SCE Integration<a class="anchor" aria-label="anchor" href="#advanced-sce-integration"></a>
+</h3>
+<p>Leverage SCE-specific features while using scCulturePredict:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use existing dimensionality reductions from SCE</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scater</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scran</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Prepare SCE with existing analyses</span></span>
+<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">logNormCounts</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
+<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">runPCA</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
+<span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">runUMAP</span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The package will automatically detect and use these reductions</span></span>
+<span><span class="va">results_with_reductions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
+<span>    sce_data_path <span class="op">=</span> <span class="va">sce</span>,</span>
+<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
+<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="st">"./sce_with_reductions"</span>,</span>
+<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
+<span>    experiment_id <span class="op">=</span> <span class="st">"sce_integrated"</span>,</span>
+<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Access the results as Seurat object for further analysis</span></span>
+<span><span class="va">seurat_from_sce</span> <span class="op">&lt;-</span> <span class="va">results_with_reductions</span><span class="op">$</span><span class="va">seurat_object</span></span>
+<span></span>
+<span><span class="co"># Or convert back to SCE if needed for downstream Bioconductor workflows</span></span>
+<span><span class="co"># (requires additional conversion code)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
 <p>This vignette demonstrated advanced usage scenarios for the
 <code>scCulturePredict</code> package, including batch effect
 correction, custom pathway analysis, performance optimization, advanced
-prediction models, and integration with other single-cell analysis
-tools. These techniques can help you extract more insights from your
-single-cell data and customize the analysis to your specific research
-questions.</p>
+prediction models, integration with other single-cell analysis tools,
+and comprehensive SingleCellExperiment support. These techniques can
+help you extract more insights from your single-cell data and customize
+the analysis to your specific research questions.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -740,48 +925,76 @@ questions.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt; [1] dplyr_1.1.4              Seurat_5.3.0             SeuratObject_5.1.0      </span></span>
-<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.28 BiocStyle_2.36.0        </span></span>
+<span><span class="co">#&gt; [4] sp_2.2-0                 scCulturePredict_0.99.30 BiocStyle_2.36.0        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] deldir_2.0-4           pbapply_1.7-4          gridExtra_2.3         </span></span>
-<span><span class="co">#&gt;   [4] rlang_1.1.6            magrittr_2.0.3         RcppAnnoy_0.0.22      </span></span>
-<span><span class="co">#&gt;   [7] spatstat.geom_3.5-0    matrixStats_1.5.0      ggridges_0.5.6        </span></span>
-<span><span class="co">#&gt;  [10] compiler_4.5.1         png_0.1-8              systemfonts_1.2.3     </span></span>
-<span><span class="co">#&gt;  [13] vctrs_0.6.5            reshape2_1.4.4         stringr_1.5.1         </span></span>
-<span><span class="co">#&gt;  [16] pkgconfig_2.0.3        fastmap_1.2.0          promises_1.3.3        </span></span>
-<span><span class="co">#&gt;  [19] rmarkdown_2.29         ragg_1.4.0             purrr_1.1.0           </span></span>
-<span><span class="co">#&gt;  [22] xfun_0.52              cachem_1.1.0           jsonlite_2.0.0        </span></span>
-<span><span class="co">#&gt;  [25] goftest_1.2-3          later_1.4.2            spatstat.utils_3.1-5  </span></span>
-<span><span class="co">#&gt;  [28] irlba_2.3.5.1          parallel_4.5.1         cluster_2.1.8.1       </span></span>
-<span><span class="co">#&gt;  [31] R6_2.6.1               ica_1.0-3              spatstat.data_3.1-6   </span></span>
-<span><span class="co">#&gt;  [34] stringi_1.8.7          bslib_0.9.0            RColorBrewer_1.1-3    </span></span>
-<span><span class="co">#&gt;  [37] reticulate_1.43.0      spatstat.univar_3.1-4  parallelly_1.45.1     </span></span>
-<span><span class="co">#&gt;  [40] lmtest_0.9-40          jquerylib_0.1.4        scattermore_1.2       </span></span>
-<span><span class="co">#&gt;  [43] Rcpp_1.1.0             bookdown_0.43          knitr_1.50            </span></span>
-<span><span class="co">#&gt;  [46] tensor_1.5.1           future.apply_1.20.0    zoo_1.8-14            </span></span>
-<span><span class="co">#&gt;  [49] sctransform_0.4.2      httpuv_1.6.16          Matrix_1.7-3          </span></span>
-<span><span class="co">#&gt;  [52] splines_4.5.1          igraph_2.1.4           tidyselect_1.2.1      </span></span>
-<span><span class="co">#&gt;  [55] abind_1.4-8            yaml_2.3.10            spatstat.random_3.4-1 </span></span>
-<span><span class="co">#&gt;  [58] spatstat.explore_3.5-2 codetools_0.2-20       miniUI_0.1.2          </span></span>
-<span><span class="co">#&gt;  [61] listenv_0.9.1          plyr_1.8.9             lattice_0.22-7        </span></span>
-<span><span class="co">#&gt;  [64] tibble_3.3.0           shiny_1.11.1           ROCR_1.0-11           </span></span>
-<span><span class="co">#&gt;  [67] evaluate_1.0.4         Rtsne_0.17             future_1.67.0         </span></span>
-<span><span class="co">#&gt;  [70] fastDummies_1.7.5      desc_1.4.3             survival_3.8-3        </span></span>
-<span><span class="co">#&gt;  [73] polyclip_1.10-7        fitdistrplus_1.2-4     pillar_1.11.0         </span></span>
-<span><span class="co">#&gt;  [76] BiocManager_1.30.26    KernSmooth_2.23-26     plotly_4.11.0         </span></span>
-<span><span class="co">#&gt;  [79] generics_0.1.4         RcppHNSW_0.6.0         ggplot2_3.5.2         </span></span>
-<span><span class="co">#&gt;  [82] scales_1.4.0           globals_0.18.0         xtable_1.8-4          </span></span>
-<span><span class="co">#&gt;  [85] glue_1.8.0             lazyeval_0.2.2         tools_4.5.1           </span></span>
-<span><span class="co">#&gt;  [88] data.table_1.17.8      RSpectra_0.16-2        RANN_2.6.2            </span></span>
-<span><span class="co">#&gt;  [91] fs_1.6.6               dotCall64_1.2          cowplot_1.2.0         </span></span>
-<span><span class="co">#&gt;  [94] grid_4.5.1             tidyr_1.3.1            nlme_3.1-168          </span></span>
-<span><span class="co">#&gt;  [97] patchwork_1.3.1        cli_3.6.5              spatstat.sparse_3.1-0 </span></span>
-<span><span class="co">#&gt; [100] textshaping_1.0.1      spam_2.11-1            viridisLite_0.4.2     </span></span>
-<span><span class="co">#&gt; [103] uwot_0.2.3             gtable_0.3.6           sass_0.4.10           </span></span>
-<span><span class="co">#&gt; [106] digest_0.6.37          progressr_0.15.1       ggrepel_0.9.6         </span></span>
-<span><span class="co">#&gt; [109] htmlwidgets_1.6.4      farver_2.1.2           htmltools_0.5.8.1     </span></span>
-<span><span class="co">#&gt; [112] pkgdown_2.1.3          lifecycle_1.0.4        httr_1.4.7            </span></span>
-<span><span class="co">#&gt; [115] mime_0.13              MASS_7.3-65</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3          jsonlite_2.0.0             </span></span>
+<span><span class="co">#&gt;   [3] magrittr_2.0.3              spatstat.utils_3.1-5       </span></span>
+<span><span class="co">#&gt;   [5] farver_2.1.2                rmarkdown_2.29             </span></span>
+<span><span class="co">#&gt;   [7] fs_1.6.6                    ragg_1.4.0                 </span></span>
+<span><span class="co">#&gt;   [9] vctrs_0.6.5                 ROCR_1.0-11                </span></span>
+<span><span class="co">#&gt;  [11] spatstat.explore_3.5-2      htmltools_0.5.8.1          </span></span>
+<span><span class="co">#&gt;  [13] S4Arrays_1.8.1              SparseArray_1.8.1          </span></span>
+<span><span class="co">#&gt;  [15] sass_0.4.10                 sctransform_0.4.2          </span></span>
+<span><span class="co">#&gt;  [17] parallelly_1.45.1           KernSmooth_2.23-26         </span></span>
+<span><span class="co">#&gt;  [19] bslib_0.9.0                 htmlwidgets_1.6.4          </span></span>
+<span><span class="co">#&gt;  [21] desc_1.4.3                  ica_1.0-3                  </span></span>
+<span><span class="co">#&gt;  [23] plyr_1.8.9                  plotly_4.11.0              </span></span>
+<span><span class="co">#&gt;  [25] zoo_1.8-14                  cachem_1.1.0               </span></span>
+<span><span class="co">#&gt;  [27] igraph_2.1.4                mime_0.13                  </span></span>
+<span><span class="co">#&gt;  [29] lifecycle_1.0.4             pkgconfig_2.0.3            </span></span>
+<span><span class="co">#&gt;  [31] Matrix_1.7-3                R6_2.6.1                   </span></span>
+<span><span class="co">#&gt;  [33] fastmap_1.2.0               GenomeInfoDbData_1.2.14    </span></span>
+<span><span class="co">#&gt;  [35] MatrixGenerics_1.20.0       fitdistrplus_1.2-4         </span></span>
+<span><span class="co">#&gt;  [37] future_1.67.0               shiny_1.11.1               </span></span>
+<span><span class="co">#&gt;  [39] digest_0.6.37               patchwork_1.3.2            </span></span>
+<span><span class="co">#&gt;  [41] S4Vectors_0.46.0            tensor_1.5.1               </span></span>
+<span><span class="co">#&gt;  [43] RSpectra_0.16-2             irlba_2.3.5.1              </span></span>
+<span><span class="co">#&gt;  [45] textshaping_1.0.1           GenomicRanges_1.60.0       </span></span>
+<span><span class="co">#&gt;  [47] progressr_0.15.1            spatstat.sparse_3.1-0      </span></span>
+<span><span class="co">#&gt;  [49] polyclip_1.10-7             httr_1.4.7                 </span></span>
+<span><span class="co">#&gt;  [51] abind_1.4-8                 compiler_4.5.1             </span></span>
+<span><span class="co">#&gt;  [53] fastDummies_1.7.5           MASS_7.3-65                </span></span>
+<span><span class="co">#&gt;  [55] DelayedArray_0.34.1         tools_4.5.1                </span></span>
+<span><span class="co">#&gt;  [57] lmtest_0.9-40               httpuv_1.6.16              </span></span>
+<span><span class="co">#&gt;  [59] future.apply_1.20.0         goftest_1.2-3              </span></span>
+<span><span class="co">#&gt;  [61] glue_1.8.0                  nlme_3.1-168               </span></span>
+<span><span class="co">#&gt;  [63] promises_1.3.3              grid_4.5.1                 </span></span>
+<span><span class="co">#&gt;  [65] Rtsne_0.17                  cluster_2.1.8.1            </span></span>
+<span><span class="co">#&gt;  [67] reshape2_1.4.4              generics_0.1.4             </span></span>
+<span><span class="co">#&gt;  [69] gtable_0.3.6                spatstat.data_3.1-8        </span></span>
+<span><span class="co">#&gt;  [71] tidyr_1.3.1                 data.table_1.17.8          </span></span>
+<span><span class="co">#&gt;  [73] XVector_0.48.0              spatstat.geom_3.5-0        </span></span>
+<span><span class="co">#&gt;  [75] BiocGenerics_0.54.0         RcppAnnoy_0.0.22           </span></span>
+<span><span class="co">#&gt;  [77] ggrepel_0.9.6               RANN_2.6.2                 </span></span>
+<span><span class="co">#&gt;  [79] pillar_1.11.0               stringr_1.5.1              </span></span>
+<span><span class="co">#&gt;  [81] spam_2.11-1                 RcppHNSW_0.6.0             </span></span>
+<span><span class="co">#&gt;  [83] later_1.4.3                 splines_4.5.1              </span></span>
+<span><span class="co">#&gt;  [85] lattice_0.22-7              deldir_2.0-4               </span></span>
+<span><span class="co">#&gt;  [87] survival_3.8-3              tidyselect_1.2.1           </span></span>
+<span><span class="co">#&gt;  [89] SingleCellExperiment_1.30.1 miniUI_0.1.2               </span></span>
+<span><span class="co">#&gt;  [91] pbapply_1.7-4               knitr_1.50                 </span></span>
+<span><span class="co">#&gt;  [93] gridExtra_2.3               bookdown_0.44              </span></span>
+<span><span class="co">#&gt;  [95] IRanges_2.42.0              SummarizedExperiment_1.38.1</span></span>
+<span><span class="co">#&gt;  [97] scattermore_1.2             stats4_4.5.1               </span></span>
+<span><span class="co">#&gt;  [99] xfun_0.53                   Biobase_2.68.0             </span></span>
+<span><span class="co">#&gt; [101] matrixStats_1.5.0           stringi_1.8.7              </span></span>
+<span><span class="co">#&gt; [103] UCSC.utils_1.4.0            lazyeval_0.2.2             </span></span>
+<span><span class="co">#&gt; [105] yaml_2.3.10                 evaluate_1.0.4             </span></span>
+<span><span class="co">#&gt; [107] codetools_0.2-20            tibble_3.3.0               </span></span>
+<span><span class="co">#&gt; [109] BiocManager_1.30.26         cli_3.6.5                  </span></span>
+<span><span class="co">#&gt; [111] uwot_0.2.3                  xtable_1.8-4               </span></span>
+<span><span class="co">#&gt; [113] reticulate_1.43.0           systemfonts_1.2.3          </span></span>
+<span><span class="co">#&gt; [115] jquerylib_0.1.4             Rcpp_1.1.0                 </span></span>
+<span><span class="co">#&gt; [117] GenomeInfoDb_1.44.2         spatstat.random_3.4-1      </span></span>
+<span><span class="co">#&gt; [119] globals_0.18.0              png_0.1-8                  </span></span>
+<span><span class="co">#&gt; [121] spatstat.univar_3.1-4       parallel_4.5.1             </span></span>
+<span><span class="co">#&gt; [123] pkgdown_2.1.3               ggplot2_3.5.2              </span></span>
+<span><span class="co">#&gt; [125] dotCall64_1.2               listenv_0.9.1              </span></span>
+<span><span class="co">#&gt; [127] viridisLite_0.4.2           scales_1.4.0               </span></span>
+<span><span class="co">#&gt; [129] ggridges_0.5.6              purrr_1.1.0                </span></span>
+<span><span class="co">#&gt; [131] crayon_1.5.3                rlang_1.1.6                </span></span>
+<span><span class="co">#&gt; [133] cowplot_1.2.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
