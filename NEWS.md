@@ -1,3 +1,25 @@
+# scCulturePredict 0.99.31 (2025-09-11)
+
+## Documentation
+* Improved vignette chunk evaluation from 41% to 70.8% to meet Bioconductor requirements:
+  - Introduction vignette: increased from 43% to 65% evaluated chunks
+  - Advanced vignette: increased from 17% to 71% evaluated chunks (subsequently removed)
+  - Visualization vignette: increased from 72% to 78% evaluated chunks
+* Added CITATION file in `inst/CITATION` for proper package citation
+* Enabled evaluation of key demonstration chunks using mock data approach from package examples
+* Removed advanced vignette to simplify package documentation and focus on main pipeline functions
+* Simplified README by removing advanced usage sections and alternative implementation details
+* Package now focuses on the two main exported functions: `scCulture()` and `plot_scCulture()`
+
+## Bug Fixes
+* Fixed vignette chunks that were unnecessarily set to `eval=FALSE`
+* Ensured all evaluated chunks use appropriate test data or mock objects
+* Fixed vignette build errors related to `build_fingerprints()` function arguments (kegg_data → kegg_pathways)
+* Fixed incorrect handling of list structure returned by `build_fingerprints()` in vignettes
+* Corrected `predict_by_svm()` function calls in vignettes (removed non-existent `train_ratio` parameter)
+* Fixed evaluation code in introduction vignette to handle missing prediction columns properly
+* Fixed custom visualization code to properly handle list structure from `build_fingerprints()`
+
 # scCulturePredict 0.99.30 (2025-08-27)
 
 ## Documentation

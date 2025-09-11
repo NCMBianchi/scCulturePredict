@@ -5,12 +5,37 @@ All notable changes to the scCulturePredict package will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.31] - 2025-09-11
+
+### Added
+- CITATION file in `inst/CITATION` for proper package citation
+
+### Changed
+- Improved vignette chunk evaluation from 41% to 70.8% to meet Bioconductor requirements:
+  * Introduction vignette: increased from 43% to 65% evaluated chunks
+  * Advanced vignette: increased from 17% to 71% evaluated chunks (subsequently removed)
+  * Visualization vignette: increased from 72% to 78% evaluated chunks
+- Enabled evaluation of key demonstration chunks using mock data approach from package examples
+- Removed advanced vignette to simplify package documentation and focus on main pipeline functions
+- Simplified README by removing advanced usage sections and alternative implementation details
+- Package now focuses on the two main exported functions: `scCulture()` and `plot_scCulture()`
+
+### Fixed
+- Vignette chunks that were unnecessarily set to `eval=FALSE`
+- Ensured all evaluated chunks use appropriate test data or mock objects
+- Vignette build errors related to `build_fingerprints()` function arguments (kegg_data → kegg_pathways)
+- Incorrect handling of list structure returned by `build_fingerprints()` in vignettes
+- `predict_by_svm()` function calls in vignettes (removed non-existent `train_ratio` parameter)
+- Evaluation code in introduction vignette to handle missing prediction columns properly
+- Custom visualization code to properly handle list structure from `build_fingerprints()`
+
 ## [0.99.30] - 2025-08-27
 
 ### Fixed
 - pkgdown site build failure by updating `_pkgdown.yml` to reference renamed functions:
   * Changed `load_data` to `load_10x_data` in function reference
   * Added `load_sce_data` to data loading section
+- Documentation site now builds correctly with the function renaming introduced in v0.99.29
 
 ## [0.99.29] - 2025-08-27
 

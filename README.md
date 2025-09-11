@@ -1,7 +1,7 @@
 # scCulturePredict
 
 [![Bioconductor](https://img.shields.io/badge/Bioconductor-under%20review-yellow)](https://github.com/Bioconductor/Contributions/issues)
-[![Version](https://img.shields.io/badge/Version-0.99.30-orange)](https://github.com/nccb/scCulturePredict)
+[![Version](https://img.shields.io/badge/Version-0.99.31-orange)](https://github.com/nccb/scCulturePredict)
 [![R-CMD-check-BiocCheck](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/NCMBianchi/scCulturePredict/actions/workflows/check-bioc.yml)
 [![codecov](https://codecov.io/gh/NCMBianchi/scCulturePredict/branch/main/graph/badge.svg)](https://codecov.io/gh/NCMBianchi/scCulturePredict)
 [![R](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)](https://www.r-project.org/)
@@ -203,19 +203,7 @@ summary(prediction_results$seurat_object$prediction_confidence)
 table(prediction_results$seurat_object$classification_pred)
 ```
 
-### Advanced Usage
 
-For users who need more control over individual steps:
-
-```r
-# Step-by-step approach
-tenx_data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
-seurat_object <- load_10x_data(tenx_data_dir, experiment_id = "example")
-seurat_object <- preprocess_data(seurat_object)
-seurat_object <- reduce_dimensions(seurat_object)
-
-# Continue with pathway analysis and predictions...
-```
 
 ## Data Format Requirements
 
@@ -279,24 +267,8 @@ Comprehensive documentation is available in the package:
 
 - `vignette("scCulturePredict-introduction")` - Introduction to scCulturePredict
 - `vignette("scCulturePredict-visualization")` - Visualisation guide
-- `vignette("scCulturePredict-advanced")` - Advanced usage
 
-## Alternative Implementations
 
-The package includes additional functions that provide extended functionality but are not part of the main pipeline. These are preserved in `inst/extras/alternative_implementations.R` for advanced users or future development:
-
-- **Enhanced dimensionality reduction**: PCA with variance explained, UMAP with clustering
-- **Statistical pathway analysis**: Pathway enrichment with p-values and FDR correction
-- **Advanced visualizations**: Heatmaps, boxplots, and customizable plots
-
-These functions can be sourced and used independently:
-```r
-source(system.file("extras", "alternative_implementations.R", package = "scCulturePredict"))
-# Use enhanced PCA with variance explained
-pca_results <- perform_pca(seurat_object)
-```
-
-See the file for detailed documentation and integration instructions.
 
 ## Code Quality
 
@@ -377,7 +349,7 @@ If you use scCulturePredict in your research, please cite (bibtex format):
   title = {scCulturePredict: Single-Cell Feature Prediction Using Transcriptomic Fingerprints},
   author = {Niccolò Bianchi},
   year = {2025},
-  note = {R package version 0.99.30},
+  note = {R package version 0.99.31},
   url = {https://github.com/ncmbianchi/scCulturePredict},
 }
 ```

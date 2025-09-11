@@ -5,518 +5,392 @@ date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
     toc: true
-    toc_depth: 2
+    toc_float: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{Visualization with scCulturePredict}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.width = 8,
-    fig.height = 6,
-    warning = FALSE,
-    message = FALSE
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 8,
+  fig.height = 6
 )
 ```
 
 # Introduction
 
-Effective visualization is crucial for interpreting single-cell RNA sequencing data. The `scCulturePredict` package provides a comprehensive set of visualization functions designed to help you explore your data and evaluate prediction results. This vignette demonstrates how to use these visualization tools to create informative and publication-ready figures.
+This vignette demonstrates visualization capabilities of the `scCulturePredict` package for exploring single-cell RNA-seq data and prediction results.
 
-## Loading Required Packages
+# Setup
 
-```{r setup}
+```{r setup_packages}
 library(scCulturePredict)
 library(Seurat)
 library(ggplot2)
-library(patchwork)
+library(dplyr)
+set.seed(123)  # For reproducibility
 ```
 
-## Creating Example Data
+# Creating Example Data
 
-For this vignette, we'll create some example data to demonstrate the visualization capabilities:
+```{r create_data}
+# Create simple mock data for visualization
+create_viz_data <- function(n_genes = 200, n_cells = 150) {
+  # Create count matrix
+  counts <- matrix(rpois(n_genes * n_cells, lambda = 5),
+                   nrow = n_genes, ncol = n_cells)
 
-```{r example_data}
-# Create a mock Seurat object
-create_mock_seurat <- function() {
-    # Create a small Seurat object with UMAP coordinates
-    set.seed(42)
-    counts <- matrix(rpois(100 * 30, 10), nrow = 100, ncol = 30)
-    rownames(counts) <- paste0("gene", 1:100)
-    colnames(counts) <- paste0("cell", 1:30)
+  # Simple gene and cell names
+  rownames(counts) <- paste0("Gene", seq_len(n_genes))
+  colnames(counts) <- paste0("Cell", seq_len(n_cells))
 
-    seurat <- Seurat::CreateSeuratObject(counts = counts)
+  # Create metadata with multiple variables
+  metadata <- data.frame(
+    condition = rep(c("Control", "Treatment_A", "Treatment_B"), each = n_cells/3),
+    batch = rep(c("Batch1", "Batch2"), length.out = n_cells),
+    n_genes = colSums(counts > 0),
+    n_counts = colSums(counts),
+    percent_mt = runif(n_cells, 0, 20),
+    row.names = colnames(counts)
+  )
 
-    # Add UMAP coordinates and metadata
-    seurat@meta.data$UMAP_1 <- rnorm(30)
-    seurat@meta.data$UMAP_2 <- rnorm(30)
-    seurat@meta.data$sample <- rep(c("A", "B", "C"), each = 10)
-    seurat@meta.data$cluster <- rep(c(1, 2, 3), times = 10)
-    seurat@meta.data$percent_mito <- runif(30, 0, 10)
+  # Create Seurat object
+  seurat_obj <- CreateSeuratObject(
+    counts = counts,
+    meta.data = metadata,
+    min.cells = 3,
+    min.features = 10
+  )
 
-    return(seurat)
+  # Process the data
+  seurat_obj <- NormalizeData(seurat_obj, verbose = FALSE)
+  seurat_obj <- FindVariableFeatures(seurat_obj, nfeatures = 100, verbose = FALSE)
+  seurat_obj <- ScaleData(seurat_obj, verbose = FALSE)
+  seurat_obj <- RunPCA(seurat_obj, npcs = 20, verbose = FALSE)
+  seurat_obj <- RunUMAP(seurat_obj, dims = 1:10, verbose = FALSE)
+
+  # Add UMAP coordinates to metadata
+  seurat_obj@meta.data$UMAP_1 <- Embeddings(seurat_obj, "umap")[, 1]
+  seurat_obj@meta.data$UMAP_2 <- Embeddings(seurat_obj, "umap")[, 2]
+
+  # Add mock predictions
+  seurat_obj@meta.data$predicted_condition <- sample(
+    c("Control", "Treatment_A", "Treatment_B"),
+    n_cells, replace = TRUE
+  )
+  seurat_obj@meta.data$prediction_confidence <- runif(n_cells, 0.5, 1.0)
+
+  return(seurat_obj)
 }
 
-# Create mock evaluation results
-create_mock_evaluation <- function() {
-    list(
-        direct_accuracy = data.frame(
-            sample = c("A", "B", "C"),
-            correct = c(8, 7, 9),
-            percent = c("80%", "70%", "90%")
-        ),
-        direct_table = as.table(matrix(c(8, 1, 1, 1, 7, 2, 1, 2, 7),
-            nrow = 3,
-            dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
-        )),
-        svm_accuracy = data.frame(
-            sample = c("A", "B", "C"),
-            correct = c(9, 8, 7),
-            percent = c("90%", "80%", "70%")
-        ),
-        svm_table = as.table(matrix(c(9, 0, 1, 1, 8, 1, 0, 2, 7),
-            nrow = 3,
-            dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
-        )),
-        threshold_table = as.table(matrix(c(7, 1, 0, 2, 6, 1, 1, 2, 8),
-            nrow = 3,
-            dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
-        ))
-    )
-}
-
-# Generate example data
-seurat_object <- create_mock_seurat()
-evaluation_results <- create_mock_evaluation()
+# Create the data
+viz_data <- create_viz_data(n_genes = 200, n_cells = 150)
+print(viz_data)
 ```
 
-# Basic Visualizations
+# Quality Control Visualizations
+
+## QC Metrics Distribution
+
+```{r qc_plots, fig.width=10, fig.height=8}
+# Extract metadata for plotting
+meta_data <- viz_data@meta.data
+
+# Create QC visualization
+p1 <- ggplot(meta_data, aes(x = condition, y = n_genes, fill = condition)) +
+  geom_violin(alpha = 0.7) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  theme_minimal() +
+  labs(title = "Genes per Cell by Condition",
+       x = "Condition", y = "Number of Genes") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "none")
+
+p2 <- ggplot(meta_data, aes(x = condition, y = percent_mt, fill = condition)) +
+  geom_violin(alpha = 0.7) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  theme_minimal() +
+  labs(title = "Mitochondrial % by Condition",
+       x = "Condition", y = "MT %") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "none")
+
+p3 <- ggplot(meta_data, aes(x = n_counts, y = n_genes, color = percent_mt)) +
+  geom_point(alpha = 0.6, size = 2) +
+  theme_minimal() +
+  labs(title = "Count-Gene Relationship",
+       x = "Total Counts", y = "Total Genes",
+       color = "MT %") +
+  scale_color_gradient(low = "blue", high = "red")
+
+p4 <- ggplot(meta_data, aes(x = batch, fill = condition)) +
+  geom_bar(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Cell Distribution across Batches",
+       x = "Batch", y = "Count") +
+  scale_fill_brewer(palette = "Set1")
+
+# Combine plots using base R graphics
+par(mfrow = c(2, 2))
+# Note: For actual combination, use patchwork or gridExtra packages
+# Here we'll display them individually
+print(p1)
+print(p2)
+print(p3)
+print(p4)
+par(mfrow = c(1, 1))
+```
+
+# Dimensionality Reduction Visualizations
 
 ## UMAP Visualization
 
-For UMAP visualizations, use Seurat's built-in `DimPlot` function or `plot_scCulture` for scCulture results:
+```{r umap_plots, fig.width=10, fig.height=8}
+# UMAP colored by condition
+p_condition <- ggplot(meta_data, aes(x = UMAP_1, y = UMAP_2, color = condition)) +
+  geom_point(size = 2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "UMAP by Condition",
+       x = "UMAP 1", y = "UMAP 2") +
+  scale_color_brewer(palette = "Set1")
 
-```{r umap_basic}
-# Basic UMAP plot using metadata coordinates
-library(ggplot2)
-umap_plot <- ggplot(seurat_object@meta.data,
-                    aes(x = UMAP_1, y = UMAP_2, color = sample)) +
-    geom_point(size = 2) +
-    theme_minimal() +
-    labs(title = "UMAP of Example Data",
-         x = "UMAP_1",
-         y = "UMAP_2",
-         color = "Sample") +
-    scale_color_manual(values = c("A" = "#E41A1C", "B" = "#377EB8", "C" = "#4DAF4A"))
+print(p_condition)
 
-print(umap_plot)
+# UMAP colored by batch
+p_batch <- ggplot(meta_data, aes(x = UMAP_1, y = UMAP_2, color = batch)) +
+  geom_point(size = 2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "UMAP by Batch",
+       x = "UMAP 1", y = "UMAP 2") +
+  scale_color_brewer(palette = "Dark2")
+
+print(p_batch)
+
+# UMAP colored by gene count
+p_genes <- ggplot(meta_data, aes(x = UMAP_1, y = UMAP_2, color = n_genes)) +
+  geom_point(size = 2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "UMAP by Gene Count",
+       x = "UMAP 1", y = "UMAP 2",
+       color = "Genes") +
+  scale_color_gradient(low = "darkblue", high = "yellow")
+
+print(p_genes)
 ```
 
-### Customizing UMAP Plots
+## PCA Visualization
 
-You can customize various aspects of the UMAP plot:
+```{r pca_plots}
+# Get PCA coordinates
+pca_coords <- Embeddings(viz_data, "pca")[, 1:4]
+meta_data$PC1 <- pca_coords[, 1]
+meta_data$PC2 <- pca_coords[, 2]
 
-```{r umap_custom}
-# Customized UMAP plot
-umap_custom <- ggplot(seurat_object@meta.data,
-                      aes(x = UMAP_1, y = UMAP_2, color = factor(cluster))) +
-    geom_point(size = 2.5) +
-    theme_minimal() +
-    labs(title = "UMAP by Cluster",
-         x = "UMAP_1",
-         y = "UMAP_2",
-         color = "Cluster ID") +
-    scale_color_discrete()
+# PCA plot
+p_pca <- ggplot(meta_data, aes(x = PC1, y = PC2, color = condition)) +
+  geom_point(size = 2, alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "PCA: PC1 vs PC2",
+       color = "Condition") +
+  scale_color_brewer(palette = "Set1")
 
-print(umap_custom)
-```
+print(p_pca)
 
-You can also use other metadata columns for coloring:
+# Variance explained
+pca_var <- Stdev(viz_data, reduction = "pca")^2
+var_explained <- pca_var / sum(pca_var) * 100
 
-```{r umap_continuous}
-# UMAP with continuous variable
-umap_continuous <- ggplot(seurat_object@meta.data,
-                          aes(x = UMAP_1, y = UMAP_2, color = percent_mito)) +
-    geom_point(size = 2) +
-    theme_minimal() +
-    labs(title = "UMAP by Mitochondrial Percentage",
-         x = "UMAP_1",
-         y = "UMAP_2",
-         color = "% Mito") +
-    scale_color_viridis_c()
-
-print(umap_continuous)
-```
-
-### Combining Multiple UMAP Plots
-
-The plots can be combined using the `patchwork` package:
-
-```{r umap_combined}
-# Combine multiple UMAP plots
-combined_plot <- umap_plot + umap_custom + umap_continuous +
-    plot_layout(ncol = 2) +
-    plot_annotation(title = "Multiple UMAP Visualizations")
-
-print(combined_plot)
-```
-
-# Prediction Evaluation Visualizations
-
-## Evaluation Metrics Plots
-
-Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
-
-```{r accuracy}
-# Metrics visualization
-# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
-# metrics_plot <- create_evaluation_metrics_plot(
-#     evaluation_results = evaluation_results,
-#     plot_type = "metrics",
-#     title = "Direct Prediction Accuracy"
-# )
-
-# Alternative: Use create_evaluation_plots for comprehensive visualization
-evaluation_plots <- create_evaluation_plots(
-    seurat_object = seurat_object,
-    results_dir = "./results",
-    verbose = FALSE
+var_df <- data.frame(
+  PC = 1:min(20, length(var_explained)),
+  Variance = var_explained[1:min(20, length(var_explained))]
 )
 
-# Display the plots (plots are saved to results directory)
-# evaluation_plots
+p_var <- ggplot(var_df, aes(x = PC, y = Variance)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_line(color = "red") +
+  theme_minimal() +
+  labs(title = "PCA Variance Explained",
+       x = "Principal Component",
+       y = "Variance Explained (%)")
+
+print(p_var)
 ```
 
-### Customizing Accuracy Plots
+# Pathway Analysis Visualization
 
-You can customize the color palette:
+```{r pathway_viz}
+# Create mock pathway activity data
+n_pathways <- 10
+pathway_names <- c("Glycolysis", "TCA_Cycle", "Cell_Cycle", "DNA_Repair",
+                   "Translation", "Oxidative_Stress", "Metabolism",
+                   "Signaling", "Transport", "Biosynthesis")
 
-```{r accuracy_custom}
-# Custom color palette
-custom_colors <- c("A" = "#E41A1C", "B" = "#377EB8", "C" = "#4DAF4A")
+# Create mock pathway matrix
+pathway_matrix <- matrix(rnorm(ncol(viz_data) * n_pathways),
+                        nrow = ncol(viz_data),
+                        ncol = n_pathways)
+colnames(pathway_matrix) <- pathway_names[1:n_pathways]
+rownames(pathway_matrix) <- colnames(viz_data)
 
-# Customized accuracy plot
-# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
-# custom_accuracy <- create_evaluation_metrics_plot(
-#     evaluation_results = evaluation_results,
-#     plot_type = "metrics",
-#     title = "Custom Accuracy Plot",
-#     color_palette = c("#2E86AB", "#A23B72", "#F18F01")
-# )
-#
-# print(custom_accuracy)
+# Calculate mean pathway activity by condition
+pathway_summary <- data.frame(
+  pathway_matrix,
+  condition = viz_data$condition
+) %>%
+  group_by(condition) %>%
+  summarise(across(everything(), mean))
+
+# Reshape for plotting
+pathway_long <- tidyr::pivot_longer(pathway_summary,
+                                   cols = -condition,
+                                   names_to = "Pathway",
+                                   values_to = "Activity")
+
+# Create heatmap-style plot with ggplot2
+p_pathway <- ggplot(pathway_long, aes(x = Pathway, y = condition, fill = Activity)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Mean Pathway Activity by Condition",
+       x = "Pathway", y = "Condition")
+
+print(p_pathway)
 ```
 
-## Confusion Matrix Visualization
+# Prediction Visualization
 
-Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
+## Confusion Matrix
 
-```{r confusion}
-# Confusion matrix visualization
-# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
-# confusion_plot <- create_evaluation_metrics_plot(
-#     evaluation_results = evaluation_results,
-#     plot_type = "confusion",
-#     title = "Direct Prediction Confusion Matrix"
-# )
+```{r confusion_matrix}
+# Create confusion matrix
+actual <- viz_data$condition
+predicted <- viz_data$predicted_condition
 
-# Alternative confusion matrix view
-# Note: Individual confusion matrix functions have been moved to inst/extras/alternative_implementations.R
-# svm_confusion <- create_evaluation_metrics_plot(
-#     evaluation_results = evaluation_results,
-#     plot_type = "confusion",
-#     title = "SVM Prediction Confusion Matrix"
-# )
+conf_mat <- table(Actual = actual, Predicted = predicted)
+conf_mat_prop <- prop.table(conf_mat, margin = 1)
 
-# For comprehensive evaluation including all methods
-# Use create_evaluation_plots which generates multiple visualizations
-all_plots <- create_evaluation_plots(
-    seurat_object = seurat_object,
-    results_dir = "./results",
-    verbose = FALSE
-)
+# Convert to data frame for plotting
+conf_df <- as.data.frame(conf_mat_prop)
 
-# Individual plots can be accessed from the results
-# Display the plots
-# Note: Individual plot objects would need to be created separately
-# direct_confusion
-# svm_confusion
-# threshold_confusion
+# Create heatmap
+p_conf <- ggplot(conf_df, aes(x = Predicted, y = Actual, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = sprintf("%.2f", Freq)), color = "white", size = 4) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red",
+                       midpoint = 0.5, limits = c(0, 1)) +
+  theme_minimal() +
+  labs(title = "Confusion Matrix (Normalized)",
+       x = "Predicted", y = "Actual",
+       fill = "Proportion") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+print(p_conf)
 ```
 
-### Customizing Confusion Heatmaps
+## Prediction Confidence
 
-You can customize the color gradient:
+```{r confidence_viz}
+# Confidence distribution
+p_conf_dist <- ggplot(meta_data, aes(x = prediction_confidence)) +
+  geom_histogram(bins = 20, fill = "steelblue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Prediction Confidence Distribution",
+       x = "Confidence Score", y = "Count") +
+  geom_vline(xintercept = mean(meta_data$prediction_confidence),
+             color = "red", linetype = "dashed", size = 1)
 
-```{r confusion_custom}
-# Custom color gradient
-custom_gradient <- c("white", "navy")
+print(p_conf_dist)
 
-# Customized confusion matrix visualization
-# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
-# custom_confusion <- create_evaluation_metrics_plot(
-#     evaluation_results = evaluation_results,
-#     plot_type = "confusion",
-#     color_palette = c("#2E86AB", "#A23B72", "#F18F01"),
-#     title = "Custom Confusion Matrix"
-# )
-#
-# print(custom_confusion)
+# Confidence by condition
+p_conf_cond <- ggplot(meta_data, aes(x = condition, y = prediction_confidence,
+                                     fill = condition)) +
+  geom_violin(alpha = 0.7) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) +
+  theme_minimal() +
+  labs(title = "Confidence by Condition",
+       x = "Condition", y = "Confidence Score") +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "none")
+
+print(p_conf_cond)
 ```
 
-# Evaluation Metrics Visualization
+# Using plot_scCulture Function
 
-Note: The `create_evaluation_metrics_plot` function has been moved to inst/extras/alternative_implementations.R
+The package provides the `plot_scCulture` function for automated visualization:
 
-```{r eval_metrics, eval=FALSE}
-# For this demonstration, we need additional metrics that would come from a real evaluation
-# This code is provided as an example but not evaluated in this vignette
+```{r plot_scculture, eval=FALSE}
+# Example of using plot_scCulture with analysis results
+# This requires results from the scCulture() function
 
-# Create evaluation metrics plot
-# The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R
-# metrics_plot <- create_evaluation_metrics_plot(
-#     evaluation_results = complete_evaluation_results,
-#     plot_type = "metrics",
-#     title = "Prediction Performance Metrics"
+# results <- scCulture(
+#   tenx_data_dir = "path/to/data",
+#   input_type = "10x",
+#   output_dir = "./results",
+#   mode = "build"
 # )
 #
-# print(metrics_plot)
-#
-# # ROC curve
-# roc_plot <- create_evaluation_metrics_plot(
-#     evaluation_results = complete_evaluation_results,
-#     plot_type = "roc",
-#     title = "ROC Curve"
-# )
-#
-# print(roc_plot)
-#
-# # Precision-Recall curve
-# pr_plot <- create_evaluation_metrics_plot(
-#     evaluation_results = complete_evaluation_results,
-#     plot_type = "pr",
-#     title = "Precision-Recall Curve"
-# )
-#
-# print(pr_plot)
+# # Create visualization
+# p <- plot_scCulture(results)
+# print(p)
 ```
 
-# Saving Visualization Results
+# Custom Visualization Functions
 
-Visualization plots can be saved using `ggplot2::ggsave()` or base R graphics functions:
+## Creating Publication-Ready Figures
 
-```{r save_plots, eval=FALSE}
-# Create directory for results
-results_dir <- "scCulturePredict_results"
-if (!dir.exists(results_dir)) dir.create(results_dir)
-
-# Save individual plots using ggplot2::ggsave
-# Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R
-
-# Save confusion matrix plot
-if (exists("confusion_plot")) {
-  ggplot2::ggsave(
-    filename = file.path(results_dir, "example_confusion.png"),
-    plot = confusion_plot,
-    width = 10,
-    height = 8,
-    dpi = 300
-  )
-}
-
-# Save metrics plot
-if (exists("metrics_plot")) {
-  ggplot2::ggsave(
-    filename = file.path(results_dir, "example_metrics.png"),
-    plot = metrics_plot,
-    width = 10,
-    height = 8,
-    dpi = 300
-  )
-}
-
-# Save UMAP plot
-if (exists("umap_plot")) {
-  ggplot2::ggsave(
-    filename = file.path(results_dir, "example_umap.png"),
-    plot = umap_plot,
-    width = 10,
-    height = 8,
-    dpi = 300
-  )
-}
-```
-
-This will save the following files to the specified directory:
-- example_umap.png
-- umap_experimental.png (from create_evaluation_plots)
-
-# Advanced Customization
-
-Since all visualization functions return `ggplot` objects, you can further customize them using standard `ggplot2` functions:
-
-```{r ggplot_customize}
-# Create a highly customized plot using ggplot2 directly
-customized_plot <- ggplot(seurat_object@meta.data,
-                          aes(x = UMAP_1, y = UMAP_2, color = sample)) +
-    geom_point(size = 2) +
-    theme_minimal() +
-    labs(
-        title = "Highly Customized UMAP Plot",
-        subtitle = "With additional annotations",
-        caption = "Created with scCulturePredict",
-        x = "UMAP_1",
-        y = "UMAP_2",
-        color = "Sample"
-    ) +
+```{r custom_theme}
+# Define custom theme for consistency
+theme_publication <- function(base_size = 11) {
+  theme_minimal(base_size = base_size) +
     theme(
-        plot.title = element_text(size = 16, face = "bold"),
-        plot.subtitle = element_text(size = 12, color = "darkgray"),
-        legend.position = "bottom",
-        panel.grid.major = element_line(color = "lightgray", linetype = "dashed"),
-        panel.background = element_rect(fill = "aliceblue")
-    ) +
-    scale_color_brewer(palette = "Set1")
-
-print(customized_plot)
-```
-
-# Visualizing SingleCellExperiment Results
-
-The `scCulturePredict` package seamlessly handles visualization of results from SingleCellExperiment objects. The same visualization functions work regardless of the input data format.
-
-## Visualizing SCE-based Analysis
-
-```{r sce_visualization, eval=FALSE}
-# Run analysis with SCE data
-results_sce <- scCulture(
-    sce_data_path = "path/to/sce_data.rds",
-    input_type = "sce",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./sce_results",
-    mode = "build",
-    experiment_id = "sce_viz_example",
-    verbose = TRUE
-)
-
-# Visualize SCE results - same function as for 10X data
-plot_sce <- plot_scCulture(results_sce)
-print(plot_sce)
-
-# Access the underlying ggplot objects for customization
-if (is.list(plot_sce)) {
-    # For PREDICT mode, multiple plots are returned
-    plot_sce$predictions +
-        scale_color_viridis_d(option = "magma") +
-        theme_dark()
-} else {
-    # For BUILD mode, single plot is returned
-    plot_sce +
-        ggtitle("SCE Data Analysis Results")
+      plot.title = element_text(size = base_size * 1.2, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = base_size * 1.1),
+      axis.text = element_text(size = base_size * 0.9),
+      legend.title = element_text(size = base_size * 1.1, face = "bold"),
+      legend.text = element_text(size = base_size),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(color = "gray80", fill = NA, size = 0.5)
+    )
 }
+
+# Apply custom theme
+p_custom <- ggplot(meta_data, aes(x = UMAP_1, y = UMAP_2, color = condition)) +
+  geom_point(size = 2, alpha = 0.7) +
+  labs(title = "Publication-Ready UMAP",
+       x = "UMAP 1", y = "UMAP 2",
+       color = "Condition") +
+  scale_color_brewer(palette = "Set1") +
+  theme_publication()
+
+print(p_custom)
 ```
 
-## Comparing 10X and SCE Visualizations
+## Saving Figures
 
-When working with both data formats, you can create side-by-side comparisons:
-
-```{r compare_formats, eval=FALSE}
-library(patchwork)
-
-# Results from 10X data
-results_10x <- scCulture(
-    tenx_data_dir = "path/to/10x_data",
-    input_type = "10x",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./10x_results",
-    mode = "build",
-    experiment_id = "10x_example",
-    verbose = TRUE
-)
-
-# Results from SCE data
-results_sce <- scCulture(
-    sce_data_path = "path/to/sce_data.rds",
-    input_type = "sce",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./sce_results",
-    mode = "build",
-    experiment_id = "sce_example",
-    verbose = TRUE
-)
-
-# Create plots
-plot_10x <- plot_scCulture(results_10x) + ggtitle("10X Data")
-plot_sce <- plot_scCulture(results_sce) + ggtitle("SCE Data")
-
-# Combine using patchwork
-combined_plot <- plot_10x + plot_sce +
-    plot_layout(ncol = 2) +
-    plot_annotation(title = "Comparison of Data Formats")
-
-print(combined_plot)
+```{r save_figures, eval=FALSE}
+# Save figures in publication quality
+# ggsave("umap_conditions.pdf", p_condition, width = 8, height = 6, dpi = 300)
+# ggsave("confusion_matrix.png", p_conf, width = 8, height = 6, dpi = 300)
 ```
 
-## Cross-Dataset Prediction Visualization
+# Tips for Effective Visualization
 
-Visualizing predictions when training on one format and predicting on another:
+1. **Color Selection**: Use colorblind-friendly palettes (e.g., Set1, Set2 from RColorBrewer)
+2. **Clarity**: Avoid overcrowding plots; use faceting for multiple comparisons
+3. **Consistency**: Maintain consistent color schemes across related plots
+4. **Accessibility**: Include shape or pattern variations in addition to colors
+5. **Export Quality**: Save at appropriate resolution (300 dpi for print, 72-150 for web)
 
-```{r cross_viz, eval=FALSE}
-# Train on 10X
-model_10x <- scCulture(
-    tenx_data_dir = "path/to/labeled_10x",
-    input_type = "10x",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./model_10x",
-    mode = "build",
-    experiment_id = "training",
-    verbose = TRUE
-)
-
-# Predict on SCE
-predictions_sce <- scCulture(
-    sce_data_path = "path/to/unlabeled_sce.rds",
-    input_type = "sce",
-    output_dir = "./predictions_sce",
-    mode = "predict",
-    fingerprint_file = model_10x$fingerprint_file,
-    experiment_id = "prediction",
-    verbose = TRUE
-)
-
-# Visualize cross-dataset predictions
-pred_plot <- plot_scCulture(predictions_sce)
-
-# The prediction plot shows both predictions and confidence
-if (is.list(pred_plot)) {
-    # Customize prediction plot
-    pred_plot$predictions <- pred_plot$predictions +
-        theme_minimal() +
-        labs(title = "Cross-Dataset Predictions",
-             subtitle = "Model: 10X → Query: SCE")
-
-    # Customize confidence plot
-    pred_plot$confidence <- pred_plot$confidence +
-        scale_color_gradient(low = "gray80", high = "darkred") +
-        labs(title = "Prediction Confidence",
-             subtitle = "Higher values indicate more reliable predictions")
-
-    # Display both
-    library(patchwork)
-    combined <- pred_plot$predictions / pred_plot$confidence
-    print(combined)
-}
-```
-
-# Conclusion
-
-The `scCulturePredict` package provides a comprehensive set of visualization functions for exploring single-cell data and evaluating prediction results. These functions generate publication-ready figures that can be further customized using the powerful `ggplot2` framework.
-
-# Session Info
+# Session Information
 
 ```{r session_info}
 sessionInfo()

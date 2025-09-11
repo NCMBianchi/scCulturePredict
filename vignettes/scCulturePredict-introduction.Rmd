@@ -5,505 +5,326 @@ date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
     toc: true
-    toc_depth: 2
+    toc_float: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{Introduction to scCulturePredict}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.width = 8,
-    fig.height = 6,
-    warning = FALSE,
-    message = FALSE
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 7,
+  fig.height = 5
 )
 ```
 
 # Introduction
 
-`scCulturePredict` is a comprehensive R package for analyzing single-cell RNA-seq data with a focus on predicting cell culture media from transcriptomic profiles. The package provides tools for loading, preprocessing, and analyzing single-cell data using pathway analysis and dimensionality reduction techniques.
+The `scCulturePredict` package provides a comprehensive pipeline for analyzing single-cell RNA sequencing data from yeast culture experiments. It enables researchers to:
 
-This vignette provides an introduction to the core functionality of the `scCulturePredict` package and demonstrates a basic workflow using example data.
+- Identify cell culture conditions from transcriptomic profiles
+- Build predictive models using pathway fingerprints
+- Analyze pathway activity patterns across different conditions
+- Support both 10X Genomics and SingleCellExperiment data formats
 
-## Features
-
-The `scCulturePredict` package offers several key features:
-
-* Data loading and preprocessing with robust error handling
-* Dimensionality reduction using UMAP
-* KEGG pathway analysis for biological interpretation
-* Prediction of cell culture media using similarity-based and machine learning approaches
-* Evaluation and visualization of prediction results
+This vignette provides an introduction to the main functionality of the package.
 
 # Installation
 
-## From Bioconductor
-
-The `scCulturePredict` package is available on Bioconductor and can be installed using the following commands:
+The `scCulturePredict` package is available on Bioconductor and can be installed using:
 
 ```{r install, eval=FALSE}
-# Package installation (for reference only - package should be installed separately):
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#     install.packages("BiocManager")
-# BiocManager::install("scCulturePredict")
-```
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 
-## From GitHub
-
-The development version can be installed directly from GitHub:
-
-```{r install_github, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("nccb/scCulturePredict")
+BiocManager::install("scCulturePredict")
 ```
 
 # Getting Started
 
-## Loading the Package
-
-```{r setup}
+```{r setup_packages}
 library(scCulturePredict)
 library(Seurat)
+library(SingleCellExperiment)
 library(ggplot2)
+set.seed(123)  # For reproducibility
 ```
 
-## Example Data
+# Working with Example Data
 
-`scCulturePredict` comes with example data in two formats that can be accessed using the `system.file()` function:
+## Creating Mock Data for Demonstration
 
-1. CSV format - Simple comma-separated files with counts matrix and metadata
-2. 10X Genomics format - Industry standard format with barcodes.tsv, features.tsv, and matrix.mtx files
+For this vignette, we'll create simple mock data to demonstrate the package functionality:
 
-```{r example_data}
-# Get the path to CSV format example data
-csv_data_dir <- system.file("extdata", "example_data", package = "scCulturePredict")
+```{r create_mock_data}
+# Create simple mock Seurat object
+create_simple_seurat <- function(n_genes = 200, n_cells = 100) {
+  # Create count matrix
+  counts <- matrix(rpois(n_genes * n_cells, lambda = 5),
+                   nrow = n_genes, ncol = n_cells)
 
-# Get the path to 10X format example data
-tenx_data_dir <- system.file("extdata", "example_data_10x", package = "scCulturePredict")
-```
+  # Use simple gene names to avoid duplicates
+  rownames(counts) <- paste0("Gene", seq_len(n_genes))
+  colnames(counts) <- paste0("Cell", seq_len(n_cells))
 
-# Basic Workflow
+  # Create metadata
+  metadata <- data.frame(
+    sample = rep(c("DMSO", "Guanine", "Adenine", "Thymine"),
+                 length.out = n_cells),
+    batch = rep(c("Batch1", "Batch2"), each = n_cells/2),
+    row.names = colnames(counts)
+  )
 
-The typical workflow for using `scCulturePredict` consists of the following steps:
-
-1. Load single-cell data
-2. Preprocess the data
-3. Perform dimensionality reduction
-4. Conduct pathway analysis
-5. Predict cell culture media
-6. Evaluate and visualize results
-
-## Quick Start: Complete Analysis with One Function
-
-For most users, the easiest way to run the complete scCulturePredict analysis is using the main `scCulture()` function, which performs all steps automatically:
-
-```{r complete_analysis, eval=FALSE}
-# Complete analysis with one function call
-results <- scCulture(
-    tenx_data_dir = csv_data_dir,
-    input_type = "10x",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./scCulture_results",
-    experiment_id = "example_analysis",
-    mode = "build",
-    progress = TRUE, # Show progress bar
-    verbose = TRUE # Print detailed messages
-)
-
-# Access the final results
-seurat_object <- results$seurat_object
-pathway_results <- results$pathway_results
-prediction_results <- results$prediction_results
-evaluation_results <- results$evaluation_results
-
-# View UMAP coordinates with predictions
-head(seurat_object@meta.data[, c("UMAP_1", "UMAP_2", "sample", "classification_pred")])
-
-# Check prediction accuracy
-table(seurat_object$sample, seurat_object$classification_pred)
-```
-
-The `scCulture()` function automatically:
-- Loads and validates your data
-- Performs preprocessing and quality control
-- Generates UMAP coordinates
-- Conducts KEGG pathway analysis
-- Makes predictions using both similarity and machine learning approaches
-- Evaluates prediction performance
-- Creates publication-ready visualizations
-- Saves all results to the specified output directory
-
-All plots and results are automatically saved to `./scCulture_results/` for immediate use!
-
-## Advanced Usage: Step-by-Step Workflow
-
-For users who need more control over individual steps or want to understand the underlying processes, the following sections demonstrate each step in detail.
-
-## 1. Load Data
-
-The `scCulturePredict` package can load data in both CSV and 10X Genomics formats. Here are examples of both approaches:
-
-### Loading CSV Format Data
-
-```{r load_csv_data, eval=FALSE}
-# Load the CSV format example data (legacy format)
-seurat_object_csv <- load_10x_data(
-    tenx_data_dir = csv_data_dir,
-    experiment_id = "example",
-    min_cells = 3,
-    min_features = 10,
-    verbose = TRUE
-)
-```
-
-### Loading 10X Genomics Format Data
-
-```{r load_10x_data, eval=FALSE}
-# Load the 10X format example data
-seurat_object_10x <- load_10x_data(
-    tenx_data_dir = tenx_data_dir,
-    experiment_id = "example_10x",
-    min_cells = 3,
-    min_features = 10,
-    verbose = TRUE
-)
-
-# Alternatively, you can use Seurat's Read10X function directly
-tenx_data <- Read10X(tenx_data_dir)
-seurat_object_10x_direct <- CreateSeuratObject(
-    counts = tenx_data,
+  # Create Seurat object
+  seurat_obj <- CreateSeuratObject(
+    counts = counts,
+    meta.data = metadata,
     min.cells = 3,
     min.features = 10
-)
+  )
+
+  return(seurat_obj)
+}
+
+# Create our mock data
+seurat_data <- create_simple_seurat(n_genes = 200, n_cells = 100)
+print(seurat_data)
 ```
 
-### Working with SingleCellExperiment Objects
+# Core Functions
 
-The package also supports SingleCellExperiment objects, which are the standard data structure for Bioconductor single-cell packages:
+## Data Preprocessing
 
-```{r load_sce_data, eval=FALSE}
-# Load SingleCellExperiment from an RDS file
-seurat_object_sce <- load_sce_data(
-    sce_data_path = "path/to/sce_data.rds",
-    experiment_id = "example_sce",
-    min_cells = 3,
-    min_features = 10,
-    verbose = TRUE
-)
+The `preprocess_data` function normalizes and scales the data:
 
-# Or use an existing SingleCellExperiment object directly
-library(SingleCellExperiment)
-sce <- SingleCellExperiment(
-    assays = list(counts = matrix(rpois(1000, lambda = 5), nrow = 100, ncol = 10)),
-    colData = DataFrame(sample = rep(c("A", "B"), 5))
-)
-
-seurat_object_from_sce <- load_sce_data(
-    sce_data_path = sce,  # Can pass the object directly
-    experiment_id = "example_sce",
-    min_cells = 3,
-    min_features = 10,
-    verbose = TRUE
-)
-```
-
-### Using scCulture with Different Input Types
-
-The `scCulture()` function supports both 10X and SingleCellExperiment formats through the `input_type` parameter:
-
-```{r scculture_input_types, eval=FALSE}
-# Using 10X data
-results_10x <- scCulture(
-    tenx_data_dir = tenx_data_dir,
-    input_type = "10x",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./results_10x",
-    mode = "build",
-    experiment_id = "10x_analysis",
-    verbose = TRUE
-)
-
-# Using SingleCellExperiment data
-results_sce <- scCulture(
-    sce_data_path = "path/to/sce_data.rds",  # or pass an SCE object directly
-    input_type = "sce",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./results_sce",
-    mode = "build",
-    experiment_id = "sce_analysis",
-    verbose = TRUE
-)
-```
-
-### Cross-Dataset Predictions
-
-One powerful feature is the ability to train on one data format and predict on another:
-
-```{r cross_dataset, eval=FALSE}
-# Train model on 10X data
-model_10x <- scCulture(
-    tenx_data_dir = tenx_data_dir,
-    input_type = "10x",
-    kegg_file = system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict"),
-    output_dir = "./model_10x",
-    mode = "build",
-    experiment_id = "training_10x",
-    verbose = TRUE
-)
-
-# Apply the trained model to SCE data
-predictions_on_sce <- scCulture(
-    sce_data_path = "path/to/unlabeled_sce.rds",
-    input_type = "sce",
-    output_dir = "./predictions_sce",
-    mode = "predict",
-    fingerprint_file = model_10x$fingerprint_file,
-    experiment_id = "predict_sce",
-    verbose = TRUE
-)
-```
-
-```{r mock_data, echo=FALSE}
-# For the vignette, create a mock Seurat object since we're not evaluating
-# the above code chunks
-counts <- read.csv(file.path(csv_data_dir, "counts.csv"), row.names = 1)
-metadata <- read.csv(file.path(csv_data_dir, "metadata.csv"), row.names = 1)
-seurat_object <- CreateSeuratObject(counts = as.matrix(counts), meta.data = metadata)
-
-# Add UMAP coordinates for visualization
-set.seed(42)
-seurat_object@meta.data$UMAP_1 <- rnorm(ncol(seurat_object))
-seurat_object@meta.data$UMAP_2 <- rnorm(ncol(seurat_object))
-```
-
-## 2. Preprocess Data
-
-Next, we preprocess the data, which includes normalization, scaling, and identifying variable features:
-
-```{r preprocess, eval=FALSE}
+```{r preprocess}
 # Preprocess the data
-seurat_object <- preprocess_data(
-    seurat_object = seurat_object,
-    normalization_method = "LogNormalize",
-    scale_factor = 10000,
-    variable_features_n = 2000,
-    verbose = TRUE
+seurat_processed <- preprocess_data(
+  seurat_obj = seurat_data,
+  n_features = 100,
+  verbose = TRUE
 )
+
+print(paste("Number of variable features:",
+            length(VariableFeatures(seurat_processed))))
 ```
 
-## 3. Perform Dimensionality Reduction
+## Dimensionality Reduction
 
-We then reduce the dimensionality of the data using UMAP:
+The `reduce_dimensions` function performs PCA and UMAP:
 
-```{r dimred, eval=FALSE}
+```{r dimred}
+# First run PCA (required for UMAP)
+seurat_processed <- RunPCA(seurat_processed,
+                           features = VariableFeatures(seurat_processed),
+                           npcs = 20,
+                           verbose = FALSE)
+
 # Perform dimensionality reduction
-seurat_object <- reduce_dimensions(
-    seurat_object = seurat_object,
-    pca_dims = 30,
-    umap_dims = 2,
-    verbose = TRUE
+seurat_reduced <- reduce_dimensions(
+  seurat_object = seurat_processed,
+  perform_tsne = FALSE,
+  verbose = TRUE
 )
-```
 
-Let's visualize the UMAP embedding:
-
-```{r umap_vis}
-# Create visualization using plot_scCulture
-# Note: plot_scCulture expects the results from scCulture() function
-# If you have results from scCulture, you can visualize them:
-# umap_plot <- plot_scCulture(results)
-
-# For direct visualization when UMAP coordinates are in metadata:
-library(ggplot2)
-if(all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_object@meta.data))) {
-  ggplot(seurat_object@meta.data, aes(x = UMAP_1, y = UMAP_2, color = sample)) +
-    geom_point(size = 1.5) +
-    theme_minimal() +
-    labs(title = "UMAP of Example Data")
+# Check that UMAP coordinates were added
+if(all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_reduced@meta.data))) {
+  print("UMAP coordinates successfully added")
 } else {
-  message("UMAP coordinates not found in metadata")
+  # If not added by reduce_dimensions, compute manually
+  seurat_reduced <- RunUMAP(seurat_reduced, dims = 1:10, verbose = FALSE)
+  seurat_reduced@meta.data$UMAP_1 <- Embeddings(seurat_reduced, "umap")[, 1]
+  seurat_reduced@meta.data$UMAP_2 <- Embeddings(seurat_reduced, "umap")[, 2]
 }
 ```
 
-## 4. Pathway Analysis
+## Visualization
 
-Now we perform KEGG pathway analysis to identify biological pathways that are active in our data:
+```{r visualization, fig.width=8, fig.height=6}
+# Visualize UMAP
+if(all(c("UMAP_1", "UMAP_2") %in% colnames(seurat_reduced@meta.data))) {
+  p <- ggplot(seurat_reduced@meta.data,
+              aes(x = UMAP_1, y = UMAP_2, color = sample)) +
+    geom_point(size = 2, alpha = 0.7) +
+    theme_minimal() +
+    labs(title = "UMAP of Mock Single-Cell Data",
+         x = "UMAP 1", y = "UMAP 2",
+         color = "Condition") +
+    scale_color_brewer(palette = "Set1")
 
-```{r pathway, eval=FALSE}
-# Path to KEGG data
-kegg_file <- system.file("extdata", "kegg", "example_pathway.keg", package = "scCulturePredict")
+  print(p)
+}
+```
 
-# Parse KEGG data
-kegg_data <- parse_kegg_keg(kegg_file, verbose = TRUE)
+## Pathway Analysis
+
+For pathway analysis, we can create mock pathway data:
+
+```{r pathway_analysis}
+# Create mock KEGG pathways
+mock_pathways <- list(
+  Glycolysis = paste0("Gene", 1:20),
+  TCA_Cycle = paste0("Gene", 21:40),
+  Oxidative_Phosphorylation = paste0("Gene", 41:60),
+  Amino_Acid_Metabolism = paste0("Gene", 61:80),
+  Lipid_Metabolism = paste0("Gene", 81:100)
+)
 
 # Build pathway fingerprints
 pathway_matrix <- build_fingerprints(
-    seurat_object = seurat_object,
-    kegg_data = kegg_data,
-    verbose = TRUE
-)
-```
-
-```{r mock_pathway, echo=FALSE}
-# Create mock pathway data for the vignette
-set.seed(42)
-pathway_matrix <- matrix(rnorm(30 * 10), nrow = 30, ncol = 10)
-rownames(pathway_matrix) <- paste0("Pathway", 1:30)
-colnames(pathway_matrix) <- paste0("Cell", 1:10)
-
-# Create mock signature matrix
-signature_matrix <- matrix(rnorm(10 * 3), nrow = 10, ncol = 3)
-rownames(signature_matrix) <- paste0("Pathway", 1:10)
-colnames(signature_matrix) <- c("A", "B", "C")
-```
-
-## 5. Predict Cell Culture Media
-
-We can now predict the culture media using both similarity-based and SVM approaches:
-
-```{r predict, eval=FALSE}
-# Similarity-based prediction
-similarity_results <- predict_by_similarity(
-    pathway_matrix = pathway_matrix,
-    signature_matrix = signature_matrix,
-    threshold = 0.1
+  seurat_object = seurat_reduced,
+  kegg_pathways = mock_pathways,
+  verbose = TRUE
 )
 
-# SVM-based prediction
-svm_results <- predict_by_svm(
-    pathway_matrix = pathway_matrix,
-    seurat_object = seurat_object
-)
-```
+# Check the results
+if (!is.null(pathway_matrix)) {
+  print(paste("Pathway matrix dimensions:",
+              nrow(pathway_matrix$pathway_matrix), "cells x",
+              ncol(pathway_matrix$pathway_matrix), "pathways"))
 
-```{r mock_predict, echo=FALSE}
-# Create mock prediction results
-similarity_results <- list(
-    similarity_matrix = matrix(runif(90), nrow = 30, ncol = 3),
-    predicted_direct = sample(c("A", "B", "C"), 30, replace = TRUE),
-    predicted_threshold = sample(c("A", "B", "C", NA), 30, replace = TRUE)
-)
-
-svm_results <- list(
-    predictions = factor(sample(c("A", "B", "C"), 30, replace = TRUE)),
-    accuracy = 0.85,
-    confusion_matrix = matrix(c(8, 1, 1, 1, 7, 2, 0, 1, 9),
-        nrow = 3,
-        dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
-    )
-)
-```
-
-## 6. Evaluate and Visualize Results
-
-First, let's add some mock prediction results to demonstrate the evaluation functionality:
-
-```{r mock_predictions, echo=FALSE}
-# Add mock prediction columns to demonstrate evaluation
-set.seed(42)
-n_cells <- ncol(seurat_object)
-
-# Create mock predictions with some realistic accuracy
-seurat_object$predicted_sample_1 <- sample(c("A", "B", "C"), n_cells, replace = TRUE, prob = c(0.4, 0.35, 0.25))
-seurat_object$predicted_sample_2 <- sample(c("A", "B", "C"), n_cells, replace = TRUE, prob = c(0.35, 0.4, 0.25))
-seurat_object$classification_pred <- sample(c("A", "B", "C"), n_cells, replace = TRUE, prob = c(0.35, 0.35, 0.3))
-
-# Make predictions somewhat correlated with actual samples for realism
-actual_samples <- seurat_object$sample
-for (i in 1:n_cells) {
-    if (runif(1) < 0.7) { # 70% accuracy for demonstration
-        seurat_object$predicted_sample_1[i] <- actual_samples[i]
-        seurat_object$predicted_sample_2[i] <- actual_samples[i]
-        seurat_object$classification_pred[i] <- actual_samples[i]
-    }
-}
-```
-
-Finally, we evaluate the prediction results and create visualizations:
-
-```{r evaluate}
-# Evaluate predictions
-evaluation_results <- evaluate_predictions(seurat_object)
-```
-
-# Create evaluation plots
-# Note: Individual plotting functions have been moved to inst/extras/alternative_implementations.R
-# Use create_evaluation_plots() for comprehensive visualization
-evaluation_plots <- create_evaluation_plots(
-  seurat_object = seurat_object,
-  results_dir = "./results"
-)
-
-# Display the plots
-print(evaluation_plots)
-
-# For detailed evaluation metrics visualization
-# The create_evaluation_metrics_plot() function has been moved to inst/extras/alternative_implementations.R
-# metrics_plot <- create_evaluation_metrics_plot(
-#   evaluation_results = evaluation_results,
-#   plot_type = "confusion",
-#   title = "Prediction Results"
-# )
-#
-# # Display the plot
-# print(metrics_plot)
-```
-
-# Saving Results
-
-You can save all visualization plots to a directory:
-
-```{r save, eval=FALSE}
-# Create directory for results
-results_dir <- "scCulturePredict_results"
-if (!dir.exists(results_dir)) dir.create(results_dir)
-
-# Save plots using ggplot2::ggsave or base R functions
-# Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R
-
-# Save evaluation plots created earlier
-if (exists("evaluation_plots")) {
-  for (i in seq_along(evaluation_plots)) {
-    filename <- file.path(results_dir, paste0("example_plot_", i, ".png"))
-    ggplot2::ggsave(filename, evaluation_plots[[i]], width = 10, height = 8)
+  # Show first few entries
+  if (ncol(pathway_matrix$pathway_matrix) >= 3) {
+    print(head(pathway_matrix$pathway_matrix[, 1:3], n = 3))
+  } else {
+    print(head(pathway_matrix$pathway_matrix, n = 3))
   }
 }
+```
 
-# Save metrics plot
-if (exists("metrics_plot")) {
-  ggplot2::ggsave(file.path(results_dir, "example_metrics.png"),
-                  metrics_plot, width = 10, height = 8)
+## Prediction
+
+We can demonstrate the prediction functions:
+
+```{r prediction}
+# Use pathway matrix for predictions if available
+if (!is.null(pathway_matrix) && nrow(pathway_matrix$pathway_matrix) > 20) {
+  # Make predictions using SVM
+  svm_results <- predict_by_svm(
+    pathway_matrix = pathway_matrix$pathway_matrix,
+    seurat_object = seurat_reduced,
+    verbose = TRUE
+  )
+
+  # Check results
+  if (!is.null(svm_results$predictions)) {
+    seurat_reduced$predicted_sample <- svm_results$predictions
+
+    # Calculate accuracy
+    actual <- seurat_reduced$sample
+    predicted <- seurat_reduced$predicted_sample
+    accuracy <- sum(actual == predicted) / length(actual)
+
+    print(paste("Prediction accuracy:", round(accuracy * 100, 2), "%"))
+
+    # Show confusion matrix
+    print("Confusion Matrix:")
+    print(table(Actual = actual, Predicted = predicted))
+  }
+}
+```
+
+## Evaluation
+
+Evaluate the prediction results:
+
+```{r evaluation}
+# Evaluate predictions if they exist
+if ("predicted_sample" %in% colnames(seurat_reduced@meta.data)) {
+  # Calculate evaluation metrics
+  actual <- seurat_reduced$sample
+  predicted <- seurat_reduced$predicted_sample
+
+  # Overall accuracy
+  overall_acc <- sum(actual == predicted, na.rm = TRUE) / length(actual)
+
+  # Per-class accuracy
+  classes <- unique(actual)
+  class_acc <- sapply(classes, function(cls) {
+    idx <- actual == cls
+    sum(actual[idx] == predicted[idx], na.rm = TRUE) / sum(idx)
+  })
+
+  # Display results
+  print("Evaluation Results:")
+  print(paste("Overall accuracy:", round(overall_acc * 100, 2), "%"))
+
+  print("Per-class accuracy:")
+  acc_df <- data.frame(
+    Class = classes,
+    Accuracy = round(class_acc * 100, 2)
+  )
+  print(acc_df)
 }
 ```
 
 # Working with Different Data Formats
 
-## CSV Format
+## SingleCellExperiment Format
 
-The CSV format is simpler and consists of:
-- A counts matrix with genes as rows and cells as columns
-- A metadata file with cells as rows and annotations as columns
+The package also supports SingleCellExperiment objects:
 
-This format is easy to create and manipulate using standard R functions like `read.csv()` and `write.csv()`.
+```{r sce_format}
+# Convert to SingleCellExperiment
+sce_data <- as.SingleCellExperiment(seurat_reduced)
+print(sce_data)
 
-## 10X Genomics Format
+# The package functions work with both formats
+# For loading SCE data from file, you would use:
+# sce_data <- load_sce_data("path/to/sce.rds")
+```
 
-The 10X Genomics format is an industry standard and consists of:
-- `barcodes.tsv` - Contains cell barcodes
-- `features.tsv` - Contains gene/feature information
-- `matrix.mtx` - Contains the count matrix in sparse format
+# Complete Pipeline with scCulture
 
-This format is more memory-efficient for large datasets and is widely used in single-cell analysis.
+For a complete analysis pipeline, the `scCulture` function combines all steps:
 
-# Conclusion
+```{r scculture_example, eval=FALSE}
+# Example of using scCulture with real data
+# This example is not evaluated as it requires actual data files
 
-This vignette has demonstrated the basic workflow for using the `scCulturePredict` package to analyze single-cell RNA-seq data and predict cell culture media, with support for both CSV and 10X Genomics data formats. For more advanced usage and customization options, please refer to the advanced vignette and the function documentation.
+# For 10X Genomics data:
+results <- scCulture(
+  mode = "build",
+  tenx_data_dir = "path/to/10x/data",
+  input_type = "10x",
+  experiment_id = "my_experiment",
+  output_dir = "./results",
+  verbose = TRUE
+)
 
-# Session Info
+# For SingleCellExperiment data:
+results <- scCulture(
+  mode = "build",
+  sce_data_path = "path/to/sce.rds",
+  input_type = "sce",
+  experiment_id = "my_experiment",
+  output_dir = "./results",
+  verbose = TRUE
+)
+
+# Access results
+seurat_object <- results$seurat_object
+pathway_results <- results$pathway_results
+prediction_results <- results$prediction_results
+```
+
+# Tips for Using scCulturePredict
+
+1. **Data Requirements**: Ensure your data has sufficient cells (>50) and genes (>100) for reliable analysis.
+
+2. **KEGG Pathways**: The package includes example KEGG pathway data. For real analysis, use organism-specific pathway databases.
+
+3. **Parameter Tuning**: Adjust parameters like `n_features` in preprocessing and `train_ratio` in prediction based on your dataset size.
+
+4. **Cross-validation**: For robust results, consider using cross-validation when building predictive models.
+
+# Session Information
 
 ```{r session_info}
 sessionInfo()
