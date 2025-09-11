@@ -1,7 +1,7 @@
 Package: scCulturePredict
 Type: Package
 Title: Predict Cell Culture Conditions from Single-Cell RNA-seq Data
-Version: 0.99.31
+Version: 0.99.32
 Date: 2025-09-11
 Authors@R: c(
     person("Niccolò", "Bianchi", email = "ncmb89@gmail.com", role = c("aut", "cre"),

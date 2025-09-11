@@ -1,3 +1,8 @@
+# scCulturePredict 0.99.32 (2025-09-11)
+
+## Bug Fixes
+* Fixed pkgdown site build by removing references to deleted advanced vignette from `_pkgdown.yml`
+
 # scCulturePredict 0.99.31 (2025-09-11)
 
 ## Documentation

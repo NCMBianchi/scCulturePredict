@@ -34,8 +34,6 @@ navbar:
           href: articles/scCulturePredict-introduction.html
         - text: Visualization with scCulturePredict
           href: articles/scCulturePredict-visualization.html
-        - text: Advanced Usage of scCulturePredict
-          href: articles/scCulturePredict-advanced.html
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/NCMBianchi/scCulturePredict
@@ -91,11 +89,10 @@ articles:
     navbar: ~
     contents:
       - scCulturePredict-introduction
-  - title: Advanced Topics
+  - title: Visualization
     navbar: ~
     contents:
       - scCulturePredict-visualization
-      - scCulturePredict-advanced
 
 news:
   releases:

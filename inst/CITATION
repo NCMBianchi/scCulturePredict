@@ -5,7 +5,7 @@ citEntry(
   title    = "scCulturePredict: Predict Cell Culture Conditions from Single-Cell RNA-seq Data",
   author   = person("Niccolò", "Bianchi"),
   year     = "2025",
-  note     = "R package version 0.99.30",
+  note     = "R package version 0.99.32",
   url      = "https://github.com/NCMBianchi/scCulturePredict",
   textVersion = paste(
     "Bianchi, N. (2025).",
