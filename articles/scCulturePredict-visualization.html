@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.32</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/scCulturePredict-introduction.html">Introduction to scCulturePredict</a></li>
     <li><a class="dropdown-item" href="../articles/scCulturePredict-visualization.html">Visualization with scCulturePredict</a></li>
-    <li><a class="dropdown-item" href="../articles/scCulturePredict-advanced.html">Advanced Usage of scCulturePredict</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -68,7 +67,7 @@
                         <h4 data-toc-skip class="author">Niccolò
 Bianchi</h4>
             
-            <h4 data-toc-skip class="date">2025-08-27</h4>
+            <h4 data-toc-skip class="date">2025-09-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/NCMBianchi/scCulturePredict/blob/main/vignettes/scCulturePredict-visualization.Rmd" class="external-link"><code>vignettes/scCulturePredict-visualization.Rmd</code></a></small>
       <div class="d-none name"><code>scCulturePredict-visualization.Rmd</code></div>
@@ -79,521 +78,428 @@ Bianchi</h4>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Effective visualization is crucial for interpreting single-cell RNA
-sequencing data. The <code>scCulturePredict</code> package provides a
-comprehensive set of visualization functions designed to help you
-explore your data and evaluate prediction results. This vignette
-demonstrates how to use these visualization tools to create informative
-and publication-ready figures.</p>
-<div class="section level3">
-<h3 id="loading-required-packages">Loading Required Packages<a class="anchor" aria-label="anchor" href="#loading-required-packages"></a>
-</h3>
+<p>This vignette demonstrates visualization capabilities of the
+<code>scCulturePredict</code> package for exploring single-cell RNA-seq
+data and prediction results.</p>
+</div>
+<div class="section level2">
+<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://NCMBianchi.github.io/scCulturePredict">scCulturePredict</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>  <span class="co"># For reproducibility</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="creating-example-data">Creating Example Data<a class="anchor" aria-label="anchor" href="#creating-example-data"></a>
-</h3>
-<p>For this vignette, we’ll create some example data to demonstrate the
-visualization capabilities:</p>
+<div class="section level2">
+<h2 id="creating-example-data">Creating Example Data<a class="anchor" aria-label="anchor" href="#creating-example-data"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create a mock Seurat object</span></span>
-<span><span class="va">create_mock_seurat</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># Create a small Seurat object with UMAP coordinates</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span>    <span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fl">30</span>, <span class="fl">10</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">100</span>, ncol <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"gene"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cell"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Create simple mock data for visualization</span></span>
+<span><span class="va">create_viz_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n_genes</span> <span class="op">=</span> <span class="fl">200</span>, <span class="va">n_cells</span> <span class="op">=</span> <span class="fl">150</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Create count matrix</span></span>
+<span>  <span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="va">n_genes</span> <span class="op">*</span> <span class="va">n_cells</span>, lambda <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>                   nrow <span class="op">=</span> <span class="va">n_genes</span>, ncol <span class="op">=</span> <span class="va">n_cells</span><span class="op">)</span></span>
 <span></span>
-<span>    <span class="va">seurat</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span><span class="op">)</span></span>
+<span>  <span class="co"># Simple gene and cell names</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Gene"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_genes</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Cell"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_cells</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span>    <span class="co"># Add UMAP coordinates and metadata</span></span>
-<span>    <span class="va">seurat</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">UMAP_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span></span>
-<span>    <span class="va">seurat</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">UMAP_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span></span>
-<span>    <span class="va">seurat</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span>    <span class="va">seurat</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span>    <span class="va">seurat</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">percent_mito</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="co"># Create metadata with multiple variables</span></span>
+<span>  <span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    condition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Treatment_A"</span>, <span class="st">"Treatment_B"</span><span class="op">)</span>, each <span class="op">=</span> <span class="va">n_cells</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span>,</span>
+<span>    batch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Batch1"</span>, <span class="st">"Batch2"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="va">n_cells</span><span class="op">)</span>,</span>
+<span>    n_genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    n_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span>
+<span>    percent_mt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n_cells</span>, <span class="fl">0</span>, <span class="fl">20</span><span class="op">)</span>,</span>
+<span>    row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">seurat</span><span class="op">)</span></span>
+<span>  <span class="co"># Create Seurat object</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span></span>
+<span>    counts <span class="op">=</span> <span class="va">counts</span>,</span>
+<span>    meta.data <span class="op">=</span> <span class="va">metadata</span>,</span>
+<span>    min.cells <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    min.features <span class="op">=</span> <span class="fl">10</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Process the data</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">seurat_obj</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">seurat_obj</span>, nfeatures <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">seurat_obj</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">seurat_obj</span>, npcs <span class="op">=</span> <span class="fl">20</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">seurat_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">seurat_obj</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Add UMAP coordinates to metadata</span></span>
+<span>  <span class="va">seurat_obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">UMAP_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seurat_obj</span>, <span class="st">"umap"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="va">seurat_obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">UMAP_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seurat_obj</span>, <span class="st">"umap"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span></span>
+<span></span>
+<span>  <span class="co"># Add mock predictions</span></span>
+<span>  <span class="va">seurat_obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">predicted_condition</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control"</span>, <span class="st">"Treatment_A"</span>, <span class="st">"Treatment_B"</span><span class="op">)</span>,</span>
+<span>    <span class="va">n_cells</span>, replace <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">seurat_obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">prediction_confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n_cells</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">seurat_obj</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Create mock evaluation results</span></span>
-<span><span class="va">create_mock_evaluation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        direct_accuracy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>            sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
-<span>            correct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">7</span>, <span class="fl">9</span><span class="op">)</span>,</span>
-<span>            percent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"80%"</span>, <span class="st">"70%"</span>, <span class="st">"90%"</span><span class="op">)</span></span>
-<span>        <span class="op">)</span>,</span>
-<span>        direct_table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">7</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">7</span><span class="op">)</span>,</span>
-<span>            nrow <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="op">)</span><span class="op">)</span>,</span>
-<span>        svm_accuracy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>            sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
-<span>            correct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">8</span>, <span class="fl">7</span><span class="op">)</span>,</span>
-<span>            percent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"90%"</span>, <span class="st">"80%"</span>, <span class="st">"70%"</span><span class="op">)</span></span>
-<span>        <span class="op">)</span>,</span>
-<span>        svm_table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">8</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">7</span><span class="op">)</span>,</span>
-<span>            nrow <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="op">)</span><span class="op">)</span>,</span>
-<span>        threshold_table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">8</span><span class="op">)</span>,</span>
-<span>            nrow <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="co"># Create the data</span></span>
+<span><span class="va">viz_data</span> <span class="op">&lt;-</span> <span class="fu">create_viz_data</span><span class="op">(</span>n_genes <span class="op">=</span> <span class="fl">200</span>, n_cells <span class="op">=</span> <span class="fl">150</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">viz_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; An object of class Seurat </span></span>
+<span><span class="co">#&gt; 200 features across 150 samples within 1 assay </span></span>
+<span><span class="co">#&gt; Active assay: RNA (200 features, 100 variable features)</span></span>
+<span><span class="co">#&gt;  3 layers present: counts, data, scale.data</span></span>
+<span><span class="co">#&gt;  2 dimensional reductions calculated: pca, umap</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="quality-control-visualizations">Quality Control Visualizations<a class="anchor" aria-label="anchor" href="#quality-control-visualizations"></a>
+</h2>
+<div class="section level3">
+<h3 id="qc-metrics-distribution">QC Metrics Distribution<a class="anchor" aria-label="anchor" href="#qc-metrics-distribution"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract metadata for plotting</span></span>
+<span><span class="va">meta_data</span> <span class="op">&lt;-</span> <span class="va">viz_data</span><span class="op">@</span><span class="va">meta.data</span></span>
 <span></span>
-<span><span class="co"># Generate example data</span></span>
-<span><span class="va">seurat_object</span> <span class="op">&lt;-</span> <span class="fu">create_mock_seurat</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">evaluation_results</span> <span class="op">&lt;-</span> <span class="fu">create_mock_evaluation</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Create QC visualization</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">condition</span>, y <span class="op">=</span> <span class="va">n_genes</span>, fill <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.2</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Genes per Cell by Condition"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Condition"</span>, y <span class="op">=</span> <span class="st">"Number of Genes"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">condition</span>, y <span class="op">=</span> <span class="va">percent_mt</span>, fill <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.2</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Mitochondrial % by Condition"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Condition"</span>, y <span class="op">=</span> <span class="st">"MT %"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">n_counts</span>, y <span class="op">=</span> <span class="va">n_genes</span>, color <span class="op">=</span> <span class="va">percent_mt</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.6</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Count-Gene Relationship"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Total Counts"</span>, y <span class="op">=</span> <span class="st">"Total Genes"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"MT %"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"blue"</span>, high <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">batch</span>, fill <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"dodge"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cell Distribution across Batches"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Batch"</span>, y <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine plots using base R graphics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Note: For actual combination, use patchwork or gridExtra packages</span></span>
+<span><span class="co"># Here we'll display them individually</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/qc_plots-1.png" width="960"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/qc_plots-2.png" width="960"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/qc_plots-3.png" width="960"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/qc_plots-4.png" width="960"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="basic-visualizations">Basic Visualizations<a class="anchor" aria-label="anchor" href="#basic-visualizations"></a>
+<h2 id="dimensionality-reduction-visualizations">Dimensionality Reduction Visualizations<a class="anchor" aria-label="anchor" href="#dimensionality-reduction-visualizations"></a>
 </h2>
 <div class="section level3">
 <h3 id="umap-visualization">UMAP Visualization<a class="anchor" aria-label="anchor" href="#umap-visualization"></a>
 </h3>
-<p>For UMAP visualizations, use Seurat’s built-in <code>DimPlot</code>
-function or <code>plot_scCulture</code> for scCulture results:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Basic UMAP plot using metadata coordinates</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="va">umap_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span>,</span>
-<span>                    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP of Example Data"</span>,</span>
-<span>         x <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>         y <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
-<span>         color <span class="op">=</span> <span class="st">"Sample"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="st">"#E41A1C"</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="st">"#377EB8"</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="st">"#4DAF4A"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">umap_plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scCulturePredict-visualization_files/figure-html/umap_basic-1.png" width="768"></p>
-<div class="section level4">
-<h4 id="customizing-umap-plots">Customizing UMAP Plots<a class="anchor" aria-label="anchor" href="#customizing-umap-plots"></a>
-</h4>
-<p>You can customize various aspects of the UMAP plot:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Customized UMAP plot</span></span>
-<span><span class="va">umap_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span>,</span>
-<span>                      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP by Cluster"</span>,</span>
-<span>         x <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>         y <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
-<span>         color <span class="op">=</span> <span class="st">"Cluster ID"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">umap_custom</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scCulturePredict-visualization_files/figure-html/umap_custom-1.png" width="768"></p>
-<p>You can also use other metadata columns for coloring:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># UMAP with continuous variable</span></span>
-<span><span class="va">umap_continuous</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span>,</span>
-<span>                          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">percent_mito</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP by Mitochondrial Percentage"</span>,</span>
-<span>         x <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>         y <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
-<span>         color <span class="op">=</span> <span class="st">"% Mito"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">umap_continuous</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scCulturePredict-visualization_files/figure-html/umap_continuous-1.png" width="768"></p>
-</div>
-<div class="section level4">
-<h4 id="combining-multiple-umap-plots">Combining Multiple UMAP Plots<a class="anchor" aria-label="anchor" href="#combining-multiple-umap-plots"></a>
-</h4>
-<p>The plots can be combined using the <code>patchwork</code>
-package:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Combine multiple UMAP plots</span></span>
-<span><span class="va">combined_plot</span> <span class="op">&lt;-</span> <span class="va">umap_plot</span> <span class="op">+</span> <span class="va">umap_custom</span> <span class="op">+</span> <span class="va">umap_continuous</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Multiple UMAP Visualizations"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined_plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scCulturePredict-visualization_files/figure-html/umap_combined-1.png" width="768"></p>
-</div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="prediction-evaluation-visualizations">Prediction Evaluation Visualizations<a class="anchor" aria-label="anchor" href="#prediction-evaluation-visualizations"></a>
-</h2>
-<div class="section level3">
-<h3 id="evaluation-metrics-plots">Evaluation Metrics Plots<a class="anchor" aria-label="anchor" href="#evaluation-metrics-plots"></a>
-</h3>
-<p>Note: The <code>create_evaluation_metrics_plot</code> function has
-been moved to inst/extras/alternative_implementations.R</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Metrics visualization</span></span>
-<span><span class="co"># The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># metrics_plot &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "metrics",</span></span>
-<span><span class="co">#     title = "Direct Prediction Accuracy"</span></span>
-<span><span class="co"># )</span></span>
-<span></span>
-<span><span class="co"># Alternative: Use create_evaluation_plots for comprehensive visualization</span></span>
-<span><span class="va">evaluation_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_evaluation_plots.html">create_evaluation_plots</a></span><span class="op">(</span></span>
-<span>    seurat_object <span class="op">=</span> <span class="va">seurat_object</span>,</span>
-<span>    results_dir <span class="op">=</span> <span class="st">"./results"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display the plots (plots are saved to results directory)</span></span>
-<span><span class="co"># evaluation_plots</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="customizing-accuracy-plots">Customizing Accuracy Plots<a class="anchor" aria-label="anchor" href="#customizing-accuracy-plots"></a>
-</h4>
-<p>You can customize the color palette:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Custom color palette</span></span>
-<span><span class="va">custom_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span> <span class="op">=</span> <span class="st">"#E41A1C"</span>, <span class="st">"B"</span> <span class="op">=</span> <span class="st">"#377EB8"</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="st">"#4DAF4A"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># UMAP colored by condition</span></span>
+<span><span class="va">p_condition</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP by Condition"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"UMAP 1"</span>, y <span class="op">=</span> <span class="st">"UMAP 2"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Customized accuracy plot</span></span>
-<span><span class="co"># The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># custom_accuracy &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "metrics",</span></span>
-<span><span class="co">#     title = "Custom Accuracy Plot",</span></span>
-<span><span class="co">#     color_palette = c("#2E86AB", "#A23B72", "#F18F01")</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># print(custom_accuracy)</span></span></code></pre></div>
-</div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_condition</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/umap_plots-1.png" width="960"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># UMAP colored by batch</span></span>
+<span><span class="va">p_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">batch</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP by Batch"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"UMAP 1"</span>, y <span class="op">=</span> <span class="st">"UMAP 2"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_batch</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/umap_plots-2.png" width="960"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># UMAP colored by gene count</span></span>
+<span><span class="va">p_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">n_genes</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UMAP by Gene Count"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"UMAP 1"</span>, y <span class="op">=</span> <span class="st">"UMAP 2"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Genes"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"darkblue"</span>, high <span class="op">=</span> <span class="st">"yellow"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_genes</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/umap_plots-3.png" width="960"></p>
 </div>
 <div class="section level3">
-<h3 id="confusion-matrix-visualization">Confusion Matrix Visualization<a class="anchor" aria-label="anchor" href="#confusion-matrix-visualization"></a>
+<h3 id="pca-visualization">PCA Visualization<a class="anchor" aria-label="anchor" href="#pca-visualization"></a>
 </h3>
-<p>Note: The <code>create_evaluation_metrics_plot</code> function has
-been moved to inst/extras/alternative_implementations.R</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Confusion matrix visualization</span></span>
-<span><span class="co"># The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># confusion_plot &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "confusion",</span></span>
-<span><span class="co">#     title = "Direct Prediction Confusion Matrix"</span></span>
-<span><span class="co"># )</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get PCA coordinates</span></span>
+<span><span class="va">pca_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">viz_data</span>, <span class="st">"pca"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">meta_data</span><span class="op">$</span><span class="va">PC1</span> <span class="op">&lt;-</span> <span class="va">pca_coords</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">meta_data</span><span class="op">$</span><span class="va">PC2</span> <span class="op">&lt;-</span> <span class="va">pca_coords</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># Alternative confusion matrix view</span></span>
-<span><span class="co"># Note: Individual confusion matrix functions have been moved to inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># svm_confusion &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "confusion",</span></span>
-<span><span class="co">#     title = "SVM Prediction Confusion Matrix"</span></span>
-<span><span class="co"># )</span></span>
+<span><span class="co"># PCA plot</span></span>
+<span><span class="va">p_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">PC1</span>, y <span class="op">=</span> <span class="va">PC2</span>, color <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PCA: PC1 vs PC2"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Condition"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># For comprehensive evaluation including all methods</span></span>
-<span><span class="co"># Use create_evaluation_plots which generates multiple visualizations</span></span>
-<span><span class="va">all_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_evaluation_plots.html">create_evaluation_plots</a></span><span class="op">(</span></span>
-<span>    seurat_object <span class="op">=</span> <span class="va">seurat_object</span>,</span>
-<span>    results_dir <span class="op">=</span> <span class="st">"./results"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_pca</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/pca_plots-1.png" width="768"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Variance explained</span></span>
+<span><span class="va">pca_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Stdev.html" class="external-link">Stdev</a></span><span class="op">(</span><span class="va">viz_data</span>, reduction <span class="op">=</span> <span class="st">"pca"</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="va">var_explained</span> <span class="op">&lt;-</span> <span class="va">pca_var</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pca_var</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span></span>
+<span></span>
+<span><span class="va">var_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  PC <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">var_explained</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Variance <span class="op">=</span> <span class="va">var_explained</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">var_explained</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Individual plots can be accessed from the results</span></span>
-<span><span class="co"># Display the plots</span></span>
-<span><span class="co"># Note: Individual plot objects would need to be created separately</span></span>
-<span><span class="co"># direct_confusion</span></span>
-<span><span class="co"># svm_confusion</span></span>
-<span><span class="co"># threshold_confusion</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="customizing-confusion-heatmaps">Customizing Confusion Heatmaps<a class="anchor" aria-label="anchor" href="#customizing-confusion-heatmaps"></a>
-</h4>
-<p>You can customize the color gradient:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Custom color gradient</span></span>
-<span><span class="va">custom_gradient</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"navy"</span><span class="op">)</span></span>
+<span><span class="va">p_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">var_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">PC</span>, y <span class="op">=</span> <span class="va">Variance</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="st">"identity"</span>, fill <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PCA Variance Explained"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Principal Component"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Variance Explained (%)"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Customized confusion matrix visualization</span></span>
-<span><span class="co"># The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># custom_confusion &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "confusion",</span></span>
-<span><span class="co">#     color_palette = c("#2E86AB", "#A23B72", "#F18F01"),</span></span>
-<span><span class="co">#     title = "Custom Confusion Matrix"</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># print(custom_confusion)</span></span></code></pre></div>
-</div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_var</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/pca_plots-2.png" width="768"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="evaluation-metrics-visualization">Evaluation Metrics Visualization<a class="anchor" aria-label="anchor" href="#evaluation-metrics-visualization"></a>
+<h2 id="pathway-analysis-visualization">Pathway Analysis Visualization<a class="anchor" aria-label="anchor" href="#pathway-analysis-visualization"></a>
 </h2>
-<p>Note: The <code>create_evaluation_metrics_plot</code> function has
-been moved to inst/extras/alternative_implementations.R</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># For this demonstration, we need additional metrics that would come from a real evaluation</span></span>
-<span><span class="co"># This code is provided as an example but not evaluated in this vignette</span></span>
-<span></span>
-<span><span class="co"># Create evaluation metrics plot</span></span>
-<span><span class="co"># The create_evaluation_metrics_plot function is now in inst/extras/alternative_implementations.R</span></span>
-<span><span class="co"># metrics_plot &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = complete_evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "metrics",</span></span>
-<span><span class="co">#     title = "Prediction Performance Metrics"</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># print(metrics_plot)</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># # ROC curve</span></span>
-<span><span class="co"># roc_plot &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = complete_evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "roc",</span></span>
-<span><span class="co">#     title = "ROC Curve"</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># print(roc_plot)</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># # Precision-Recall curve</span></span>
-<span><span class="co"># pr_plot &lt;- create_evaluation_metrics_plot(</span></span>
-<span><span class="co">#     evaluation_results = complete_evaluation_results,</span></span>
-<span><span class="co">#     plot_type = "pr",</span></span>
-<span><span class="co">#     title = "Precision-Recall Curve"</span></span>
-<span><span class="co"># )</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># print(pr_plot)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="saving-visualization-results">Saving Visualization Results<a class="anchor" aria-label="anchor" href="#saving-visualization-results"></a>
-</h2>
-<p>Visualization plots can be saved using <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>
-or base R graphics functions:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create directory for results</span></span>
-<span><span class="va">results_dir</span> <span class="op">&lt;-</span> <span class="st">"scCulturePredict_results"</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">results_dir</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">results_dir</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Save individual plots using ggplot2::ggsave</span></span>
-<span><span class="co"># Note: save_visualization_plots has been moved to inst/extras/alternative_implementations.R</span></span>
-<span></span>
-<span><span class="co"># Save confusion matrix plot</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"confusion_plot"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
-<span>    filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">results_dir</span>, <span class="st">"example_confusion.png"</span><span class="op">)</span>,</span>
-<span>    plot <span class="op">=</span> <span class="va">confusion_plot</span>,</span>
-<span>    width <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>    height <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>    dpi <span class="op">=</span> <span class="fl">300</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Save metrics plot</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"metrics_plot"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
-<span>    filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">results_dir</span>, <span class="st">"example_metrics.png"</span><span class="op">)</span>,</span>
-<span>    plot <span class="op">=</span> <span class="va">metrics_plot</span>,</span>
-<span>    width <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>    height <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>    dpi <span class="op">=</span> <span class="fl">300</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Save UMAP plot</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"umap_plot"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span></span>
-<span>    filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">results_dir</span>, <span class="st">"example_umap.png"</span><span class="op">)</span>,</span>
-<span>    plot <span class="op">=</span> <span class="va">umap_plot</span>,</span>
-<span>    width <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>    height <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>    dpi <span class="op">=</span> <span class="fl">300</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>This will save the following files to the specified directory: -
-example_umap.png - umap_experimental.png (from
-create_evaluation_plots)</p>
-</div>
-<div class="section level2">
-<h2 id="advanced-customization">Advanced Customization<a class="anchor" aria-label="anchor" href="#advanced-customization"></a>
-</h2>
-<p>Since all visualization functions return <code>ggplot</code> objects,
-you can further customize them using standard <code>ggplot2</code>
-functions:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create a highly customized plot using ggplot2 directly</span></span>
-<span><span class="va">customized_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">seurat_object</span><span class="op">@</span><span class="va">meta.data</span>,</span>
-<span>                          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>        title <span class="op">=</span> <span class="st">"Highly Customized UMAP Plot"</span>,</span>
-<span>        subtitle <span class="op">=</span> <span class="st">"With additional annotations"</span>,</span>
-<span>        caption <span class="op">=</span> <span class="st">"Created with scCulturePredict"</span>,</span>
-<span>        x <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>        y <span class="op">=</span> <span class="st">"UMAP_2"</span>,</span>
-<span>        color <span class="op">=</span> <span class="st">"Sample"</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">16</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
-<span>        plot.subtitle <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span>, color <span class="op">=</span> <span class="st">"darkgray"</span><span class="op">)</span>,</span>
-<span>        legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>        panel.grid.major <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"lightgray"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span>,</span>
-<span>        panel.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"aliceblue"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Create mock pathway activity data</span></span>
+<span><span class="va">n_pathways</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">pathway_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Glycolysis"</span>, <span class="st">"TCA_Cycle"</span>, <span class="st">"Cell_Cycle"</span>, <span class="st">"DNA_Repair"</span>,</span>
+<span>                   <span class="st">"Translation"</span>, <span class="st">"Oxidative_Stress"</span>, <span class="st">"Metabolism"</span>,</span>
+<span>                   <span class="st">"Signaling"</span>, <span class="st">"Transport"</span>, <span class="st">"Biosynthesis"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">customized_plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scCulturePredict-visualization_files/figure-html/ggplot_customize-1.png" width="768"></p>
+<span><span class="co"># Create mock pathway matrix</span></span>
+<span><span class="va">pathway_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">viz_data</span><span class="op">)</span> <span class="op">*</span> <span class="va">n_pathways</span><span class="op">)</span>,</span>
+<span>                        nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">viz_data</span><span class="op">)</span>,</span>
+<span>                        ncol <span class="op">=</span> <span class="va">n_pathways</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pathway_matrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">pathway_names</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">n_pathways</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pathway_matrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">viz_data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate mean pathway activity by condition</span></span>
+<span><span class="va">pathway_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  <span class="va">pathway_matrix</span>,</span>
+<span>  condition <span class="op">=</span> <span class="va">viz_data</span><span class="op">$</span><span class="va">condition</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">condition</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reshape for plotting</span></span>
+<span><span class="va">pathway_long</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">pathway_summary</span>,</span>
+<span>                                   cols <span class="op">=</span> <span class="op">-</span><span class="va">condition</span>,</span>
+<span>                                   names_to <span class="op">=</span> <span class="st">"Pathway"</span>,</span>
+<span>                                   values_to <span class="op">=</span> <span class="st">"Activity"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create heatmap-style plot with ggplot2</span></span>
+<span><span class="va">p_pathway</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">pathway_long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Pathway</span>, y <span class="op">=</span> <span class="va">condition</span>, fill <span class="op">=</span> <span class="va">Activity</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"blue"</span>, mid <span class="op">=</span> <span class="st">"white"</span>, high <span class="op">=</span> <span class="st">"red"</span>, midpoint <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Mean Pathway Activity by Condition"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Pathway"</span>, y <span class="op">=</span> <span class="st">"Condition"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_pathway</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/pathway_viz-1.png" width="768"></p>
 </div>
 <div class="section level2">
-<h2 id="visualizing-singlecellexperiment-results">Visualizing SingleCellExperiment Results<a class="anchor" aria-label="anchor" href="#visualizing-singlecellexperiment-results"></a>
+<h2 id="prediction-visualization">Prediction Visualization<a class="anchor" aria-label="anchor" href="#prediction-visualization"></a>
 </h2>
-<p>The <code>scCulturePredict</code> package seamlessly handles
-visualization of results from SingleCellExperiment objects. The same
-visualization functions work regardless of the input data format.</p>
 <div class="section level3">
-<h3 id="visualizing-sce-based-analysis">Visualizing SCE-based Analysis<a class="anchor" aria-label="anchor" href="#visualizing-sce-based-analysis"></a>
+<h3 id="confusion-matrix">Confusion Matrix<a class="anchor" aria-label="anchor" href="#confusion-matrix"></a>
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run analysis with SCE data</span></span>
-<span><span class="va">results_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/sce_data.rds"</span>,</span>
-<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
-<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./sce_results"</span>,</span>
-<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
-<span>    experiment_id <span class="op">=</span> <span class="st">"sce_viz_example"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Create confusion matrix</span></span>
+<span><span class="va">actual</span> <span class="op">&lt;-</span> <span class="va">viz_data</span><span class="op">$</span><span class="va">condition</span></span>
+<span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="va">viz_data</span><span class="op">$</span><span class="va">predicted_condition</span></span>
 <span></span>
-<span><span class="co"># Visualize SCE results - same function as for 10X data</span></span>
-<span><span class="va">plot_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_scCulture.html">plot_scCulture</a></span><span class="op">(</span><span class="va">results_sce</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plot_sce</span><span class="op">)</span></span>
+<span><span class="va">conf_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>Actual <span class="op">=</span> <span class="va">actual</span>, Predicted <span class="op">=</span> <span class="va">predicted</span><span class="op">)</span></span>
+<span><span class="va">conf_mat_prop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proportions.html" class="external-link">prop.table</a></span><span class="op">(</span><span class="va">conf_mat</span>, margin <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Access the underlying ggplot objects for customization</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list</a></span><span class="op">(</span><span class="va">plot_sce</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># For PREDICT mode, multiple plots are returned</span></span>
-<span>    <span class="va">plot_sce</span><span class="op">$</span><span class="va">predictions</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_dark</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="co"># For BUILD mode, single plot is returned</span></span>
-<span>    <span class="va">plot_sce</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"SCE Data Analysis Results"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="co"># Convert to data frame for plotting</span></span>
+<span><span class="va">conf_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">conf_mat_prop</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create heatmap</span></span>
+<span><span class="va">p_conf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">conf_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Predicted</span>, y <span class="op">=</span> <span class="va">Actual</span>, fill <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">Freq</span><span class="op">)</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"blue"</span>, mid <span class="op">=</span> <span class="st">"white"</span>, high <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>                       midpoint <span class="op">=</span> <span class="fl">0.5</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Confusion Matrix (Normalized)"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Predicted"</span>, y <span class="op">=</span> <span class="st">"Actual"</span>,</span>
+<span>       fill <span class="op">=</span> <span class="st">"Proportion"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_conf</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/confusion_matrix-1.png" width="768"></p>
 </div>
 <div class="section level3">
-<h3 id="comparing-10x-and-sce-visualizations">Comparing 10X and SCE Visualizations<a class="anchor" aria-label="anchor" href="#comparing-10x-and-sce-visualizations"></a>
+<h3 id="prediction-confidence">Prediction Confidence<a class="anchor" aria-label="anchor" href="#prediction-confidence"></a>
 </h3>
-<p>When working with both data formats, you can create side-by-side
-comparisons:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Confidence distribution</span></span>
+<span><span class="va">p_conf_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">prediction_confidence</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">20</span>, fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Prediction Confidence Distribution"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Confidence Score"</span>, y <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">meta_data</span><span class="op">$</span><span class="va">prediction_confidence</span><span class="op">)</span>,</span>
+<span>             color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Results from 10X data</span></span>
-<span><span class="va">results_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    tenx_data_dir <span class="op">=</span> <span class="st">"path/to/10x_data"</span>,</span>
-<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
-<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./10x_results"</span>,</span>
-<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
-<span>    experiment_id <span class="op">=</span> <span class="st">"10x_example"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_conf_dist</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/confidence_viz-1.png" width="768"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Confidence by condition</span></span>
+<span><span class="va">p_conf_cond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">condition</span>, y <span class="op">=</span> <span class="va">prediction_confidence</span>,</span>
+<span>                                     fill <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.2</span>, outlier.shape <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Confidence by Condition"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Condition"</span>, y <span class="op">=</span> <span class="st">"Confidence Score"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Results from SCE data</span></span>
-<span><span class="va">results_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/sce_data.rds"</span>,</span>
-<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
-<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./sce_results"</span>,</span>
-<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
-<span>    experiment_id <span class="op">=</span> <span class="st">"sce_example"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_conf_cond</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/confidence_viz-2.png" width="768"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="using-plot_scculture-function">Using plot_scCulture Function<a class="anchor" aria-label="anchor" href="#using-plot_scculture-function"></a>
+</h2>
+<p>The package provides the <code>plot_scCulture</code> function for
+automated visualization:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example of using plot_scCulture with analysis results</span></span>
+<span><span class="co"># This requires results from the scCulture() function</span></span>
 <span></span>
-<span><span class="co"># Create plots</span></span>
-<span><span class="va">plot_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_scCulture.html">plot_scCulture</a></span><span class="op">(</span><span class="va">results_10x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"10X Data"</span><span class="op">)</span></span>
-<span><span class="va">plot_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_scCulture.html">plot_scCulture</a></span><span class="op">(</span><span class="va">results_sce</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"SCE Data"</span><span class="op">)</span></span>
+<span><span class="co"># results &lt;- scCulture(</span></span>
+<span><span class="co">#   tenx_data_dir = "path/to/data",</span></span>
+<span><span class="co">#   input_type = "10x",</span></span>
+<span><span class="co">#   output_dir = "./results",</span></span>
+<span><span class="co">#   mode = "build"</span></span>
+<span><span class="co"># )</span></span>
+<span><span class="co">#</span></span>
+<span><span class="co"># # Create visualization</span></span>
+<span><span class="co"># p &lt;- plot_scCulture(results)</span></span>
+<span><span class="co"># print(p)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="custom-visualization-functions">Custom Visualization Functions<a class="anchor" aria-label="anchor" href="#custom-visualization-functions"></a>
+</h2>
+<div class="section level3">
+<h3 id="creating-publication-ready-figures">Creating Publication-Ready Figures<a class="anchor" aria-label="anchor" href="#creating-publication-ready-figures"></a>
+</h3>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define custom theme for consistency</span></span>
+<span><span class="va">theme_publication</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">base_size</span> <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="va">base_size</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">base_size</span> <span class="op">*</span> <span class="fl">1.2</span>, face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">base_size</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>,</span>
+<span>      axis.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">base_size</span> <span class="op">*</span> <span class="fl">0.9</span><span class="op">)</span>,</span>
+<span>      legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">base_size</span> <span class="op">*</span> <span class="fl">1.1</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>      legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="va">base_size</span><span class="op">)</span>,</span>
+<span>      panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>      panel.border <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray80"</span>, fill <span class="op">=</span> <span class="cn">NA</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Combine using patchwork</span></span>
-<span><span class="va">combined_plot</span> <span class="op">&lt;-</span> <span class="va">plot_10x</span> <span class="op">+</span> <span class="va">plot_sce</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Comparison of Data Formats"</span><span class="op">)</span></span>
+<span><span class="co"># Apply custom theme</span></span>
+<span><span class="va">p_custom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">meta_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">UMAP_1</span>, y <span class="op">=</span> <span class="va">UMAP_2</span>, color <span class="op">=</span> <span class="va">condition</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Publication-Ready UMAP"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"UMAP 1"</span>, y <span class="op">=</span> <span class="st">"UMAP 2"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Condition"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_publication</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined_plot</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_custom</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scCulturePredict-visualization_files/figure-html/custom_theme-1.png" width="768"></p>
 </div>
 <div class="section level3">
-<h3 id="cross-dataset-prediction-visualization">Cross-Dataset Prediction Visualization<a class="anchor" aria-label="anchor" href="#cross-dataset-prediction-visualization"></a>
+<h3 id="saving-figures">Saving Figures<a class="anchor" aria-label="anchor" href="#saving-figures"></a>
 </h3>
-<p>Visualizing predictions when training on one format and predicting on
-another:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Train on 10X</span></span>
-<span><span class="va">model_10x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    tenx_data_dir <span class="op">=</span> <span class="st">"path/to/labeled_10x"</span>,</span>
-<span>    input_type <span class="op">=</span> <span class="st">"10x"</span>,</span>
-<span>    kegg_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"kegg"</span>, <span class="st">"example_pathway.keg"</span>, package <span class="op">=</span> <span class="st">"scCulturePredict"</span><span class="op">)</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./model_10x"</span>,</span>
-<span>    mode <span class="op">=</span> <span class="st">"build"</span>,</span>
-<span>    experiment_id <span class="op">=</span> <span class="st">"training"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Predict on SCE</span></span>
-<span><span class="va">predictions_sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scCulture.html">scCulture</a></span><span class="op">(</span></span>
-<span>    sce_data_path <span class="op">=</span> <span class="st">"path/to/unlabeled_sce.rds"</span>,</span>
-<span>    input_type <span class="op">=</span> <span class="st">"sce"</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="st">"./predictions_sce"</span>,</span>
-<span>    mode <span class="op">=</span> <span class="st">"predict"</span>,</span>
-<span>    fingerprint_file <span class="op">=</span> <span class="va">model_10x</span><span class="op">$</span><span class="va">fingerprint_file</span>,</span>
-<span>    experiment_id <span class="op">=</span> <span class="st">"prediction"</span>,</span>
-<span>    verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Visualize cross-dataset predictions</span></span>
-<span><span class="va">pred_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_scCulture.html">plot_scCulture</a></span><span class="op">(</span><span class="va">predictions_sce</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># The prediction plot shows both predictions and confidence</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list</a></span><span class="op">(</span><span class="va">pred_plot</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># Customize prediction plot</span></span>
-<span>    <span class="va">pred_plot</span><span class="op">$</span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="va">pred_plot</span><span class="op">$</span><span class="va">predictions</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cross-Dataset Predictions"</span>,</span>
-<span>             subtitle <span class="op">=</span> <span class="st">"Model: 10X → Query: SCE"</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="co"># Customize confidence plot</span></span>
-<span>    <span class="va">pred_plot</span><span class="op">$</span><span class="va">confidence</span> <span class="op">&lt;-</span> <span class="va">pred_plot</span><span class="op">$</span><span class="va">confidence</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"gray80"</span>, high <span class="op">=</span> <span class="st">"darkred"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Prediction Confidence"</span>,</span>
-<span>             subtitle <span class="op">=</span> <span class="st">"Higher values indicate more reliable predictions"</span><span class="op">)</span></span>
-<span></span>
-<span>    <span class="co"># Display both</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
-<span>    <span class="va">combined</span> <span class="op">&lt;-</span> <span class="va">pred_plot</span><span class="op">$</span><span class="va">predictions</span> <span class="op">/</span> <span class="va">pred_plot</span><span class="op">$</span><span class="va">confidence</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">combined</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Save figures in publication quality</span></span>
+<span><span class="co"># ggsave("umap_conditions.pdf", p_condition, width = 8, height = 6, dpi = 300)</span></span>
+<span><span class="co"># ggsave("confusion_matrix.png", p_conf, width = 8, height = 6, dpi = 300)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+<h2 id="tips-for-effective-visualization">Tips for Effective Visualization<a class="anchor" aria-label="anchor" href="#tips-for-effective-visualization"></a>
 </h2>
-<p>The <code>scCulturePredict</code> package provides a comprehensive
-set of visualization functions for exploring single-cell data and
-evaluating prediction results. These functions generate
-publication-ready figures that can be further customized using the
-powerful <code>ggplot2</code> framework.</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Color Selection</strong>: Use colorblind-friendly palettes
+(e.g., Set1, Set2 from RColorBrewer)</li>
+<li>
+<strong>Clarity</strong>: Avoid overcrowding plots; use faceting for
+multiple comparisons</li>
+<li>
+<strong>Consistency</strong>: Maintain consistent color schemes
+across related plots</li>
+<li>
+<strong>Accessibility</strong>: Include shape or pattern variations
+in addition to colors</li>
+<li>
+<strong>Export Quality</strong>: Save at appropriate resolution (300
+dpi for print, 72-150 for web)</li>
+</ol>
 </div>
 <div class="section level2">
-<h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+<h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.2 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.3 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -612,15 +518,15 @@ powerful <code>ggplot2</code> framework.</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] patchwork_1.3.2          ggplot2_3.5.2            Seurat_5.3.0            </span></span>
-<span><span class="co">#&gt; [4] SeuratObject_5.1.0       sp_2.2-0                 scCulturePredict_0.99.30</span></span>
+<span><span class="co">#&gt; [1] dplyr_1.1.4              ggplot2_3.5.2            Seurat_5.3.0            </span></span>
+<span><span class="co">#&gt; [4] SeuratObject_5.2.0       sp_2.2-0                 scCulturePredict_0.99.32</span></span>
 <span><span class="co">#&gt; [7] BiocStyle_2.36.0        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] RColorBrewer_1.1-3          jsonlite_2.0.0             </span></span>
 <span><span class="co">#&gt;   [3] magrittr_2.0.3              spatstat.utils_3.1-5       </span></span>
 <span><span class="co">#&gt;   [5] farver_2.1.2                rmarkdown_2.29             </span></span>
-<span><span class="co">#&gt;   [7] fs_1.6.6                    ragg_1.4.0                 </span></span>
+<span><span class="co">#&gt;   [7] fs_1.6.6                    ragg_1.5.0                 </span></span>
 <span><span class="co">#&gt;   [9] vctrs_0.6.5                 ROCR_1.0-11                </span></span>
 <span><span class="co">#&gt;  [11] spatstat.explore_3.5-2      htmltools_0.5.8.1          </span></span>
 <span><span class="co">#&gt;  [13] S4Arrays_1.8.1              SparseArray_1.8.1          </span></span>
@@ -636,30 +542,30 @@ powerful <code>ggplot2</code> framework.</p>
 <span><span class="co">#&gt;  [33] fastmap_1.2.0               GenomeInfoDbData_1.2.14    </span></span>
 <span><span class="co">#&gt;  [35] MatrixGenerics_1.20.0       fitdistrplus_1.2-4         </span></span>
 <span><span class="co">#&gt;  [37] future_1.67.0               shiny_1.11.1               </span></span>
-<span><span class="co">#&gt;  [39] digest_0.6.37               S4Vectors_0.46.0           </span></span>
-<span><span class="co">#&gt;  [41] tensor_1.5.1                RSpectra_0.16-2            </span></span>
-<span><span class="co">#&gt;  [43] irlba_2.3.5.1               textshaping_1.0.1          </span></span>
-<span><span class="co">#&gt;  [45] GenomicRanges_1.60.0        labeling_0.4.3             </span></span>
-<span><span class="co">#&gt;  [47] progressr_0.15.1            spatstat.sparse_3.1-0      </span></span>
-<span><span class="co">#&gt;  [49] polyclip_1.10-7             httr_1.4.7                 </span></span>
-<span><span class="co">#&gt;  [51] abind_1.4-8                 compiler_4.5.1             </span></span>
-<span><span class="co">#&gt;  [53] withr_3.0.2                 fastDummies_1.7.5          </span></span>
-<span><span class="co">#&gt;  [55] MASS_7.3-65                 DelayedArray_0.34.1        </span></span>
-<span><span class="co">#&gt;  [57] tools_4.5.1                 lmtest_0.9-40              </span></span>
-<span><span class="co">#&gt;  [59] httpuv_1.6.16               future.apply_1.20.0        </span></span>
-<span><span class="co">#&gt;  [61] goftest_1.2-3               glue_1.8.0                 </span></span>
-<span><span class="co">#&gt;  [63] nlme_3.1-168                promises_1.3.3             </span></span>
-<span><span class="co">#&gt;  [65] grid_4.5.1                  Rtsne_0.17                 </span></span>
-<span><span class="co">#&gt;  [67] cluster_2.1.8.1             reshape2_1.4.4             </span></span>
-<span><span class="co">#&gt;  [69] generics_0.1.4              gtable_0.3.6               </span></span>
-<span><span class="co">#&gt;  [71] spatstat.data_3.1-8         tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt;  [73] data.table_1.17.8           XVector_0.48.0             </span></span>
-<span><span class="co">#&gt;  [75] spatstat.geom_3.5-0         BiocGenerics_0.54.0        </span></span>
-<span><span class="co">#&gt;  [77] RcppAnnoy_0.0.22            ggrepel_0.9.6              </span></span>
-<span><span class="co">#&gt;  [79] RANN_2.6.2                  pillar_1.11.0              </span></span>
-<span><span class="co">#&gt;  [81] stringr_1.5.1               spam_2.11-1                </span></span>
-<span><span class="co">#&gt;  [83] RcppHNSW_0.6.0              later_1.4.3                </span></span>
-<span><span class="co">#&gt;  [85] splines_4.5.1               dplyr_1.1.4                </span></span>
+<span><span class="co">#&gt;  [39] digest_0.6.37               patchwork_1.3.2            </span></span>
+<span><span class="co">#&gt;  [41] S4Vectors_0.46.0            tensor_1.5.1               </span></span>
+<span><span class="co">#&gt;  [43] RSpectra_0.16-2             irlba_2.3.5.1              </span></span>
+<span><span class="co">#&gt;  [45] textshaping_1.0.3           GenomicRanges_1.60.0       </span></span>
+<span><span class="co">#&gt;  [47] labeling_0.4.3              progressr_0.15.1           </span></span>
+<span><span class="co">#&gt;  [49] spatstat.sparse_3.1-0       polyclip_1.10-7            </span></span>
+<span><span class="co">#&gt;  [51] httr_1.4.7                  abind_1.4-8                </span></span>
+<span><span class="co">#&gt;  [53] compiler_4.5.1              withr_3.0.2                </span></span>
+<span><span class="co">#&gt;  [55] fastDummies_1.7.5           MASS_7.3-65                </span></span>
+<span><span class="co">#&gt;  [57] DelayedArray_0.34.1         tools_4.5.1                </span></span>
+<span><span class="co">#&gt;  [59] lmtest_0.9-40               httpuv_1.6.16              </span></span>
+<span><span class="co">#&gt;  [61] future.apply_1.20.0         goftest_1.2-3              </span></span>
+<span><span class="co">#&gt;  [63] glue_1.8.0                  nlme_3.1-168               </span></span>
+<span><span class="co">#&gt;  [65] promises_1.3.3              grid_4.5.1                 </span></span>
+<span><span class="co">#&gt;  [67] Rtsne_0.17                  cluster_2.1.8.1            </span></span>
+<span><span class="co">#&gt;  [69] reshape2_1.4.4              generics_0.1.4             </span></span>
+<span><span class="co">#&gt;  [71] gtable_0.3.6                spatstat.data_3.1-8        </span></span>
+<span><span class="co">#&gt;  [73] tidyr_1.3.1                 data.table_1.17.8          </span></span>
+<span><span class="co">#&gt;  [75] XVector_0.48.0              spatstat.geom_3.5-0        </span></span>
+<span><span class="co">#&gt;  [77] BiocGenerics_0.54.0         RcppAnnoy_0.0.22           </span></span>
+<span><span class="co">#&gt;  [79] ggrepel_0.9.6               RANN_2.6.2                 </span></span>
+<span><span class="co">#&gt;  [81] pillar_1.11.0               stringr_1.5.2              </span></span>
+<span><span class="co">#&gt;  [83] spam_2.11-1                 RcppHNSW_0.6.0             </span></span>
+<span><span class="co">#&gt;  [85] later_1.4.4                 splines_4.5.1              </span></span>
 <span><span class="co">#&gt;  [87] lattice_0.22-7              deldir_2.0-4               </span></span>
 <span><span class="co">#&gt;  [89] survival_3.8-3              tidyselect_1.2.1           </span></span>
 <span><span class="co">#&gt;  [91] SingleCellExperiment_1.30.1 miniUI_0.1.2               </span></span>
@@ -670,7 +576,7 @@ powerful <code>ggplot2</code> framework.</p>
 <span><span class="co">#&gt; [101] xfun_0.53                   Biobase_2.68.0             </span></span>
 <span><span class="co">#&gt; [103] matrixStats_1.5.0           stringi_1.8.7              </span></span>
 <span><span class="co">#&gt; [105] UCSC.utils_1.4.0            lazyeval_0.2.2             </span></span>
-<span><span class="co">#&gt; [107] yaml_2.3.10                 evaluate_1.0.4             </span></span>
+<span><span class="co">#&gt; [107] yaml_2.3.10                 evaluate_1.0.5             </span></span>
 <span><span class="co">#&gt; [109] codetools_0.2-20            tibble_3.3.0               </span></span>
 <span><span class="co">#&gt; [111] BiocManager_1.30.26         cli_3.6.5                  </span></span>
 <span><span class="co">#&gt; [113] uwot_0.2.3                  xtable_1.8-4               </span></span>
@@ -681,7 +587,7 @@ powerful <code>ggplot2</code> framework.</p>
 <span><span class="co">#&gt; [123] spatstat.univar_3.1-4       parallel_4.5.1             </span></span>
 <span><span class="co">#&gt; [125] pkgdown_2.1.3               dotCall64_1.2              </span></span>
 <span><span class="co">#&gt; [127] listenv_0.9.1               viridisLite_0.4.2          </span></span>
-<span><span class="co">#&gt; [129] scales_1.4.0                ggridges_0.5.6             </span></span>
+<span><span class="co">#&gt; [129] scales_1.4.0                ggridges_0.5.7             </span></span>
 <span><span class="co">#&gt; [131] purrr_1.1.0                 crayon_1.5.3               </span></span>
 <span><span class="co">#&gt; [133] rlang_1.1.6                 cowplot_1.2.0</span></span></code></pre></div>
 </div>

@@ -9,7 +9,7 @@ Optionally performs t-SNE analysis."><link rel="stylesheet" href="https://cdn.js
 
     <a class="navbar-brand me-2" href="../index.html">scCulturePredict</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.32</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,6 @@ Optionally performs t-SNE analysis."><link rel="stylesheet" href="https://cdn.js
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/scCulturePredict-introduction.html">Introduction to scCulturePredict</a></li>
     <li><a class="dropdown-item" href="../articles/scCulturePredict-visualization.html">Visualization with scCulturePredict</a></li>
-    <li><a class="dropdown-item" href="../articles/scCulturePredict-advanced.html">Advanced Usage of scCulturePredict</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
@@ -97,10 +96,10 @@ If perform_tsne is TRUE, t-SNE coordinates are also added.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 UMAP embedding parameters a = 1.75 b = 0.8421</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Read 500 rows and found 40 numeric columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Using Annoy for neighbor search, n_neighbors = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Building Annoy index with metric = cosine, n_trees = 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 UMAP embedding parameters a = 1.75 b = 0.8421</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Read 500 rows and found 40 numeric columns</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Using Annoy for neighbor search, n_neighbors = 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Building Annoy index with metric = cosine, n_trees = 50</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 0%   10   20   30   40   50   60   70   80   90   100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [----|----|----|----|----|----|----|----|----|----|</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
@@ -154,15 +153,15 @@ If perform_tsne is TRUE, t-SNE coordinates are also added.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> *</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> |</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Writing NN index file to temp file /tmp/RtmpIrTgqq/file27114d6f518</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Searching Annoy index using 1 thread, search_k = 400</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:31 Annoy recall = 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:32 Commencing smooth kNN distance calibration using 1 thread</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Writing NN index file to temp file /tmp/RtmpsUpmhj/file27436e7ccd87</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Searching Annoy index using 1 thread, search_k = 400</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Annoy recall = 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:54 Commencing smooth kNN distance calibration using 1 thread</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  with target n_neighbors = 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Initializing from normalized Laplacian + noise (using RSpectra)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Commencing optimization for 500 epochs, with 1928 positive edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Using rng type: pcg</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 18:15:33 Optimization finished</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:56 Initializing from normalized Laplacian + noise (using RSpectra)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:56 Commencing optimization for 500 epochs, with 1928 positive edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:56 Using rng type: pcg</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 13:05:56 Optimization finished</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check that UMAP coordinates were added</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">seurat_obj_reduced</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UMAP_1"</span>, <span class="st">"UMAP_2"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
